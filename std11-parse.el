@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11-parse.el,v 0.3 1996-08-28 17:15:33 morioka Exp $
+;; Version: $Id: std11-parse.el,v 0.4 1996-08-28 17:25:56 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -58,6 +58,33 @@
 	(cons (cons 'atom (substring str 0 end))
 	      (substring str end)
 	      ))))
+
+(defun std11-analyze-quoted-string (str)
+  (let ((len (length str)))
+    (if (and (> len 0)
+	     (eq (aref str 0) ?\"))
+	(let ((i 1) chr dest)
+	  (catch 'tag
+	    (while (< i len)
+	      (setq chr (aref str i))
+	      (cond ((eq chr ?\\)
+		     (setq i (1+ i))
+		     (if (>= i len)
+			 (throw 'tag nil)
+		       )
+		     (setq dest (concat dest (char-to-string (aref str i))))
+		     )
+		    ((eq chr ?\")
+		     (throw 'tag
+			    (cons (cons 'quoted-string dest)
+				  (substring str (1+ i)))
+			    )
+		     )
+		    (t
+		     (setq dest (concat dest (char-to-string (aref str i))))
+		     ))
+	      (setq i (1+ i))
+	      ))))))
 
 
 ;;; @ end
