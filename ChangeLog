@@ -1,3 +1,18 @@
+1999-07-30  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-ml-count-field-list): Don't use
+	`mu-cite-custom-set-variable'.
+	(mu-cite-top-format): New implementation for customization.
+	(mu-cite-prefix-format): Ditto.
+	(mu-cite-custom-set-variable): Remove function.
+	(mu-cite-choose-top-format): Remove widget.
+	(mu-cite-choose-prefix-format): Remove widget.
+	(TopLevel): Don't use `mapcar' for defining obsolete functions.
+	(TopLevel): Undo the last change for defining obsolete variables
+	under XEmacs.
+	(mu-cite-obsolete-variable-alist): Redefine as a macro which will
+	be bound at the compile time only.
+
 1999-07-29  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-cite.el (TopLevel): Use `mapcar' instead of `dolist' for
