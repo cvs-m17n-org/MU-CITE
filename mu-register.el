@@ -7,7 +7,7 @@
 ;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.10 1996-01-16 17:42:01 morioka Exp $
+;;;	$Id: mu-register.el,v 1.11 1996-01-16 21:54:27 morioka Exp $
 ;;;
 ;;; This file is part of tl (Tiny Library).
 ;;;
@@ -122,9 +122,9 @@
     (if (null return1)
 	(setq return1 fullname))
     (setq return
-	  (read-string "Citation name? "
-		       return1
-		       'mu-register/minibuffer-history))
+	  (tl:read-string "Citation name? "
+			  return1
+			  'mu-register/minibuffer-history))
     (if (not (string-equal return return1))
 	(let ((ans)
 	      (cursor-in-echo-area t))
@@ -152,10 +152,9 @@
     (if (null return1)
 	(progn
 	  (setq return
-		(read-string "Citation name? "
-			     fullname
-			     'mu-register/minibuffer-history))
-	  
+		(tl:read-string "Citation name? "
+				fullname
+				'mu-register/minibuffer-history))
 	  (if (not (string-equal return return1))
 	      (let ((ans)
 		    (cursor-in-echo-area t))
