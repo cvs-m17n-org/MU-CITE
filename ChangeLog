@@ -1,3 +1,13 @@
+2001-12-21  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-register.el (mu-cite-load-registration-file): Reverted.  I've
+	got XEmacs wrong that it does'nt support the coding system magic
+	cookie.  However it has been working since XEmacs 21.2.21.  Users
+	can avoid mis-decoding a file by setting the value of the option
+	`mu-registration-file-coding-system-for-read' properly even if
+	they are using one of old (X)Emacsen.
+	(mu-registration-file-coding-system-for-read): Fix a doc-string.
+
 2001-08-29  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-register.el (mu-cite-load-registration-file): Retry to read

@@ -63,14 +63,18 @@ for writing a file."
   "*Name of the variable to register citation prefix strings.")
 
 (defvar mu-registration-file-coding-system-for-read nil
-  "*Coding-system used when reading a registration file.  It is strongly
-recommended that you do not set this option if you have no particular
-reason.")
+  "*Coding-system used when reading a registration file.  Normally, you
+have no need to set this option.  If you have many friends in various
+countries and the file contains their names in various languages, you
+may avoid mis-decoding them by setting this option to `iso-2022-7bit'
+or the other universal coding-system.  Note that when you change this
+value, you should save the file manually using the same coding-system
+in advance.")
 
 (defvar mu-registration-file-coding-system nil
   "Internal variable used to keep a default coding-system for writing
 a current registration file.  The value will be renewed whenever a
-registration id read.")
+registration file is read.")
 
 (defvar mu-register-history nil)
 
@@ -81,47 +85,24 @@ registration id read.")
 (defun mu-cite-load-registration-file ()
   (if (file-readable-p mu-registration-file)
       (with-temp-buffer
+	(set-buffer-multibyte t)
 	(if mu-registration-file-coding-system-for-read
 	    (insert-file-contents-as-coding-system
 	     mu-registration-file-coding-system-for-read
 	     mu-registration-file)
 	  (insert-file-contents mu-registration-file))
-	(let (exp)
-	  (if (or (condition-case nil
-		      (progn
-			(setq exp (read (current-buffer)))
-			t)
-		    (error nil))
-		  ;; Under XEmacs, the function `insert-file-contents'
-		  ;; does not handle the coding-system magic cookie.
-		  (progn
-		    (insert-file-contents-as-raw-text mu-registration-file
-						      nil 0 3000 t)
-		    (goto-char (point-min))
-		    (if (looking-at "\
-^[^\n]*-\\*-[^\n]*coding: \\([^\t\n ;]+\\)[^\n]*-\\*-")
-			(progn
-			  (insert-file-contents-as-coding-system
-			   (intern (match-string 1)) mu-registration-file
-			   nil nil nil t)
-			  (goto-char (point-min))
-			  (condition-case nil
-			      (progn
-				(setq exp (read (current-buffer)))
-				t)
-			    (error nil))))))
-	      (progn
-		(setq mu-registration-file-coding-system
-		      (static-cond
-		       ((boundp 'buffer-file-coding-system)
-			(symbol-value 'buffer-file-coding-system))
-		       ((boundp 'file-coding-system)
-			(symbol-value 'file-coding-system))
-		       (t
-			nil)))
-		(or (eq (car (cdr exp)) mu-registration-symbol)
-		    (setcar (cdr exp) mu-registration-symbol))
-		(eval exp))))))
+	(setq mu-registration-file-coding-system
+	      (static-cond
+	       ((boundp 'buffer-file-coding-system)
+		(symbol-value 'buffer-file-coding-system))
+	       ((boundp 'file-coding-system)
+		(symbol-value 'file-coding-system))
+	       (t
+		nil)))
+	(let ((exp (read (current-buffer))))
+	  (or (eq (car (cdr exp)) mu-registration-symbol)
+	      (setcar (cdr exp) mu-registration-symbol))
+	  (eval exp))))
   (or (boundp mu-registration-symbol)
       (set mu-registration-symbol nil)))
 
