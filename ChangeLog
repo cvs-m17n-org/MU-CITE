@@ -1,3 +1,58 @@
+1999-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* (mu-cite-version): Update to 8.0.
+
+	* (mu-cite-eval-format): Don't use `save-excursion'.
+	* (mu-cite-get-value): Save excursion while evaluating a function.
+
+	* (mu-cite-save-registration-file): New implementation.
+	* (mu-cite-load-registration-file): Likewise.
+
+	* (mu-cite-registration-file-modes): New user option.
+	* (mu-cite-registration-file-coding-system-for-write): Likewise.
+	* (mu-cite-registration-file-coding-system-for-read): Likewise.
+
+	* (TopLevel): Treat old variables and functions as obsolete.
+
+	* (TopLevel): Require `custom'.
+	* (TopLevel): Require `emu' for picking up `char-category' for
+	XEmacs.
+	* (TopLevel): Require `poe' for picking up some macros, e.g.
+	`with-temp-buffer', for old Emacsen.
+	* (TopLevel): Require `cl' at the compile time.
+
+	* (mu-cite-top-format, mu-cite-registration-file-modes,
+	mu-cite-registration-file-coding-system-for-write,
+	mu-cite-registration-file-coding-system-for-read,
+	mu-cite-registration-file, mu-cite-prefix-format,
+	mu-cite-pre-cite-hook, mu-cite-post-cite-hook,
+	mu-cite-ml-count-field-list, mu-cite-load-hook,
+	mu-cite-instantiation-hook, mu-cite-cited-prefix-regexp,
+	mu-cite-allow-null-string-registration, citation-mark-chars,
+	citation-disable-chars): Use `defcustom' instead of `defvar'.
+
+	* (mu-cite): New customization group.
+
+	* (mu-cite-original): Renamed from `mu-cite/cite-original'.
+	* (mu-cite-version, mu-cite-top-format,
+	mu-cite-save-registration-file, mu-cite-registration-symbol,
+	mu-cite-registration-file, mu-cite-prefix-format,
+	mu-cite-pre-cite-hook, mu-cite-post-cite-hook, mu-cite-mu-cite.el,
+	mu-cite-ml-count-field-list, mu-cite-minibuffer-history,
+	mu-cite-methods-alist, mu-cite-make-methods,
+	mu-cite-load-registration-file, mu-cite-instantiation-hook,
+	mu-cite-get-value, mu-cite-get-prefix-register-verbose-method,
+	mu-cite-get-prefix-register-method, mu-cite-get-prefix-method,
+	mu-cite-get-ml-count-method, mu-cite-get-field-value-method-alist,
+	mu-cite-get-field-value, mu-cite-get-citation-name,
+	mu-cite-eval-format, mu-cite-default-methods-alist,
+	mu-cite-cited-prefix-regexp, mu-cite-citation-name-alist,
+	mu-cite-allow-null-string-registration, mu-cite-add-citation-name):
+	Renamed from `mu-cite/*'.
+
+	* MU-MK (compile-mu): Use `mu-modules-to-compile' instead of
+	`mu-modules'.
+
 1999-07-15  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mu-cite.el: Change Maintainer; change my address.
