@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.39 1996-08-28 13:03:05 morioka Exp $")
+  "$Id: tl-822.el,v 7.40 1996-08-28 13:05:04 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -48,12 +48,8 @@
 
 (defconst rfc822/field-name-regexp "[!-9;-~]+")
 
-(defconst rfc822/field-top-regexp
-  (concat "\\(" rfc822/field-name-regexp "\\):"))
-
-(defalias `rfc822/field-end 'std11-field-end)
-
-(defalias 'rfc822/get-field-body 'std11-field-body)
+(defalias `rfc822/field-end		'std11-field-end)
+(defalias 'rfc822/get-field-body	'std11-field-body)
 
 (defun rfc822/get-field-bodies (field-names &optional default-value boundary)
   (let ((case-fold-search t))
