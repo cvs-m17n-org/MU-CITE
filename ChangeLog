@@ -1,3 +1,9 @@
+1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* ftp.in: New file.
+
+	* Makefile (ARC_DIR): Default to "/pub/elisp/mu".
+
 1999-07-17  Kenji Itoh        <keit@tpj.co.jp>
 
 	* mu-cite.el (mu-cite-original): Add autoload cookie.
