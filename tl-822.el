@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.25 1996-05-17 08:12:46 morioka Exp $")
+  "$Id: tl-822.el,v 7.26 1996-05-20 15:51:11 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -524,7 +524,7 @@
 
 (defun rfc822/parse-addr-spec (lal)
   (let ((ret (rfc822/parse-local-part lal))
-	addr at-sign)
+	addr)
     (if (and ret
 	     (prog1
 		 (setq addr (cdr (car ret)))
