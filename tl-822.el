@@ -29,7 +29,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.32 1996-08-16 05:36:27 morioka Exp $")
+  "$Id: tl-822.el,v 7.33 1996-08-16 05:44:47 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -251,17 +251,15 @@
   )
 
 (defun rfc822/analyze-atom (str)
-  (let ((i (position-mismatched
-	    (function
-	     (lambda (elt)
-	       (not (find elt rfc822/non-atom-chars))
-	       )) str))
-	)
-    (if (> i 0)
-	(cons (cons 'atom (substring str 0 i))
-	      (substring str i)
-	      ))
-    ))
+  (let ((i (string-match (concat "[" rfc822/non-atom-chars "]") str)))
+    (if i
+	(if (> i 0)
+	    (cons (cons 'atom (substring str 0 i))
+		  (substring str i)
+		  ))
+      (if (not (string-equal str ""))
+	  (cons (cons 'spaces str) "")
+	))))
 
 (defun rfc822/analyze-quoted-string (str)
   (let ((len (length str)))
