@@ -87,9 +87,13 @@
 	     mu-registration-file)
 	  (insert-file-contents mu-registration-file))
 	(setq mu-registration-file-coding-system
-	      (static-if (<= emacs-major-version 19)
-		  file-coding-system
-		buffer-file-coding-system))
+	      (static-cond
+	       ((boundp 'buffer-file-coding-system)
+		(symbol-value 'buffer-file-coding-system))
+	       ((boundp 'file-coding-system)
+		(symbol-value 'file-coding-system))
+	       (t
+		nil)))
 	(let ((exp (read (current-buffer))))
 	  (or (eq (car (cdr exp)) mu-registration-symbol)
 	      (setcar (cdr exp) mu-registration-symbol))
