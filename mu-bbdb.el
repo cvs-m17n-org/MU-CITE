@@ -84,6 +84,7 @@ instead of call the function directly."
 		(mu-cite-remove-text-properties
 		 (read-string "Citation name? "
 			      (or (mu-cite-get-value 'x-attribution)
+				  (mu-cite-get-value 'x-cite-me)
 				  (mu-cite-get-value 'full-name))
 			      'mu-bbdb-history))))
 	  (if (and (not (string-equal return ""))
@@ -109,6 +110,7 @@ instead of call the function directly."
 		  (read-string "Citation name? "
 			       (or attr
 				   (mu-cite-get-value 'x-attribution)
+				   (mu-cite-get-value 'x-cite-me)
 				   (mu-cite-get-value 'full-name))
 			       'mu-bbdb-history))))
     (if (and (not (string-equal return ""))

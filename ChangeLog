@@ -1,3 +1,12 @@
+2001-03-22  NISHIDA Masakazu  <m_nisida@ca2.so-net.ne.jp>
+
+	* mu-register.el (mu-cite-get-prefix-register-verbose-method):
+	Support X-Cite-Me as well as X-Attribution.
+	(mu-cite-get-prefix-register-method): Ditto.
+	* mu-bbdb.el (mu-bbdb-get-prefix-register-verbose-method): Ditto.
+	(mu-bbdb-get-prefix-register-method): Ditto.
+	* mu-cite.el (mu-cite-default-methods-alist): Ditto.
+
 2001-03-09  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-cite.el (fill-column-for-fill-cited-region): New user option.

@@ -148,6 +148,10 @@
 	      (function
 	       (lambda ()
 		 (mu-cite-get-field-value "X-Attribution"))))
+	(cons 'x-cite-me
+	      (function
+	       (lambda ()
+		 (mu-cite-get-field-value "X-Cite-Me"))))
 	;; mu-register
 	(cons 'prefix (function mu-cite-get-prefix-method))
 	(cons 'prefix-register

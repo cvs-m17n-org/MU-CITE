@@ -148,6 +148,7 @@
 		(mu-cite-remove-text-properties
 		 (read-string "Citation name? "
 			      (or (mu-cite-get-value 'x-attribution)
+				  (mu-cite-get-value 'x-cite-me)
 				  (mu-cite-get-value 'full-name))
 			      'mu-register-history))))
 
@@ -166,6 +167,7 @@
 		  (read-string "Citation name? "
 			       (or return1
 				   (mu-cite-get-value 'x-attribution)
+				   (mu-cite-get-value 'x-cite-me)
 				   (mu-cite-get-value 'full-name))
 			       'mu-register-history))))
     (if (and (or mu-cite-allow-null-string-registration
