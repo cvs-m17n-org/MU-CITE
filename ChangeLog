@@ -1,3 +1,8 @@
+2000-01-05  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* Makefile: Update for the new CVS server.
+
+
 1999-12-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* MU-CITE: Version 8.1 was released.
