@@ -1,8 +1,16 @@
 1999-07-15  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* MU-MK: Remove RCS magic cookie.
+	* mu-cite.el: Change Maintainer; change my address.
 
-	* MU-CFG: Remove RCS magic cookie.
+1999-07-15  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* Makefile: Remove RCS magic cookie.
+
+	* mu-cite.el: Likewise.
+
+	* MU-MK: Likewise.
+
+	* MU-CFG: Likewise.
 
 1999-07-15  Masahiro Murata   <muse@ba2.so-net.ne.jp>
 
