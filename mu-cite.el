@@ -3,7 +3,7 @@
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
-;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
+;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: mail, news, citation
 
@@ -43,15 +43,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-
 ;; Pickup some macros, e.g. `with-temp-buffer', for old Emacsen.
 (require 'poe)
-
-;; Pickup `char-category' for XEmacs.
-(require 'emu)
-
-(require 'custom)
+(require 'pcustom)
 (require 'std11)
 (require 'alist)
 
@@ -59,20 +53,15 @@
 (autoload 'mu-cite-get-prefix-register-method "mu-register")
 (autoload 'mu-cite-get-prefix-register-verbose-method "mu-register")
 
+(autoload 'mu-bbdb-get-prefix-method "mu-bbdb")
+(autoload 'mu-bbdb-get-prefix-register-method "mu-bbdb")
+(autoload 'mu-bbdb-get-prefix-register-verbose-method "mu-bbdb")
+
 
 ;;; @ version
 ;;;
 
 (defconst mu-cite-version "8.0")
-
-
-;;; @ obsoletes
-;;;
-
-;; This part will be abolished in the future.
-
-;; variables
-
 
 
 ;;; @ set up
@@ -139,15 +128,23 @@
 		   (if id
 		       (format ">>>>> In %s \n" id)
 		     "")))))
+	(cons 'x-attribution
+	      (function
+	       (lambda ()
+		 (mu-cite-get-field-value "X-Attribution"))))
+	;; mu-register
 	(cons 'prefix (function mu-cite-get-prefix-method))
 	(cons 'prefix-register
 	      (function mu-cite-get-prefix-register-method))
 	(cons 'prefix-register-verbose
 	      (function mu-cite-get-prefix-register-verbose-method))
-	(cons 'x-attribution
-	      (function
-	       (lambda ()
-		 (mu-cite-get-field-value "X-Attribution"))))
+	;; mu-bbdb
+	(cons 'bbdb-prefix
+	      (function mu-bbdb-get-prefix-method))
+	(cons 'bbdb-prefix-register
+	      (function mu-bbdb-get-prefix-register-method))
+	(cons 'bbdb-prefix-register-verbose
+	      (function mu-bbdb-get-prefix-register-verbose-method))
 	))
 
 
@@ -226,6 +223,9 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
   "Alist major-mode vs. function to get field-body of header.")
 
 (defun mu-cite-get-field-value (name)
+  "Return the value of the header field NAME.
+If the field is not found in the header, a method function which is
+registered in variable `mu-cite-get-field-value-method-alist' is called."
   (or (std11-field-body name)
       (let ((method (assq major-mode mu-cite-get-field-value-method-alist)))
 	(when method
@@ -251,15 +251,21 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
   :group 'mu-cite)
 
 (defun mu-cite-get-ml-count-method ()
+  "A mu-cite method to return a ML-count.
+This function searches a field about ML-count, which is specified by
+variable `mu-cite-ml-count-field-list', in a header.
+If the field is found, the function returns a number part of the
+field.
+
+Notice that please use (mu-cite-get-value 'ml-count)
+instead of call the function directly."
   (let ((field-list mu-cite-ml-count-field-list))
     (catch 'tag
       (while field-list
 	(let* ((field (car field-list))
 	       (ml-count (mu-cite-get-field-value field)))
-	  (when (and ml-count (string-match "[0-9]+" ml-count))
-	    (throw 'tag
-		   (substring ml-count
-			      (match-beginning 0)(match-end 0))))
+	  (if (and ml-count (string-match "[0-9]+" ml-count))
+	      (throw 'tag (match-string 0 ml-count)))
 	  (setq field-list (cdr field-list)))))))
 
 
@@ -274,6 +280,7 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
   (run-hooks 'mu-cite-instantiation-hook))
 
 (defun mu-cite-get-value (item)
+  "Return current value of ITEM."
   (let ((ret (cdr (assoc item mu-cite-methods-alist))))
     (if (functionp ret)
 	(prog1
@@ -334,6 +341,31 @@ function according to the agreed upon standard."
   :type 'string
   :group 'mu-cite)
 
+(defun-maybe-cond char-category (character)
+  "Return string of category mnemonics for CHAR in TABLE.
+CHAR can be any multilingual character
+TABLE defaults to the current buffer's category table."
+  ((and (subr-fboundp 'char-category-set)
+	(subr-fboundp 'category-set-mnemonics))
+   (category-set-mnemonics (char-category-set character))
+   )
+  ((fboundp 'char-category-list)
+   (mapconcat (lambda (chr)
+		(char-to-string (int-char chr)))
+	      (char-category-list character)
+	      "")
+   )
+  ((boundp 'NEMACS)
+   (if (< (char-int character) 128)
+       "al"
+     "j")
+   )
+  (t
+   (if (< (char-int character) 128)
+       "al"
+     "l")
+   ))
+
 (defun detect-paragraph-cited-prefix ()
   (save-excursion
     (goto-char (point-min))
@@ -380,7 +412,9 @@ function according to the agreed upon standard."
 	     (buffer-substring (point-min)(point)))
 	    (t "")))))
 
+;;;###autoload
 (defun fill-cited-region (beg end)
+  "Fill each of the paragraphs in the region as a cited text."
   (interactive "*r")
   (save-excursion
     (save-restriction
@@ -404,7 +438,9 @@ function according to the agreed upon standard."
 	(goto-char (point-min))
 	(fill-region (point-min) (point-max))))))
 
+;;;###autoload
 (defun compress-cited-prefix ()
+  "Compress nested cited prefixes."
   (interactive)
   (save-excursion
     (goto-char (point-min))
