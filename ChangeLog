@@ -1,3 +1,9 @@
+2002-02-25  Daiki Ueno  <ueno@unixuser.org>
+
+	* MU-MK (config-mu-package): Add auto-autoloads and custom-load
+	only to `mu-modules-to-compile'.
+	(compile-mu-package): Don't compile `mu-modules-not-to-compile'.
+
 2001-12-21  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-register.el (mu-cite-load-registration-file): Reverted.  I've
