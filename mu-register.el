@@ -112,7 +112,11 @@
     (insert (mapconcat
 	     (function
 	      (lambda (elem)
-		(format "(\"%s\" . \"%s\")" (car elem) (cdr elem))))
+		(format "(%s . %s)"
+			(prin1-to-string
+			 (mu-cite-remove-text-properties (car elem)))
+			(prin1-to-string
+			 (mu-cite-remove-text-properties (cdr elem))))))
 	     (symbol-value mu-registration-symbol) "\n        "))
     (insert "\n        ))\n\n")
     (insert ";;; "
