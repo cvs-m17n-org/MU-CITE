@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.63 1996-09-02 15:48:07 morioka Exp $")
+  "$Id: tl-822.el,v 7.64 1996-09-08 17:59:45 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -56,7 +56,6 @@
 
 (defconst rfc822/linear-white-space-regexp "\\(\n?[ \t]\\)+")
 (defconst rfc822/quoted-pair-regexp "\\\\.")
-(defconst rfc822/non-qtext-char-list '(?\" ?\\ ?\r ?\n))
 (defconst rfc822/qtext-regexp
   (concat "[^" (char-list-to-string rfc822/non-qtext-char-list) "]"))
 (defconst rfc822/quoted-string-regexp
@@ -64,18 +63,6 @@
 	  (regexp-*
 	   (regexp-or rfc822/qtext-regexp rfc822/quoted-pair-regexp)
 	   )
-	  "\""))
-
-(defun rfc822/wrap-as-quoted-string (str)
-  "Wrap string STR as RFC 822 quoted-string. [tl-822.el]"
-  (concat "\""
-	  (mapconcat (function
-		      (lambda (chr)
-			(if (memq chr rfc822/non-qtext-char-list)
-			    (concat "\\" (char-to-string chr))
-			  (char-to-string chr)
-			  )
-			)) str "")
 	  "\""))
 
 (defun rfc822/strip-quoted-pair (str)
