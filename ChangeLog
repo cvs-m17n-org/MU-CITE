@@ -1,3 +1,37 @@
+1999-07-17  Kenji Itoh        <keit@tpj.co.jp>
+
+	* mu-cite.el (mu-cite-original): Add autoload cookie.
+	* latex-math-symbol.el (latex-math-decode-region): Likewise.
+	(latex-math-decode-buffer): Likewise.
+
+	* Makefile (release): New target.
+	(tar): New implementation.
+	(clean): Use the variables `RM' and `GOMI'.
+	(install-package): New target.
+	(package): New target.
+	(install): Accept the arguments `PREFIX', `LISPDIR' and
+	`VERSION_SPECIFIC_LISPDIR'.
+	(elc): Likewise.
+
+	(ARC_DIR, VERSION, FILES, GOMI): New variables.
+	(VERSION_SPECIFIC_LISPDIR, PACKAGEDIR, LISPDIR): New variables.
+	(PREFIX): Default to "NONE".
+	(XEMACS, CP, RM, TAR, RELEASE, API, PACKAGE): New variables.
+
+	* MU-MK (install-mu-package): New function.
+	(compile-mu-package): New function.
+	(config-mu-package): New function.
+	(config-mu): Extract the values of `LISPDIR' and
+	`VERSION_SPECIFIC_LISPDIR' from the command line arguments.
+
+	* MU-CFG (PACKAGEDIR): New variable.
+	(MU_DIR): Use `VERSION_SPECIFIC_LISPDIR' instead of `LISPDIR'.
+	(VERSION_SPECIFIC_LISPDIR): New variable.
+	(TopLevel): Delete code to detect APEL 7.3 or later.
+	(load-path): Modernize the way of adding the paths of APEL, FLIM,
+	LISPDIR, VERSION_SPECIFIC_LISPDIR, CUSTOM and `default-directory'.
+	(default-load-path): New variable.
+
 1999-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* (mu-cite-version): Update to 8.0.
