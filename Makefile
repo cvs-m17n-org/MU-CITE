@@ -2,7 +2,7 @@
 # Makefile for mu-cite.
 #
 
-PACKAGE = mu
+PACKAGE = mu-cite
 API	= 8
 RELEASE = 0
 
@@ -57,6 +57,10 @@ tar:
 	cd /tmp; $(RM) $(PACKAGE)-$(VERSION)/ftp.in ; \
 		$(TAR) cvzf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
 	cd /tmp; $(RM) -r $(PACKAGE)-$(VERSION)
+	sed "s/VERSION/$(VERSION)/" < ftp.in | sed "s/API/$(API)/" \
+		| sed "s/PACKAGE/$(PACKAGE)/" > ftp
+
+invoice:
 	sed "s/VERSION/$(VERSION)/" < ftp.in | sed "s/API/$(API)/" \
 		| sed "s/PACKAGE/$(PACKAGE)/" > ftp
 
