@@ -42,8 +42,10 @@ LISPDIR=%s\n" PREFIX LISPDIR))))
     (setq command-line-args-left (cdr command-line-args-left))
     (load-file "MU-CFG")
     (load-file "MU-ELS")
-    (setq mu-modules (append mu-modules
-			     '(auto-autoloads custom-load)))
+    (setq mu-modules-to-compile (append mu-modules-to-compile
+					'(auto-autoloads custom-load)))
+    (setq mu-modules (append mu-modules-to-compile
+			     mu-modules-not-to-compile))
     (princ (format "PACKAGEDIR=%s\n" PACKAGEDIR))))
 
 (defun compile-mu-package ()
@@ -56,7 +58,7 @@ LISPDIR=%s\n" PREFIX LISPDIR))))
   (add-to-list 'command-line-args-left ".")
   (Custom-make-dependencies)
 
-  (compile-elisp-modules mu-modules "."))
+  (compile-elisp-modules mu-modules-to-compile "."))
 
 (defun install-mu-package ()
   (config-mu-package)
