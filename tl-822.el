@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.53 1996-08-28 18:07:50 morioka Exp $")
+  "$Id: tl-822.el,v 7.54 1996-08-28 18:12:56 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -117,8 +117,6 @@
 ;;; @ lexical analyze
 ;;;
 
-(defconst rfc822/non-ctext-chars "()")
-
 (defalias 'rfc822/analyze-spaces	'std11-analyze-spaces)
 (defalias 'rfc822/analyze-special	'std11-analyze-special)
 (defalias 'rfc822/analyze-atom		'std11-analyze-atom)
@@ -126,23 +124,7 @@
 (defalias 'rfc822/analyze-domain-literal 'std11-analyze-domain-literal)
 (defalias 'rfc822/analyze-comment	'std11-analyze-comment)
 
-(defun rfc822/lexical-analyze (str)
-  (let (dest ret)
-    (while (not (string-equal str ""))
-      (setq ret
-	    (or (rfc822/analyze-quoted-string str)
-		(rfc822/analyze-domain-literal str)
-		(rfc822/analyze-comment str)
-		(rfc822/analyze-spaces str)
-		(rfc822/analyze-special str)
-		(rfc822/analyze-atom str)
-		'((error) . "")
-		))
-      (setq dest (cons (car ret) dest))
-      (setq str (cdr ret))
-      )
-    (nreverse dest)
-    ))
+(defalias 'rfc822/lexical-analyze	'std11-lexical-analyze)
 
 
 ;;; @ parser
