@@ -8,6 +8,8 @@
 	`sref'.
 	(TopLevel): Require `widget' for old Emacsen.
 
+	* mu-bbdb.el (TopLevel): Don't require `path-util'.
+
 1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mu-cite.el (mu-cite-method-list): New function.
@@ -130,6 +132,13 @@
 	`mu-cite/minibuffer-history'.
 	(mu-bbdb-get-prefix-register-verbose-method): Likewise.
 
+	* mu-register.el: New file. The name of variables and functions
+	were changed from the past as follows:
+	mu-registration-file		<- mu-cite/registration-file
+	mu-registration-symbol		<- mu-cite/registration-symbol
+	mu-register-get-citation-name	<- mu-cite/get-citation-name
+	mu-register-add-citation-name	<- mu-cite/add-citation-name
+
 	* MU-ELS: Remove RCS magic cookie.
 
 1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
@@ -145,20 +154,10 @@
 	`noninteractive' is non-nil.
 	(mu-cite-registration-file): Likewise.
 
-	* mu-bbdb.el (TopLevel): Use `mu-cite-default-methods-alist'
-	instead of `mu-cite/default-methods-alist'.
-	(mu-bbdb-get-prefix-register-method): Use
-	`mu-cite-minibuffer-history' instead of
-	`mu-cite/minibuffer-history'.
-	(mu-bbdb-get-prefix-register-verbose-method): Use
+	* mu-bbdb.el (mu-bbdb-get-prefix-register-verbose-method): Use
 	`mu-cite-get-value' instead of `mu-cite/get-value'.
 	(mu-bbdb-get-prefix-register-method): Likewise.
 	(mu-bbdb-get-prefix-method): Likewise.
-
-	(mu-bbdb-load-hook): Use `defcustom' instead of `defvar'.
-	(mu-bbdb): New customization group.
-
-	(TopLevel): Define old functions as obsolete aliases.
 
 	(mu-bbdb-set-attr): Renamed from `mu-cite/set-bbdb-attr'.
 	(mu-bbdb-get-prefix-register-verbose-method): Renamed from
