@@ -1,3 +1,7 @@
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-bbdb.el: Don't use `module-installed-p'.
+
 1999-07-19  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mu-bbdb.el (mu-bbdb-history): New variable.
