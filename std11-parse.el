@@ -5,7 +5,7 @@
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
 ;; Version:
-;;	$Id: std11-parse.el,v 0.12 1996-09-03 09:49:49 morioka Exp $
+;;	$Id: std11-parse.el,v 0.13 1996-10-01 13:29:39 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -27,8 +27,7 @@
 ;;; Code:
 
 (require 'std11)
-
-(autoload 'find-charset-string "emu")
+(require 'emu)
 
 
 ;;; @ lexical analyze
@@ -164,7 +163,7 @@
     (while (and lal
 		(setq token (car lal))
 		(if (and (setq token-value (cdr token))
-			 (find-charset-string token-value)
+			 (find-non-ascii-charset-string token-value)
 			 )
 		    (setq token nil)
 		  (std11-ignored-token-p token)
