@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.38 1996-08-28 12:50:12 morioka Exp $")
+  "$Id: tl-822.el,v 7.39 1996-08-28 13:03:05 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -40,6 +40,7 @@
 (defalias 'rfc822/narrow-to-header 'std11-narrow-to-header)
 (defalias 'rfc822/get-header-string 'std11-header-string)
 (defalias 'rfc822/get-header-string-except 'std11-header-string-except)
+(defalias 'rfc822/get-field-names 'std11-field-names)
 
 
 ;;; @ field
@@ -49,21 +50,6 @@
 
 (defconst rfc822/field-top-regexp
   (concat "\\(" rfc822/field-name-regexp "\\):"))
-
-(defun rfc822/get-field-names (&optional boundary)
-  (save-excursion
-    (save-restriction
-      (rfc822/narrow-to-header boundary)
-      (goto-char (point-min))
-      (let ((pat (concat "^\\(" rfc822/field-name-regexp "\\):"))
-	    dest name)
-	(while (re-search-forward pat nil t)
-	  (setq name (buffer-substring (match-beginning 1)(match-end 1)))
-	  (or (member name dest)
-	      (setq dest (cons name dest))
-	      )
-	  )
-	dest))))
 
 (defalias `rfc822/field-end 'std11-field-end)
 
