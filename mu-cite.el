@@ -455,6 +455,13 @@ TABLE defaults to the current buffer's category table."
 	     (buffer-substring (line-beginning-position)(point)))
 	    (t "")))))
 
+(defcustom fill-column-for-fill-cited-region nil
+  "Integer to override `fill-column' while `fill-cited-region' is being
+executed."
+  :type (` (choice (const :tag "Off" nil)
+		   (integer (, default-fill-column))))
+  :group 'mu-cite)
+
 ;;;###autoload
 (defun fill-cited-region (beg end)
   "Fill each of the paragraphs in the region as a cited text."
@@ -468,7 +475,8 @@ TABLE defaults to the current buffer's category table."
       (let* ((fill-prefix (detect-paragraph-cited-prefix))
 	     (fill-column (max (+ 1 (current-left-margin)
 				  (string-width fill-prefix))
-			       (current-fill-column)))
+			       (or fill-column-for-fill-cited-region
+				   (current-fill-column))))
 	     (pat (concat fill-prefix "\n"))
 	     filladapt-mode)
 	(goto-char (point-min))

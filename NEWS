@@ -1,6 +1,14 @@
 MU-CITE NEWS -- history of major-changes.
 Copyright (C) 1999 Free Software Foundation, Inc.
 
+* Changes in MU-CITE 8.2
+========================
+
+** New user option `fill-column-for-fill-cited-region' specifies an
+integer value to override `fill-column' while `fill-cited-region' is
+being executed.
+
+
 * Changes in MU-CITE 8.1
 ========================
 

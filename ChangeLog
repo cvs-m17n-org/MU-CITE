@@ -1,6 +1,12 @@
+2001-03-09  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el (fill-column-for-fill-cited-region): New user option.
+	(fill-cited-region): Prefer `fill-column-for-fill-cited-region' if
+	it is an integer rather than `fill-column'.
+
 2001-02-23  Katsumi Yamaoka   <yamaoka@jpl.org>
 
-	* mu-cite.el: (char-category): Force redefine as a function because
+	* mu-cite.el (char-category): Force redefine as a function because
 	it may have been defined by emu.el;  don't use `int-char' for
 	XEmacs if the function `char-category-list' returns a list of
 	characters;  enclose the whole form with `eval-and-compile'.
