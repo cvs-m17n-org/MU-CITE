@@ -2,20 +2,35 @@
 ;;; tl-822.el --- RFC 822 parser for GNU Emacs
 ;;;
 ;;; Copyright (C) 1995 Free Software Foundation, Inc.
-;;; Copyright (C) 1995 MORIOKA Tomohiko
+;;; Copyright (C) 1995,1996 MORIOKA Tomohiko
 ;;;
 ;;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Keywords: mail, news, RFC 822
 ;;;
-;;; This file is part of tm (Tools for MIME).
+;;; This file is part of tl (Tiny Library).
 ;;;
+;;; This program is free software; you can redistribute it and/or
+;;; modify it under the terms of the GNU General Public License as
+;;; published by the Free Software Foundation; either version 2, or
+;;; (at your option) any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;;; General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with This program.  If not, write to the Free Software
+;;; Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;;;
+;;; Code:
 
 (require 'tl-seq)
 (require 'tl-str)
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.2 1996-01-18 14:48:33 morioka Exp $")
+  "$Id: tl-822.el,v 7.3 1996-01-25 08:07:39 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -388,7 +403,7 @@
 	  (setq lal (cdr ret))
 	  (while (and (setq ret (rfc822/parse-token lal))
 		      (setq dot (car ret))
-		      (equal (cdr (assq 'specials dot)) ".")
+		      (string-equal (cdr (assq 'specials dot)) ".")
 		      (setq ret (rfc822/parse-word (cdr ret)))
 		      (setq local-part
 			    (append local-part dot (cdr (car ret)))
@@ -417,7 +432,7 @@
 	  (setq lal (cdr ret))
 	  (while (and (setq ret (rfc822/parse-token lal))
 		      (setq dot (car ret))
-		      (equal (cdr (assq 'specials dot)) ".")
+		      (string-equal (cdr (assq 'specials dot)) ".")
 		      (setq ret (rfc822/parse-sub-domain (cdr ret)))
 		      (setq domain
 			    (append domain dot (cdr (car ret)))
@@ -431,7 +446,7 @@
   (let ((ret (rfc822/parse-token lal)) at-sign)
     (if (and ret
 	     (setq at-sign (car ret))
-	     (equal (cdr (assq 'specials at-sign)) "@")
+	     (string-equal (cdr (assq 'specials at-sign)) "@")
 	     (setq ret (rfc822/parse-domain (cdr ret)))
 	     )
 	(cons (cons 'at-domain (append at-sign (cdr (car ret))))
@@ -461,7 +476,7 @@
 	       (setq lal (cdr ret))
 	       (while (and (setq ret (rfc822/parse-token lal))
 			   (setq comma (car ret))
-			   (equal (cdr (assq 'specials comma)) ",")
+			   (string-equal (cdr (assq 'specials comma)) ",")
 			   (setq ret (rfc822/parse-at-domain (cdr ret)))
 			   )
 		 (setq route (append route comma (cdr (car ret))))
@@ -469,7 +484,7 @@
 		 )
 	       (and (setq ret (rfc822/parse-token lal))
 		    (setq colon (car ret))
-		    (equal (cdr (assq 'specials colon)) ":")
+		    (string-equal (cdr (assq 'specials colon)) ":")
 		    (setq route (append route colon))
 		    )
 	       ))
@@ -483,7 +498,7 @@
 	< route addr-spec >)
     (if (and ret
 	     (setq < (car ret))
-	     (equal (cdr (assq 'specials <)) "<")
+	     (string-equal (cdr (assq 'specials <)) "<")
 	     (setq lal (cdr ret))
 	     (progn (and (setq ret (rfc822/parse-route lal))
 			 (setq route (cdr (car ret)))
@@ -495,7 +510,7 @@
 	     (setq lal (cdr ret))
 	     (setq ret (rfc822/parse-token lal))
 	     (setq > (car ret))
-	     (equal (cdr (assq 'specials >)) ">")
+	     (string-equal (cdr (assq 'specials >)) ">")
 	     )
 	(cons (cons 'route-addr (append route addr-spec))
 	      (cdr ret)
@@ -541,7 +556,7 @@
 	     (setq lal (cdr ret))
 	     (setq ret (rfc822/parse-token lal))
 	     (setq colon (car ret))
-	     (equal (cdr (assq 'specials colon)) ":")
+	     (string-equal (cdr (assq 'specials colon)) ":")
 	     (setq lal (cdr ret))
 	     (progn
 	       (and (setq ret (rfc822/parse-mailbox lal))
@@ -550,7 +565,8 @@
 		    (progn
 		      (while (and (setq ret (rfc822/parse-token lal))
 				  (setq comma (car ret))
-				  (equal (cdr (assq 'specials comma)) ",")
+				  (string-equal
+				   (cdr (assq 'specials comma)) ",")
 				  (setq lal (cdr ret))
 				  (setq ret (rfc822/parse-mailbox lal))
 				  (setq mbox (cons (car ret) mbox))
@@ -559,7 +575,7 @@
 			)))
 	       (and (setq ret (rfc822/parse-token lal))
 		    (setq semicolon (car ret))
-		    (equal (cdr (assq 'specials semicolon)) ";")
+		    (string-equal (cdr (assq 'specials semicolon)) ";")
 		    )))
 	(cons (list 'group phrase (reverse mbox))
 	      (cdr ret)
@@ -577,7 +593,7 @@
 	(let ((dest (list (car ret))))
 	  (setq lal (cdr ret))
 	  (while (and (setq ret (rfc822/parse-token lal))
-		      (equal (cdr (assq 'specials (car ret))) ",")
+		      (string-equal (cdr (assq 'specials (car ret))) ",")
 		      (setq ret (rfc822/parse-address (cdr ret)))
 		      )
 	    (setq dest (cons (car ret) dest))
@@ -641,3 +657,5 @@ If no name can be extracted, FULL-NAME will be nil. [tl-822.el]"
 ;;;
 
 (provide 'tl-822)
+
+;;; tl-822.el ends here
