@@ -97,6 +97,20 @@
   (function mu-cite/get-value) (function mu-cite-get-value))
 
 
+;;; @ macro
+;;;
+
+(defmacro mu-cite-remove-text-properties (string)
+  "Remove text properties from STRING which is read from minibuffer."
+  (if (or (featurep 'xemacs)
+	  (boundp 'minibuffer-allow-text-properties);; Emacs 20.1 or later.
+	  (not (fboundp 'set-text-properties)));; under Emacs 19.7.
+      string
+    (` (let ((obj (copy-sequence (, string))))
+	 (set-text-properties 0 (length obj) nil obj)
+	 obj))))
+
+
 ;;; @ set up
 ;;;
 
@@ -514,9 +528,11 @@ TABLE defaults to the current buffer's category table."
 			     pe (match-beginning 1)
 			     s (match-end 0)))
 		     i)))
-	(when (and ps (< ps pe))
-	  (delete-region b e)
-	  (insert (concat (substring prefix ps pe) (make-string nest ?>))))
+	(if (and ps (< ps pe))
+	    (progn
+	      (delete-region b e)
+	      (insert (concat (substring prefix ps pe)
+			      (make-string nest ?>)))))
 	))))
 
 (defun replace-top-string (old new)
