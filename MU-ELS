@@ -1,9 +1,10 @@
 ;;; -*-Emacs-Lisp-*-
-;;;
-;;; $Id: MU-ELS,v 1.1 1998-02-13 10:15:19 morioka Exp $
-;;;
 
-(setq mu-modules-to-compile '(mu-cite))
+;; MU-ELS: list of mu-cite modules to install
+
+;;; Code:
+
+(setq mu-modules-to-compile '(mu-cite mu-register))
 
 (if (featurep 'mule)
     (setq mu-modules-to-compile
