@@ -30,63 +30,8 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.21 1996-04-25 21:30:12 morioka Exp $")
+  "$Id: tl-822.el,v 7.22 1996-04-25 22:15:52 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
-
-
-;;; @ field
-;;;
-
-(defconst rfc822/field-name-regexp "[!-9;-~]+")
-
-(defconst rfc822/field-top-regexp
-  (concat "\\(" rfc822/field-name-regexp "\\):"))
-
-(defconst rfc822::next-field-top-regexp (concat "\n" rfc822/field-top-regexp))
-
-(defun rfc822/field-end ()
-  (if (re-search-forward rfc822::next-field-top-regexp nil t)
-      (goto-char (match-beginning 0))
-    (if (re-search-forward "^$" nil t)
-	(goto-char (1- (match-beginning 0)))
-      (end-of-line)
-      ))
-  (point)
-  )
-
-(defun rfc822/get-field-body (name &optional boundary)
-  (let ((case-fold-search t))
-    (save-excursion
-      (save-restriction
-	(rfc822/narrow-to-header boundary)
-	(goto-char (point-min))
-	(if (re-search-forward (concat "^" name ":[ \t]*") nil t)
-	    (buffer-substring-no-properties
-	     (match-end 0)
-	     (rfc822/field-end)
-	     ))
-	))))
-
-(defun rfc822/get-field-bodies (field-names &optional default-value boundary)
-  (let ((case-fold-search t))
-    (save-excursion
-      (save-restriction
-	(rfc822/narrow-to-header boundary)
-	(goto-char (point-min))
-	(let* ((dest (make-list (length field-names) default-value))
-	       (s-rest field-names)
-	       (d-rest dest)
-	       field-name)
-	  (while (setq field-name (car s-rest))
-	    (if (re-search-forward (concat "^" field-name ":[ \t]*") nil t)
-		(setcar d-rest
-			(buffer-substring-no-properties
-			 (match-end 0)
-			 (rfc822/field-end))))
-	    (setq s-rest (cdr s-rest)
-		  d-rest (cdr d-rest))
-	    )
-	  dest)))))
 
 
 ;;; @ header
@@ -97,7 +42,7 @@
 		    (if (re-search-forward
 			 (concat "^\\(" (regexp-quote
 					 (or boundary "")) "\\)?$") nil t)
-			(match-end 0)
+			(match-beginning 0)
 		      (point-max)
 		      )))
 
@@ -134,6 +79,76 @@
 	      ))
 	  header)
 	))))
+
+
+;;; @ field
+;;;
+
+(defconst rfc822/field-name-regexp "[!-9;-~]+")
+
+(defconst rfc822/field-top-regexp
+  (concat "\\(" rfc822/field-name-regexp "\\):"))
+
+(defconst rfc822::next-field-top-regexp (concat "\n" rfc822/field-top-regexp))
+
+(defun rfc822/get-field-names (&optional boundary)
+  (save-excursion
+    (save-restriction
+      (rfc822/narrow-to-header boundary)
+      (goto-char (point-min))
+      (let ((pat (concat "^\\(" rfc822/field-name-regexp "\\):"))
+	    dest name)
+	(while (re-search-forward pat nil t)
+	  (setq name (buffer-substring (match-beginning 1)(match-end 1)))
+	  (or (member name dest)
+	      (setq dest (cons name dest))
+	      )
+	  )
+	dest))))
+
+(defun rfc822/field-end ()
+  (if (re-search-forward rfc822::next-field-top-regexp nil t)
+      (goto-char (match-beginning 0))
+    (if (re-search-forward "^$" nil t)
+	(goto-char (1- (match-beginning 0)))
+      (end-of-line)
+      ))
+  (point)
+  )
+
+(defun rfc822/get-field-body (name &optional boundary)
+  (let ((case-fold-search t))
+    (save-excursion
+      (save-restriction
+	(rfc822/narrow-to-header boundary)
+	(goto-char (point-min))
+	(if (re-search-forward (concat "^" name ":[ \t]*") nil t)
+	    (buffer-substring-no-properties
+	     (match-end 0)
+	     (rfc822/field-end)
+	     ))
+	))))
+
+(defun rfc822/get-field-bodies (field-names &optional default-value boundary)
+  (let ((case-fold-search t))
+    (save-excursion
+      (save-restriction
+	(rfc822/narrow-to-header boundary)
+	(let* ((dest (make-list (length field-names) default-value))
+	       (s-rest field-names)
+	       (d-rest dest)
+	       field-name)
+	  (while (setq field-name (car s-rest))
+	    (goto-char (point-min))
+	    (if (re-search-forward (concat "^" field-name ":[ \t]*") nil t)
+		(setcar d-rest
+			(buffer-substring-no-properties
+			 (match-end 0)
+			 (rfc822/field-end))))
+	    (setq s-rest (cdr s-rest)
+		  d-rest (cdr d-rest))
+	    )
+	  dest)))))
 
 
 ;;; @ quoting
