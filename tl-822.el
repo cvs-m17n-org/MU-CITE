@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.50 1996-08-28 17:16:30 morioka Exp $")
+  "$Id: tl-822.el,v 7.51 1996-08-28 17:25:39 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -117,44 +117,13 @@
 ;;; @ lexical analyze
 ;;;
 
-(defconst rfc822/special-chars "][()<>@,;:\\<>.\"")
-(defconst rfc822/space-chars " \t\n")
-(defconst rfc822/non-atom-chars
-  (concat rfc822/special-chars rfc822/space-chars))
 (defconst rfc822/non-dtext-chars "][")
 (defconst rfc822/non-ctext-chars "()")
 
 (defalias 'rfc822/analyze-spaces	'std11-analyze-spaces)
 (defalias 'rfc822/analyze-special	'std11-analyze-special)
 (defalias 'rfc822/analyze-atom		'std11-analyze-atom)
-
-(defun rfc822/analyze-quoted-string (str)
-  (let ((len (length str)))
-    (if (and (> len 0)
-	     (eq (elt str 0) ?\")
-	     )
-	(let ((i 1) chr dest)
-	  (catch 'tag
-	    (while (< i len)
-	      (setq chr (aref str i))
-	      (cond ((eq chr ?\\)
-		     (setq i (1+ i))
-		     (if (>= i len)
-			 (throw 'tag nil)
-		       )
-		     (setq dest (concat dest (char-to-string (aref str i))))
-		     )
-		    ((eq chr ?\")
-		     (throw 'tag
-			    (cons (cons 'quoted-string dest)
-				  (substring str (1+ i)))
-			    )
-		     )
-		    (t
-		     (setq dest (concat dest (char-to-string (aref str i))))
-		     ))
-	      (setq i (1+ i))
-	      ))))))
+(defalias 'rfc822/analyze-quoted-string	'std11-analyze-quoted-string)
 
 (defun rfc822/analyze-domain-literal (str)
   (if (and (> (length str) 0)
