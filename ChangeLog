@@ -29,7 +29,7 @@
 
 	(Keywords, Maintainer): Add comments.
 	(Author): Change mail address.
-	(Copyright): Belong FSF.
+	(Copyright): Belong to FSF.
 
 	* ftp.in: New file.
 
