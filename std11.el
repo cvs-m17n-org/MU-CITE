@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.15 1996-08-28 18:18:03 morioka Exp $
+;; Version: $Id: std11.el,v 0.16 1996-08-28 20:33:54 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -179,6 +179,8 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (provide 'std11)
 
-(autoload 'std11-lexical-analyze "std11-parse")
+(autoload 'std11-lexical-analyze	"std11-parse")
+(autoload 'std11-parse-address		"std11-parse")
+(autoload 'std11-parse-addresses	"std11-parse")
 
 ;;; std11.el ends here
