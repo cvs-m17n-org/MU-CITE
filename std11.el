@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.35 1996-11-19 07:08:47 morioka Exp $
+;; Version: $Id: std11.el,v 0.36 1996-12-02 15:20:12 shuhei-k Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -113,8 +113,11 @@ header separator. [std11.el]"
 (defun std11-unfold-string (string)
   "Unfold STRING as message header field. [std11.el]"
   (let ((dest ""))
-    (while (string-match "\n\\s +" string)
-      (setq dest (concat dest (substring string 0 (match-beginning 0)) " "))
+    (while (string-match "\n\\([ \t]\\)" string)
+      (setq dest (concat dest
+                         (substring string 0 (match-beginning 0))
+                         (match-string 1 string)
+                         ))
       (setq string (substring string (match-end 0)))
       )
     (concat dest string)
