@@ -7,7 +7,7 @@
 ;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.4 1996-01-15 19:32:00 morioka Exp $
+;;;	$Id: mu-register.el,v 1.5 1996-01-15 20:04:52 morioka Exp $
 ;;;
 ;;; This file is part of tl (Tiny Library).
 ;;;
@@ -53,9 +53,14 @@
   (expand-file-name "~/.mu-register")
   "*The name of the user environment file for mu-register.")
 
+(defvar mu-register/registration-symbol 'mu-register/citation-name-alist)
+
 (defvar mu-register/citation-name-alist nil)
 (load mu-register/registration-file t t t)
-
+(or (eq 'mu-register/citation-name-alist mu-register/registration-symbol)
+    (setq mu-register/citation-name-alist
+	  (symbol-value mu-register/registration-symbol))
+    )
 (defvar mu-register/minibuffer-history nil)
 
 
@@ -119,11 +124,10 @@
       (setq buffer-file-name filename)
       (erase-buffer)
       (insert ";; generated automatically by mu-register.\n")
-      (insert "(setq mu-register/citation-name-alist\n\
- (quote\n\
-  ")
+      (insert (format "(setq %s
+ '" mu-register/registration-symbol))
       (insert (prin1-to-string mu-register/citation-name-alist))
-      (insert "))\n")
+      (insert "\n)\n")
       (save-buffer))
     (kill-buffer buffer)))
 
