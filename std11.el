@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.38 1996-12-17 11:01:47 morioka Exp $
+;; Version: $Id: std11.el,v 0.39 1996-12-17 12:06:15 morioka Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -305,13 +305,28 @@ represents addr-spec of RFC 822. [std11.el]"
 	       (comment (nth 2 address))
 	       phrase)
 	   (if (eq (car addr) 'phrase-route-addr)
-	       (setq phrase (mapconcat (function
-					(lambda (token)
-					  (cdr token)
-					  ))
-				       (nth 1 addr) ""))
+	       (setq phrase
+		     (mapconcat
+		      (function
+		       (lambda (token)
+			 (let ((type (car token)))
+			   (cond ((eq type 'quoted-string)
+				  (std11-strip-quoted-pair (cdr token))
+				  )
+				 ((eq type 'comment)
+				  (concat
+				   "("
+				   (std11-strip-quoted-pair (cdr token))
+				   ")")
+				  )
+				 (t
+				  (cdr token)
+				  )))))
+		      (nth 1 addr) ""))
 	     )
-	   (or phrase comment)
+	   (cond ((> (length phrase) 0) phrase)
+		 (comment (std11-strip-quoted-pair comment))
+		 )
 	   ))))
 
 
