@@ -6,7 +6,7 @@
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.38 $
+;; Version: $Revision: 7.41 $
 ;; Keywords: mail, news, citation
 
 ;; This file is part of tl (Tiny Library).
@@ -22,8 +22,8 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
@@ -54,19 +54,21 @@
 ;;;
 
 (defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.38 1996/09/17 07:03:39 morioka Exp $")
+  "$Id: mu-cite.el,v 7.41 1996/10/01 13:32:08 morioka Exp $")
 (defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
 
 
 ;;; @ formats
 ;;;
 
-(defvar cited-prefix-regexp "^[^ \t>]*[>|]+[ \t#]*")
-(defvar mu-cite/cited-prefix-regexp "\\(^[^ \t\n>]+>+[ \t]*\\|^[ \t]*$\\)")
+(defvar mu-cite/cited-prefix-regexp "\\(^[^ \t\n>]+>+[ \t]*\\|^[ \t]*$\\)"
+  "*Regexp to match the citation prefix.
+If match, mu-cite doesn't insert citation prefix.")
 
 (defvar mu-cite/prefix-format '(prefix-register-verbose "> ")
   "*List to represent citation prefix.
 Each elements must be string or method name.")
+
 (defvar mu-cite/top-format '(in-id
 			     ">>>>>	" from " wrote:\n")
   "*List to represent top string of citation.
@@ -76,8 +78,16 @@ Each elements must be string or method name.")
 ;;; @ hooks
 ;;;
 
+(defvar mu-cite-load-hook nil
+  "*List of functions called after mu-cite is loaded.
+Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
+
+(defvar mu-cite/instantiation-hook nil
+  "*List of functions called just before narrowing to the message.")
+
 (defvar mu-cite/pre-cite-hook nil
   "*List of functions called before citing a region of text.")
+
 (defvar mu-cite/post-cite-hook nil
   "*List of functions called after citing a region of text.")
 
@@ -172,7 +182,8 @@ Each elements must be string or method name.")
 ;;;
 
 (defvar mu-cite/ml-count-field-list
-  '("X-Ml-Count" "X-Mail-Count" "X-Seqno" "X-Sequence" "Mailinglist-Id"))
+  '("X-Ml-Count" "X-Mail-Count" "X-Seqno" "X-Sequence" "Mailinglist-Id")
+  "*List of header fields which contain sequence number of mailing list.")
 
 (defun mu-cite/get-ml-count-method ()
   (let ((field-list mu-cite/ml-count-field-list))
@@ -360,7 +371,7 @@ function according to the agreed upon standard."
 	  (top (mu-cite/eval-format mu-cite/top-format))
 	  (prefix (mu-cite/eval-format mu-cite/prefix-format))
 	  )
-      (if (re-search-forward "^$\\|^-+$" nil nil)
+      (if (re-search-forward "^-*$" nil nil)
 	  (forward-line 1)
 	)
       (widen)
@@ -379,6 +390,9 @@ function according to the agreed upon standard."
 
 ;;; @ message editing utilities
 ;;;
+
+(defvar cited-prefix-regexp "^[^ \t>]*[>|]+[ \t#]*"
+  "*Regexp to match the citation prefix.")
 
 (defun fill-cited-region (beg end)
   (interactive "*r")
