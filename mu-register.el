@@ -1,6 +1,6 @@
 ;;; mu-register.el --- registration feature of mu-cite
-
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;;        Free Software Foundation, Inc.
 
 ;; Author: MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         MORIOKA Tomohiko <tomo@m17n.org>
@@ -45,8 +45,13 @@
   :type 'integer
   :group 'mu-cite)
 
-(defcustom mu-registration-file-coding-system-for-read nil
-  "Coding system used when reading a registration file."
+(defcustom mu-registration-file-coding-system-for-write
+  (static-if (boundp 'MULE)
+      '*iso-2022-jp*
+    'iso-2022-7bit)
+  "Coding-system used when writing a registration file.  If you set this
+to nil, the value of `mu-registration-file-coding-system' will be used
+for writing a file."
   :group 'mu-cite)
 
 (defcustom mu-cite-allow-null-string-registration nil
@@ -57,8 +62,15 @@
 (defvar mu-registration-symbol 'mu-citation-name-alist
   "*Name of the variable to register citation prefix strings.")
 
+(defvar mu-registration-file-coding-system-for-read nil
+  "*Coding-system used when reading a registration file.  It is strongly
+recommended that you do not set this option if you have no particular
+reason.")
+
 (defvar mu-registration-file-coding-system nil
-  "Coding system used when writing a current registration file.")
+  "Internal variable used to keep a default coding-system for writing
+a current registration file.  The value will be renewed whenever a
+registration id read.")
 
 (defvar mu-register-history nil)
 
@@ -91,31 +103,36 @@
 
 (defun mu-cite-save-registration-file ()
   (with-temp-buffer
-    (insert ";;; " (file-name-nondirectory mu-registration-file) "\n")
-    (insert ";;; This file is generated automatically by mu-cite "
-	    mu-cite-version "\n\n")
-    (insert "(setq "
-	    (symbol-name mu-registration-symbol)
-	    "\n      '(")
-    (insert (mapconcat
-	     (function
-	      (lambda (elem)
-		(format "(%s . %s)"
-			(prin1-to-string
-			 (mu-cite-remove-text-properties (car elem)))
-			(prin1-to-string
-			 (mu-cite-remove-text-properties (cdr elem))))))
-	     (symbol-value mu-registration-symbol) "\n        "))
-    (insert "\n        ))\n\n")
-    (insert ";;; "
-	    (file-name-nondirectory mu-registration-file)
-	    " ends here\n")
-    (write-region-as-coding-system mu-registration-file-coding-system
-				   (point-min)(point-max)
-				   mu-registration-file nil 'nomsg)
-    (condition-case nil
-	(set-file-modes mu-registration-file mu-registration-file-modes)
-      (error nil))))
+    (set-buffer-multibyte t)
+    (let ((name (file-name-nondirectory mu-registration-file))
+	  (coding-system (or mu-registration-file-coding-system-for-write
+			     mu-registration-file-coding-system)))
+      (insert (format "\
+;;; %s  -*- mode: emacs-lisp; coding: %s -*-
+;; This file is generated automatically by MU-CITE v%s.
+
+"
+		      name coding-system mu-cite-version))
+      (insert "(setq "
+	      (symbol-name mu-registration-symbol)
+	      "\n      '(")
+      (insert (mapconcat
+	       (function
+		(lambda (elem)
+		  (format "(%s . %s)"
+			  (prin1-to-string
+			   (mu-cite-remove-text-properties (car elem)))
+			  (prin1-to-string
+			   (mu-cite-remove-text-properties (cdr elem))))))
+	       (symbol-value mu-registration-symbol) "\n\t"))
+      (insert "))\n\n")
+      (insert ";;; " name " ends here\n")
+      (write-region-as-coding-system coding-system
+				     (point-min) (point-max)
+				     mu-registration-file nil 'nomsg)
+      (condition-case nil
+	  (set-file-modes mu-registration-file mu-registration-file-modes)
+	(error nil)))))
 
 
 ;;; @ database accessors

@@ -1,3 +1,11 @@
+2001-08-03  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-register.el (mu-cite-save-registration-file): Use
+	`mu-registration-file-coding-system-for-write' for writing a file.
+	(mu-registration-file-coding-system-for-read): Use `defvar'
+	instead of `defcustom' to define it.
+	(mu-registration-file-coding-system-for-write): New user option.
+
 2001-05-23  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-cite.el (fill-column-for-fill-cited-region): Add a

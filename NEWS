@@ -1,8 +1,14 @@
 MU-CITE NEWS -- history of major-changes.
-Copyright (C) 1999 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
 * Changes in MU-CITE 8.2
 ========================
+
+** New user option `mu-registration-file-coding-system-for-write'
+which is used when writing a registration file.  The default value is
+`iso-2022-7bit'.  Note that you should never set the value of the
+variable `mu-registration-file-coding-system-for-read' (which was
+formerly customizable) if you have no particular reason.
 
 ** MU-CITE now supports X-Cite-Me header as well as X-Attribution.
 
