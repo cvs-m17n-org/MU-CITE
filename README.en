@@ -1,6 +1,5 @@
 [README for MU (English Version)]
 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
-$Id: README.en,v 1.2 1998-03-08 22:44:35 shuhei-k Exp $
 
 What's MU
 =========
@@ -8,18 +7,16 @@ What's MU
   MU stands for "Message Utilities".  It consists of following
   modules:
 
-	std11: std11 lexical-analyzer, parser and available utilities
-	  std11.el       --- main module
-	  std11-parse.el --- lexical-analyzer and parser
-
 	mu-cite: a citation utility
-	  mu-cite.el --- main module of mu-cite
-	  mu-bbdb.el --- mu-cite submodule for BBDB
+	  mu-cite.el     --- main module of mu-cite
+	  mu-bbdb.el     --- mu-cite submodule for BBDB
+	  mu-register.el --- mu-cite submodule for registration
 
 	latex-math-symbol.el --- translate mathematical symbols of
 			     	 LaTeX into MULE characters
 
-  It requires APEL package.  Please install it.
+  It requires two packages APEL 9.20 or later and FLIM 1.12.2 or later.
+  Please install them.
 
 
 Installation
@@ -63,11 +60,44 @@ Installation
 
 	/usr/local/share/emacs/site-lisp/mu/   --- MU
 
+  You can specify site-lisp directory, for example:
+
+	% make install LISPDIR=~/share/emacs/lisp
+
+  If `LISPDIR=...' is omitted, site-lisp directory of the specified
+  emacs command is used (perhaps /usr/local/share/emacs/site-lisp or
+  /usr/local/lib/xemacs/site-lisp).
+
+  If the emu modules (included in APEL package) have been installed in
+  the non-standard directory, you should specify where they will be
+  found, for example:
+
+	% make install VERSION_SPECIFIC_LISPDIR=~/elisp
+
   You can specify other optional settings by editing the file
   MU-CFG.  Please read comments in it.
 
-make options about load-path
-----------------------------
+(c) install as a XEmacs package
+
+  If you want to install to XEmacs package directory, please do
+  following:
+
+	% make install-package
+
+  You can specify the XEmacs command name, for example
+
+	% make install-package XEMACS=xemacs-21
+
+  If `XEMACS=...' is omitted, XEMACS=xemacs is used.
+
+  You can specify the package directory, for example:
+
+	% make install PACKAGEDIR=~/.xemacs
+
+  If `PACKAGEDIR=...' is omitted, the first existing package
+  directory is used.
+
+  Notice that XEmacs package system requires XEmacs 21.0 or later.
 
 
 load-path (for Emacs or MULE)
@@ -78,133 +108,11 @@ load-path (for Emacs or MULE)
   subdirs.el for example:
 
   --------------------------------------------------------------------
-  (normal-top-level-add-to-load-path '("APEL" "mu"))
+  (normal-top-level-add-to-load-path '("apel" "flim" "mu"))
   --------------------------------------------------------------------
 
   If you are using XEmacs, there are no need of setting about
   load-path.
-
-
-How to use
-==========
-
-alist
------
-
-Function put-alist (ITEM VALUE ALIST)
-
-  Modify ALIST to set VALUE to ITEM.  If there is a pair whose car is
-  ITEM, replace its cdr by VALUE.  If there is not such pair, create
-  new pair (ITEM . VALUE) and return new alist whose car is the new
-  pair and cdr is ALIST.
-
-Function del-alist (ITEM ALIST)
-
-  If there is a pair whose key is ITEM, delete it from ALIST.
-
-Function set-alist (SYMBOL ITEM VALUE)
-
-  Modify a alist indicated by SYMBOL to set VALUE to ITEM.
-
-  Ex. (set-alist 'auto-mode-alist "\\.pln$" 'text-mode)
-
-Function modify-alist (MODIFIER DEFAULT)
-
-  Modify alist DEFAULT into alist MODIFIER.
-
-Function set-modified-alist (SYMBOL MODIFIER)
-
-  Modify a value of a SYMBOL into alist MODIFIER.  The SYMBOL should
-  be alist. If it is not bound, its value regard as nil.
-
-file-detect
------------
-
-Function add-path (PATH &rest OPTIONS)
-
-  Add PATH to `load-path' if it exists under `default-load-path'
-  directories and it does not exist in `load-path'.
-
-  You can use following PATH styles:
-
-    load-path relative: "PATH" (it is searched from
-				`defaul-load-path')
-
-    home directory relative: "~/PATH" "~USER/PATH"
-
-    absolute path: "/FOO/BAR/BAZ"
-
-  You can specify following OPTIONS:
-
-    'all-paths --- search from `load-path' instead of
-	           `default-load-path'
-
-    'append --- add PATH to the last of `load-path'
-
-Function add-latest-path (PATTERN &optional ALL-PATHS)
-
-  Add latest path matched by regexp PATTERN to `load-path' if it
-  exists under `default-load-path' directories and it does not exist
-  in `load-path'.
-
-  For example, if there is bbdb-1.50 and bbdb-1.51 under site-lisp,
-  and if bbdb-1.51 is newer than bbdb-1.50, and site-lisp is
-  /usr/local/share/emacs/site-lisp,
-
-	(add-path "bbdb")
-
-  it adds "/usr/local/share/emacs/site-lisp/bbdb-1.51" to top of
-  `load-path'.
-
-  If optional argument ALL-PATHS is specified, it is searched from all
-  of `load-path' instead of `default-load-path'.
-
-Function get-latest-path (PATTERN &optional ALL-PATHS)
-
-  Return latest directory in default-load-path which is matched to
-  regexp PATTERN.  If optional argument ALL-PATHS is specified, it is
-  searched from all of load-path instead of default-load-path.
-
-  Ex. (let ((gnus-path (get-latest-path "gnus")))
-        (add-path (expand-file-name "lisp" gnus-path))
-        (add-to-list 'Info-default-directory-list
-		     (expand-file-name "texi" gnus-path))
-        )
-
-Function file-installed-p (FILE &optional PATHS)
-
-  Return absolute-path of FILE if FILE exists in PATHS.  If PATHS is
-  omitted, `load-path' is used.
-
-Function exec-installed-p (FILE &optional PATHS SUFFIXES)
-
-  Return absolute-path of FILE if FILE exists in PATHS.  If PATHS is
-  omitted, `exec-path' is used.  If suffixes is omitted,
-  `exec-suffix-list' is used.
-
-Function module-installed-p (MODULE &optional PATHS)
-
-  Return non-nil if module is provided or exists in PATHS.  If PATHS
-  is omitted, `load-path' is used.
-
-filename
---------
-
-Function replace-as-filename (string)
-
-  Return safety file-name from STRING.
-
-  It refers variable `filename-filters'.  It is list of functions for
-  file-name filter.  Default filter refers following variables:
-
-	Variable filename-limit-length
-
-	  Limit size of file-name.
-
-	Variable filename-replacement-alist
-
-	  Alist list of characters vs. string as replacement.  List of
-          characters represents characters not allowed as file-name.
 
 
 Bug reports
