@@ -23,17 +23,6 @@
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
-;;; Commentary:
-
-;;  - How to use
-;;    1. bytecompile this file and copy it to the apropriate directory.
-;;    2. put the following lines to your ~/.emacs:
-;;             (add-hook 'mu-cite-load-hook
-;;                       (function
-;;                        (lambda ()
-;;                          (require 'mu-bbdb)
-;;                          )))
-
 ;;; Code:
 
 (require 'mu-cite)
