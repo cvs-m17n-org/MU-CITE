@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.11 1996-08-28 15:36:20 morioka Exp $
+;; Version: $Id: std11.el,v 0.12 1996-08-28 15:38:19 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -155,7 +155,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 	  header)
 	))))
 
-(defun std11-header-field-names (&optional boundary)
+(defun std11-collect-field-names (&optional boundary)
   "Return list of all field-names of the message header in current buffer.
 If BOUNDARY is not nil, it is used as message header separator.
 \[std11.el]"
