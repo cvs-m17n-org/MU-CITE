@@ -1,10 +1,10 @@
-;;; std11.el --- STD 11 parser for GNU Emacs
+;;; std11.el --- STD 11 functions for GNU Emacs
 
 ;; Copyright (C) 1995,1996 Free Software Foundation, Inc.
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.12 1996-08-28 15:38:19 morioka Exp $
+;; Version: $Id: std11.el,v 0.13 1996-08-28 16:59:36 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -178,5 +178,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 ;;;
 
 (provide 'std11)
+
+(autoload 'std11-analyze-spaces "std11-parse")
 
 ;;; std11.el ends here
