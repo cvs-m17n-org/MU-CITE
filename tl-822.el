@@ -4,15 +4,19 @@
 ;;; Copyright (C) 1995 Free Software Foundation, Inc.
 ;;; Copyright (C) 1995 MORIOKA Tomohiko
 ;;;
-;;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;; Version:
-;;;	$Id: tl-822.el,v 3.0 1995-10-05 12:09:52 morioka Exp $
+;;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Keywords: mail, news, RFC 822
 ;;;
 ;;; This file is part of tm (Tools for MIME).
 ;;;
 
 (require 'tl-seq)
+(require 'tl-str)
+
+
+(defconst rfc822/RCS-ID
+  "$Id: tl-822.el,v 4.0 1995-10-05 13:22:22 morioka Exp $")
+(defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
 ;;; @ field
@@ -53,8 +57,21 @@
 	))))
 
 
-;;; @ quoted-string
+;;; @ quoting
 ;;;
+
+(defconst rfc822/linear-white-space-regexp "\\(\n?[ \t]\\)+")
+(defconst rfc822/quoted-pair-regexp "\\\\.")
+(defconst rfc822/qtext-regexp "[^\"\\\n\t \t]")
+(defconst rfc822/quoted-string-regexp
+  (concat "\""
+	  (regexp-*
+	   (concat
+	    "\\(" rfc822/linear-white-space-regexp "?"
+	    (regexp-or rfc822/qtext-regexp rfc822/quoted-pair-regexp)
+	    "\\)"))
+	  rfc822/linear-white-space-regexp "?"
+	  "\""))
 
 (defun rfc822/strip-quoted-pair (str)
   (let ((dest "")
