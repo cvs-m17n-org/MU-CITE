@@ -1,3 +1,8 @@
+2001-05-23  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el (fill-column-for-fill-cited-region): Add a
+	supplementary explanation in doc-string.
+
 2001-04-19  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-cite.el (mu-cite-remove-text-properties): Make it to work with

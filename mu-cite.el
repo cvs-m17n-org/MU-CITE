@@ -467,7 +467,9 @@ TABLE defaults to the current buffer's category table."
 
 (defcustom fill-column-for-fill-cited-region nil
   "Integer to override `fill-column' while `fill-cited-region' is being
-executed."
+executed.  If you wish people call you ****-san, you may set the value
+of `fill-column' to 60 in the buffer for message sending and set this
+to 70. :-)"
   :type (` (choice (const :tag "Off" nil)
 		   (integer (, default-fill-column))))
   :group 'mu-cite)
