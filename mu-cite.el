@@ -71,32 +71,30 @@
 
 ;; This part will be abolished in the future.
 
-(eval-when-compile (require 'static))
-
-(defconst mu-cite-obsolete-variable-alist
-  '((mu-cite/cited-prefix-regexp	mu-cite-cited-prefix-regexp)
-    (mu-cite/default-methods-alist	mu-cite-default-methods-alist)
-    (mu-cite/get-field-value-method-alist
-     mu-cite-get-field-value-method-alist)
-    (mu-cite/instantiation-hook		mu-cite-instantiation-hook)
-    (mu-cite/ml-count-field-list	mu-cite-ml-count-field-list)
-    (mu-cite/post-cite-hook		mu-cite-post-cite-hook)
-    (mu-cite/pre-cite-hook		mu-cite-pre-cite-hook)
-    (mu-cite/prefix-format		mu-cite-prefix-format)
-    (mu-cite/top-format			mu-cite-top-format)))
+(eval-when-compile
+  (require 'static)
+  (defmacro mu-cite-obsolete-variable-alist ()
+    ''((mu-cite/cited-prefix-regexp	mu-cite-cited-prefix-regexp)
+       (mu-cite/default-methods-alist	mu-cite-default-methods-alist)
+       (mu-cite/get-field-value-method-alist
+	mu-cite-get-field-value-method-alist)
+       (mu-cite/instantiation-hook	mu-cite-instantiation-hook)
+       (mu-cite/ml-count-field-list	mu-cite-ml-count-field-list)
+       (mu-cite/post-cite-hook		mu-cite-post-cite-hook)
+       (mu-cite/pre-cite-hook		mu-cite-pre-cite-hook)
+       (mu-cite/prefix-format		mu-cite-prefix-format)
+       (mu-cite/top-format		mu-cite-top-format))))
 
 (static-if (featurep 'xemacs)
-    (mapcar
-     (function (lambda (elem)
-		 (apply (function define-obsolete-variable-alias) elem)))
-     mu-cite-obsolete-variable-alist))
+    (dolist (def (mu-cite-obsolete-variable-alist))
+      (apply (function define-obsolete-variable-alias) def)))
 
-(mapcar
- (function (lambda (elem)
-	     (apply (function define-obsolete-function-alias) elem)))
- '((mu-cite/cite-original	mu-cite-original)
-   (mu-cite/get-field-value	mu-cite-get-field-value)
-   (mu-cite/get-value		mu-cite-get-value)))
+(define-obsolete-function-alias
+  (function mu-cite/cite-original) (function mu-cite-original))
+(define-obsolete-function-alias
+  (function mu-cite/get-field-value) (function mu-cite-get-field-value))
+(define-obsolete-function-alias
+  (function mu-cite/get-value) (function mu-cite-get-value))
 
 
 ;;; @ set up
@@ -186,42 +184,6 @@
 ;;; @ formats
 ;;;
 
-(define-widget 'mu-cite-choose-prefix-format 'group
-  "Widget for entering a prefix citation method."
-  :convert-widget
-  (function
-   (lambda (widget)
-     (list 'choice
-	   :tag "Method or String"
-	   :args (nconc
-		  (mapcar
-		   (function (lambda (elem) (list 'choice-item (car elem))))
-		   mu-cite-default-methods-alist)
-		  '((symbol :tag "Method")
-		    (const :tag "-" nil)
-		    (choice-item :tag "String: \"> \"" "> ")
-		    (string)))))))
-
-(define-widget 'mu-cite-choose-top-format 'group
-  "Widget for entering a top citation method."
-  :convert-widget
-  (function
-   (lambda (widget)
-     (list 'choice
-	   :tag "Method or String"
-	   :args (nconc
-		  (mapcar
-		   (function (lambda (elem) (list 'choice-item (car elem))))
-		   mu-cite-default-methods-alist)
-		  '((symbol :tag "Method")
-		    (const :tag "-" nil)
-		    (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
-		    (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
-		    (string :tag "String")))))))
-
-(defun mu-cite-custom-set-variable (symbol value)
-  (set-default symbol (delq nil value)))
-
 (defcustom mu-cite-cited-prefix-regexp
   "\\(^[^ \t\n<>]+>+[ \t]*\\|^[ \t]*$\\)"
   "Regexp to match the citation prefix.
@@ -232,15 +194,53 @@ If match, mu-cite doesn't insert citation prefix."
 (defcustom mu-cite-prefix-format '(prefix-register-verbose "> ")
   "List to represent citation prefix.
 Each elements must be string or method name."
-  :type '(repeat mu-cite-choose-prefix-format)
-  :set (function mu-cite-custom-set-variable)
+  :type (list
+	 'repeat
+	 (list
+	  'group
+	  :convert-widget
+	  (function
+	   (lambda (widget)
+	     (list
+	      'choice
+	      :tag "Method or String"
+	      :args
+	      (nconc
+	       (mapcar
+		(function (lambda (elem) (list 'choice-item (car elem))))
+		mu-cite-default-methods-alist)
+	       '((symbol :tag "Method")
+		 (const :tag "-" nil)
+		 (choice-item :tag "String: \"> \"" "> ")
+		 (string))))))))
+  :set (function (lambda (symbol value)
+		   (set-default symbol (delq nil value))))
   :group 'mu-cite)
 
 (defcustom mu-cite-top-format '(in-id ">>>>>\t" from " wrote:\n")
   "List to represent top string of citation.
 Each elements must be string or method name."
-  :type '(repeat mu-cite-choose-top-format)
-  :set (function mu-cite-custom-set-variable)
+  :type (list
+	 'repeat
+	 (list
+	  'group
+	  :convert-widget
+	  (function
+	   (lambda (widget)
+	     (list 'choice
+		   :tag "Method or String"
+		   :args
+		   (nconc
+		    (mapcar
+		     (function (lambda (elem) (list 'choice-item (car elem))))
+		     mu-cite-default-methods-alist)
+		    '((symbol :tag "Method")
+		      (const :tag "-" nil)
+		      (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
+		      (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
+		      (string :tag "String"))))))))
+  :set (function (lambda (symbol value)
+		   (set-default symbol (delq nil value))))
   :group 'mu-cite)
 
 
@@ -296,7 +296,8 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
 			 (choice-item "Mailinglist-Id")
 			 (const :tag "-" nil)
 			 (string :tag "Other")))
-  :set (function mu-cite-custom-set-variable)
+  :set (function (lambda (symbol value)
+		   (set-default symbol (delq nil value))))
   :group 'mu-cite)
 
 (defun mu-cite-get-ml-count-method ()
@@ -555,7 +556,7 @@ TABLE defaults to the current buffer's category table."
 ;; This part will be abolished in the future.
 
 (static-unless (featurep 'xemacs)
-  (let ((rest mu-cite-obsolete-variable-alist)
+  (let ((rest (mu-cite-obsolete-variable-alist))
 	def new-sym old-sym)
     (while rest
       (setq def (car rest))
