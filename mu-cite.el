@@ -435,18 +435,20 @@ TABLE defaults to the current buffer's category table."
     (let ((i 0)
 	  (prefix
 	   (buffer-substring (line-beginning-position)
-			     (line-end-position)))
-	  str ret)
-      (while (and (= (forward-line) 0)
-		  (setq str (buffer-substring
-			     (progn (beginning-of-line)(point))
-			     (progn (end-of-line)(point))))
-		  (setq ret (string-compare-from-top prefix str)))
-	(setq prefix
-	      (if (stringp ret)
-		  ret
-		(car (cdr ret))))
-	(setq i (1+ i)))
+			     (line-end-position))))
+      (let ((init prefix)
+	    str ret)
+	(while (and (= (forward-line) 0)
+		    (setq str (buffer-substring
+			       (progn (beginning-of-line)(point))
+			       (progn (end-of-line)(point))))
+		    (setq ret (string-compare-from-top prefix str)))
+	  (setq prefix
+		(if (stringp ret)
+		    ret
+		  (car (cdr ret))))
+	  (or (string-equal init prefix)
+	      (setq i (1+ i)))))
       (cond ((> i 1) prefix)
 	    ((> i 0)
 	     (goto-char (point-min))
@@ -471,7 +473,7 @@ TABLE defaults to the current buffer's category table."
 	     (goto-char (match-end 0))
 	     (if (looking-at "[ \t]+")
 		 (goto-char (match-end 0)))
-	     (buffer-substring (point-min)(point)))
+	     (buffer-substring (line-beginning-position)(point)))
 	    (t "")))))
 
 ;;;###autoload
@@ -485,6 +487,9 @@ TABLE defaults to the current buffer's category table."
 	   (setq end (match-end 0)))
       (narrow-to-region beg end)
       (let* ((fill-prefix (detect-paragraph-cited-prefix))
+	     (fill-column (max (+ 1 (current-left-margin)
+				  (string-width fill-prefix))
+			       (current-fill-column)))
 	     (pat (concat fill-prefix "\n")))
 	(goto-char (point-min))
 	(while (search-forward pat nil t)

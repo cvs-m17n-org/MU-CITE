@@ -1,3 +1,10 @@
+1999-10-15  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el (fill-cited-region): Increase `fill-column' if
+	`fill-prefix' is too long to fill.
+	(detect-paragraph-cited-prefix): Abolish a product of comparing
+	each line if they are identical; don't include newlines in result.
+
 1999-08-23  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-cite.el (TopLevel): Don't require `widget'.
