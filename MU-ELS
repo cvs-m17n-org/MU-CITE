@@ -1,0 +1,19 @@
+;;; -*-Emacs-Lisp-*-
+;;;
+;;; $Id: MU-ELS,v 0.1 1996-09-02 15:50:53 morioka Exp $
+;;;
+
+(setq mu-modules-to-compile '(std11 std11-parse tl-822 mu-cite))
+
+(setq mu-modules-not-to-compile nil)
+
+(if (file-installed-p "bbdb.el")
+    (setq mu-modules-to-compile (nconc mu-modules-to-compile '(mu-bbdb)))
+  (setq mu-modules-not-to-compile
+	(nconc mu-modules-not-to-compile '(mu-bbdb)))
+  )
+
+(setq mu-modules (append mu-modules-to-compile
+			 mu-modules-not-to-compile))
+
+;;; MU-ELS ends here
