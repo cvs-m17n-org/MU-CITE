@@ -7,7 +7,7 @@
 ;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.6 1996-01-15 20:28:32 morioka Exp $
+;;;	$Id: mu-register.el,v 1.7 1996-01-15 21:07:05 morioka Exp $
 ;;;
 ;;; This file is part of tl (Tiny Library).
 ;;;
@@ -68,7 +68,7 @@
 (defvar mu-register/minibuffer-history nil)
 
 
-;;; @ functions
+;;; @ database accessers
 ;;;
 
 ;; get citation-name from the database
@@ -88,7 +88,28 @@
     (mu-register/save-to-file)
     ))
 
-;; main function
+;; save to file
+(defun mu-register/save-to-file ()
+  (let* ((filename mu-register/registration-file)
+	 (buffer (get-buffer-create " *mu-register*")))
+    (save-excursion
+      (set-buffer buffer)
+      (setq buffer-file-name filename)
+      (erase-buffer)
+      (insert ";; generated automatically by mu-register.\n")
+      (insert (format "(setq %s
+ '(" mu-register/registration-symbol))
+      (insert (mapconcat
+	       (function prin1-to-string)
+	       mu-register/citation-name-alist "\n   "))
+      (insert "\n   ))\n")
+      (save-buffer))
+    (kill-buffer buffer)))
+
+
+;;; @ main functions
+;;;
+
 (defun mu-register/citation-name ()
   (let* ((from
 	  (rfc822/address-string
@@ -119,31 +140,53 @@
 	      (mu-register/add-citation-name return from))))
     return))
 
-;; save to file
-(defun mu-register/save-to-file ()
-  (let* ((filename mu-register/registration-file)
-	 (buffer (get-buffer-create " *mu-register*")))
-    (save-excursion
-      (set-buffer buffer)
-      (setq buffer-file-name filename)
-      (erase-buffer)
-      (insert ";; generated automatically by mu-register.\n")
-      (insert (format "(setq %s
- '(" mu-register/registration-symbol))
-      (insert (mapconcat
-	       (function prin1-to-string)
-	       mu-register/citation-name-alist "\n   "))
-      (insert "\n   ))\n")
-      (save-buffer))
-    (kill-buffer buffer)))
+(defun mu-register/citation-name-quietly ()
+  (let* ((from
+	  (rfc822/address-string
+	   (car (rfc822/parse-address
+		 (rfc822/lexical-analyze
+		  (mu-cite/get-value 'from))))))
+	 (fullname (mu-cite/get-value 'full-name))
+	 (return1
+	  (mu-register/get-citation-name from))
+	 return)
+    (if (null return1)
+	(progn
+	  (setq return
+		(read-string "Citation name? "
+			     fullname
+			     'mu-register/minibuffer-history))
+	  
+	  (if (not (string-equal return return1))
+	      (let ((ans)
+		    (cursor-in-echo-area t))
+		(while (null ans)
+		  (message (format "Register \"%s\" (y/n)? " return))
+		  (setq ans (read-event))
+		  (if (not (or (eq ans ?y)
+			       (eq ans ?n)))
+		      (setq ans nil)))
+		(message "")
+		(if (eq ans ?y)
+		    (mu-register/add-citation-name return from)
+		  )
+		))
+	  )
+      (setq return return1)
+      )
+    return))
+
 
 
 ;;; @ Installation
 ;;;
 
 (set-alist 'mu-cite/default-methods-alist
-	   'registered 
+	   'prefix-registered
 	   (function mu-register/citation-name))
+(set-alist 'mu-cite/default-methods-alist
+	   'prefix-registered-quietly
+	   (function mu-register/citation-name-quietly))
 
 
 ;;; @ end
