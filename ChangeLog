@@ -1,3 +1,7 @@
+1999-07-15  NAKAJI Hiroyuki   <nakaji@tutrp.tut.ac.jp>
+
+	* MU-CFG (load-path): add "../apel" and "../flim".
+
 1998-07-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (detect-paragraph-cited-prefix): Use `cadr' instead
@@ -15,7 +19,7 @@
 Tue Mar 18 15:07:56 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (mu-cite/get-field-value-method-alist): Setting for
- 	tm-mh-e was abolished.
+	tm-mh-e was abolished.
 
 
 1997-03-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -30,7 +34,7 @@ Mon Mar 10 06:13:17 1997  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* mu-cite.el (mu-cite/load-registration-file): New function.
 	(mu-cite/save-registration-file): Renamed from
- 	`mu-cite/save-to-file'.
+	`mu-cite/save-to-file'.
 
 
 1997-03-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -40,7 +44,7 @@ Mon Mar 10 06:13:17 1997  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 1997-03-03  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* std11.el (std11-addr-to-string): Enclose quoted-string with
- 	double-quote.
+	double-quote.
 
 
 1997-02-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -51,10 +55,10 @@ Sat Feb  1 18:29:43 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (citation-disable-chars): New variable.
 	(detect-paragraph-cited-prefix): Use variable
- 	`citation-disable-chars' for single line.
+	`citation-disable-chars' for single line.
 
 	* mu-cite.el (mu-cite/cited-prefix-regexp): Don't regard "<" as
- 	cited-prefix.
+	cited-prefix.
 
 
 1997-01-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -64,7 +68,7 @@ Sat Feb  1 18:29:43 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Fri Jan 31 12:31:20 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (detect-paragraph-cited-prefix): check return value
- 	of `string-compare-from-top'.
+	of `string-compare-from-top'.
 
 
 1997-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -74,18 +78,18 @@ Fri Jan 31 12:31:20 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Fri Jan 17 05:11:03 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* latex-math-symbol.el (latex-math-decode-region): to avoid
- 	mismatching.
+	mismatching.
 
 Tue Jan 14 11:30:27 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* latex-math-symbol.el (latex-math-symbol-table-alist): Add more
- 	symbols.
+	symbols.
 
 Thu Jan  9 18:01:23 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (detect-paragraph-cited-prefix): New function.
 	(fill-cited-region): Use function `detect-paragraph-cited-prefix'.
-  	Variable `cited-prefix-regexp' was abolished.
+	Variable `cited-prefix-regexp' was abolished.
 
 
 Tue Dec 17 13:07:54 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -97,14 +101,14 @@ Tue Dec 17 13:07:54 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Tue Dec 17 12:06:15 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-full-name-string): Strip quoted-pair and return
- 	nil if phrase is null-string.
+	nil if phrase is null-string.
 
 Tue Dec 17 11:01:47 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-wrap-as-quoted-pairs): New function.
 
 	(std11-wrap-as-quoted-string): Use function
- 	`std11-wrap-as-quoted-pairs'.
+	`std11-wrap-as-quoted-pairs'.
 
 Mon Dec 16 07:12:38 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -124,7 +128,7 @@ Mon Dec  2 15:20:12 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 Thu Nov 28 19:38:27 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11-parse.el (std11-check-enclosure): Unused local variable
- 	`dest' was abolished.
+	`dest' was abolished.
 
 Fri Nov 22 08:44:27 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -142,7 +146,7 @@ Wed Oct 16 00:14:50 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Thu Oct  3 05:02:32 1996  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
 
 	* mu-cite.el (fill-cited-region): prefix should be checked by
- 	`cited-prefix-regexp'. (cf. [tm-ja:2106])
+	`cited-prefix-regexp'. (cf. [tm-ja:2106])
 
 
 Tue Oct  1 13:33:32 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -160,7 +164,7 @@ Sat Sep 28 10:34:12 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 	(mu-cite/cited-prefix-regexp), (mu-cite/ml-count-field-list),
 	(cited-prefix-regexp): Doc strings.
 	(mu-cite-load-hook), (mu-cite/instantiation-hook): Explicitly
- 	defined.
+	defined.
 
 Thu Sep 26 04:51:47 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -183,14 +187,14 @@ Sun Sep 15 09:27:25 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Sat Sep 14 08:44:17 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* tl-822.el (rfc822/strip-quoted-string): New alias; moved to
- 	std11.el.
+	std11.el.
 
 	* std11.el (std11-strip-quoted-pair): New function; moved from
- 	tl-822.el.
+	tl-822.el.
 	(std11-strip-quoted-string): New function; moved from tl-822.el.
 
 	* tl-822.el: Constant `rfc822/linear-white-space-regexp' was
- 	abolished.
+	abolished.
 
 
 Sun Sep  8 19:35:20 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -206,22 +210,22 @@ Sun Sep  8 18:09:42 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Sun Sep  8 18:07:44 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-wrap-as-quoted-string): Renamed from
- 	`rfc822/wrap-as-quoted-string'.
+	`rfc822/wrap-as-quoted-string'.
 
 	* tl-822.el (rfc822/qtext-regexp): Use variable
- 	`std11-non-qtext-char-list' instead of
- 	`rfc822/non-qtext-char-list'.
+	`std11-non-qtext-char-list' instead of
+	`rfc822/non-qtext-char-list'.
 
 	* std11.el (std11-non-qtext-char-list): Renamed from
- 	`rfc822/non-qtext-char-list'.
+	`rfc822/non-qtext-char-list'.
 
 	* std11.el (rfc822/non-qtext-char-list): New variable; moved from
- 	tl-822.el.
+	tl-822.el.
 	(rfc822/wrap-as-quoted-string): New function; moved from
- 	tl-822.el.
+	tl-822.el.
 
 	* tl-822.el: Function `rfc822/wrap-as-quoted-string' and variable
- 	`rfc822/non-qtext-char-list' were moved to std11.el.
+	`rfc822/non-qtext-char-list' were moved to std11.el.
 
 
 Tue Sep  3 09:49:49 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -247,7 +251,7 @@ Mon Sep  2 15:48:07 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 	New alias; moved to std11.el.
 
 	* std11.el (std11-extract-address-components): New function; moved
- 	from tl-822.el.
+	from tl-822.el.
 
 	* std11.el, std11-parse.el, tl-822.el, mu-cite.el, mu-bbdb.el:
 	moved from tl package.
