@@ -1,5 +1,12 @@
 1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mu-cite.el (mu-cite-obsolete-variable-alist): Revert to define;
+	use it to define obsolete-variable-aliases in XEmacs.
+	- Try to set value of obsolete variables to new variables after
+	  `mu-cite-load-hook' is run in non XEmacs emacsen.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* mu-cite.el (mu-cite-load-hook): Deleted the definition as a user
 	option.
 
