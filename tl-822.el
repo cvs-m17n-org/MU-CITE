@@ -30,17 +30,16 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.41 1996-08-28 13:05:36 morioka Exp $")
+  "$Id: tl-822.el,v 7.42 1996-08-28 13:10:17 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
 ;;; @ header
 ;;;
 
-(defalias 'rfc822/narrow-to-header 'std11-narrow-to-header)
-(defalias 'rfc822/get-header-string 'std11-header-string)
+(defalias 'rfc822/narrow-to-header	'std11-narrow-to-header)
+(defalias 'rfc822/get-header-string	'std11-header-string)
 (defalias 'rfc822/get-header-string-except 'std11-header-string-except)
-(defalias 'rfc822/get-field-names 'std11-field-names)
 
 
 ;;; @ field
@@ -48,27 +47,8 @@
 
 (defalias `rfc822/field-end		'std11-field-end)
 (defalias 'rfc822/get-field-body	'std11-field-body)
-
-(defun rfc822/get-field-bodies (field-names &optional default-value boundary)
-  (let ((case-fold-search t))
-    (save-excursion
-      (save-restriction
-	(rfc822/narrow-to-header boundary)
-	(let* ((dest (make-list (length field-names) default-value))
-	       (s-rest field-names)
-	       (d-rest dest)
-	       field-name)
-	  (while (setq field-name (car s-rest))
-	    (goto-char (point-min))
-	    (if (re-search-forward (concat "^" field-name ":[ \t]*") nil t)
-		(setcar d-rest
-			(buffer-substring-no-properties
-			 (match-end 0)
-			 (rfc822/field-end))))
-	    (setq s-rest (cdr s-rest)
-		  d-rest (cdr d-rest))
-	    )
-	  dest)))))
+(defalias 'rfc822/get-field-names	'std11-field-names)
+(defalias 'rfc822/get-field-bodies	'std11-field-bodies)
 
 
 ;;; @ quoting
