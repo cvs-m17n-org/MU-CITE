@@ -384,7 +384,7 @@ TABLE defaults to the current buffer's category table."
 	      (if (stringp ret)
 		  ret
 		(cadr ret)))
-	(incf i))
+	(setq i (1+ i)))
       (cond ((> i 1) prefix)
 	    ((> i 0)
 	     (goto-char (point-min))
