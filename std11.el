@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.5 1996-08-28 13:13:12 morioka Exp $
+;; Version: $Id: std11.el,v 0.6 1996-08-28 14:17:21 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -41,7 +41,7 @@
 (defun std11-field-body (name &optional boundary)
   (save-excursion
     (save-restriction
-      (std11-narrow-to-header)
+      (std11-narrow-to-header boundary)
       (goto-char (point-min))
       (let ((case-fold-search t))
 	(if (re-search-forward (concat "^" name ":[ \t]*") nil t)
