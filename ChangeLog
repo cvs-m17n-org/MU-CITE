@@ -1,5 +1,15 @@
 1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mu-cite.el (mu-cite-method-list): New function.
+	(widget-mu-cite-method-prompt-value-history): New variable.
+	(mu-cite-method): New widget.
+	(widget-mu-cite-method-prompt-value): New function.
+	(widget-mu-cite-method-action): New function.
+	(mu-cite-prefix-format): Use `mu-cite-method'.
+	(mu-cite-top-format): Likewise.
+
+1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* mu-register.el (mu-citation-name-alist): Deleted.
 	(mu-cite-load-registration-file): Initialize value of
 	`mu-registration-symbol' if it is not bound.
