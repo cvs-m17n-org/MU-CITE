@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.37 1996-08-28 12:40:28 morioka Exp $")
+  "$Id: tl-822.el,v 7.38 1996-08-28 12:50:12 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -49,8 +49,6 @@
 
 (defconst rfc822/field-top-regexp
   (concat "\\(" rfc822/field-name-regexp "\\):"))
-
-(defconst rfc822::next-field-top-regexp (concat "\n" rfc822/field-top-regexp))
 
 (defun rfc822/get-field-names (&optional boundary)
   (save-excursion
