@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.45 1996-08-28 15:16:51 morioka Exp $")
+  "$Id: tl-822.el,v 7.46 1996-08-28 15:26:10 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -48,7 +48,7 @@
 (defalias `rfc822/field-end		'std11-field-end)
 (defalias 'rfc822/get-field-body	'std11-find-field-body)
 (defalias 'rfc822/get-field-names	'std11-field-names)
-(defalias 'rfc822/get-field-bodies	'std11-field-bodies)
+(defalias 'rfc822/get-field-bodies	'std11-find-field-bodies)
 
 
 ;;; @ quoting
