@@ -2,12 +2,12 @@
 
 ;; Copyright (C) 1995,1996 Free Software Foundation, Inc.
 
-;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
 ;; Version:
-;;	$Id: std11-parse.el,v 0.14 1996-10-01 13:30:22 morioka Exp $
+;;	$Id: std11-parse.el,v 0.15 1996-11-28 19:38:27 morioka Exp $
 
-;; This file is part of tl (Tiny Library).
+;; This file is part of MU (Message Utilities).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -68,7 +68,7 @@
 	)
     (if (and (> len i)
 	     (eq (aref str i) open))
-	(let (p chr dest)
+	(let (p chr)
 	  (setq i (1+ i))
 	  (catch 'tag
 	    (while (< i len)
