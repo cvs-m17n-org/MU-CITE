@@ -26,58 +26,20 @@
 
 (require 'tl-seq)
 (require 'tl-str)
+(require 'std11)
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.35 1996-08-16 06:00:57 morioka Exp $")
+  "$Id: tl-822.el,v 7.36 1996-08-28 12:28:54 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
 ;;; @ header
 ;;;
 
-(defun rfc822/narrow-to-header (&optional boundary)
-  (narrow-to-region (goto-char (point-min))
-		    (if (re-search-forward
-			 (concat "^\\(" (regexp-quote
-					 (or boundary "")) "\\)?$") nil t)
-			(match-beginning 0)
-		      (point-max)
-		      )))
-
-(defun rfc822/get-header-string (pat &optional boundary)
-  (let ((case-fold-search t))
-    (save-excursion
-      (save-restriction
-	(rfc822/narrow-to-header boundary)
-	(goto-char (point-min))
-	(let (field header)
-	  (while (re-search-forward rfc822/field-top-regexp nil t)
-	    (setq field (buffer-substring (match-beginning 0)
-					  (rfc822/field-end)
-					  ))
-	    (if (string-match pat field)
-		(setq header (concat header field "\n"))
-	      ))
-	  header)
-	))))
-
-(defun rfc822/get-header-string-except (pat &optional boundary)
-  (let ((case-fold-search t))
-    (save-excursion
-      (save-restriction
-	(rfc822/narrow-to-header boundary)
-	(goto-char (point-min))
-	(let (field header)
-	  (while (re-search-forward rfc822/field-top-regexp nil t)
-	    (setq field (buffer-substring (match-beginning 0)
-					  (rfc822/field-end)
-					  ))
-	    (if (not (string-match pat field))
-		(setq header (concat header field "\n"))
-	      ))
-	  header)
-	))))
+(defalias 'rfc822/narrow-to-header 'std11-narrow-to-header)
+(defalias 'rfc822/get-header-string 'std11-header-string)
+(defalias 'rfc822/get-header-string-except 'std11-header-string-except)
 
 
 ;;; @ field
@@ -105,15 +67,7 @@
 	  )
 	dest))))
 
-(defun rfc822/field-end ()
-  (if (re-search-forward rfc822::next-field-top-regexp nil t)
-      (goto-char (match-beginning 0))
-    (if (re-search-forward "^$" nil t)
-	(goto-char (1- (match-beginning 0)))
-      (end-of-line)
-      ))
-  (point)
-  )
+(defalias `rfc822/field-end 'std11-field-end)
 
 (defun rfc822/get-field-body (name &optional boundary)
   (let ((case-fold-search t))
