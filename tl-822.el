@@ -1,0 +1,488 @@
+;;;
+;;; tl-822.el --- RFC 822 parser for GNU Emacs
+;;;
+;;; Copyright (C) 1995 Free Software Foundation, Inc.
+;;; Copyright (C) 1995 MORIOKA Tomohiko
+;;;
+;;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;; Version:
+;;;	$Id: tl-822.el,v 1.1 1995-10-03 05:17:31 morioka Exp $
+;;; Keywords: mail, news, RFC 822
+;;;
+;;; This file is part of tm (Tools for MIME).
+;;;
+
+(require 'tl-seq)
+
+
+;;; @ lexical analyze
+;;;
+
+(defconst rfc822/special-chars "][()<>@,;:\\<>.\"")
+(defconst rfc822/space-chars " \t\n")
+(defconst rfc822/non-atom-chars
+  (concat rfc822/special-chars rfc822/space-chars))
+(defconst rfc822/non-qtext-chars "\"")
+(defconst rfc822/non-dtext-chars "[]")
+(defconst rfc822/non-ctext-chars "()")
+
+(defun rfc822/analyze-spaces (str)
+  (let ((i (position-mismatched
+	    (function
+	     (lambda (elt)
+	       (find elt rfc822/space-chars)
+	       )) str))
+	)
+    (if (> i 0)
+	(cons (cons 'spaces (substring str 0 i))
+	      (substring str i)
+	      ))
+    ))
+
+(defun rfc822/analyze-special (str)
+  (if (and (> (length str) 0)
+	   (find (elt str 0) rfc822/special-chars)
+	   )
+      (cons (cons 'specials (substring str 0 1))
+	    (substring str 1)
+	    ))
+  )
+
+(defun rfc822/analyze-atom (str)
+  (let ((i (position-mismatched
+	    (function
+	     (lambda (elt)
+	       (not (find elt rfc822/non-atom-chars))
+	       )) str))
+	)
+    (if (> i 0)
+	(cons (cons 'atom (substring str 0 i))
+	      (substring str i)
+	      ))
+    ))
+
+(defun rfc822/analyze-quoted-pair (str)
+  (if (and (>= (length str) 2)
+	   (eq (elt str 0) ?\\)
+	   )
+      (cons (cons 'quoted-pair (substring str 0 2))
+	    (substring str 2)
+	    ))
+  )
+
+(defun rfc822/analyze-quoted-string (str)
+  (if (and (> (length str) 0)
+	   (eq (elt str 0) ?\")
+	   )
+      (let* ((i (position-mismatched
+		 (function
+		  (lambda (elt)
+		    (not (find elt rfc822/non-qtext-chars))
+		    ))
+		 (setq str (substring str 1))
+		 ))
+	     (rest (substring str i))
+	     )
+	(if (and (> i 0)
+		 (> (length rest) 0)
+		 (eq (elt rest 0) ?\")
+		 )
+	    (cons (cons 'quoted-string (substring str 0 i))
+		  (substring rest 1)
+		  )
+	  ))))
+
+(defun rfc822/analyze-domain-literal (str)
+  (if (and (> (length str) 0)
+	   (eq (elt str 0) ?\[)
+	   )
+      (let* ((i (position-mismatched
+		 (function
+		  (lambda (elt)
+		    (not (find elt rfc822/non-dtext-chars))
+		    ))
+		 (setq str (substring str 1))
+		 ))
+	     (rest (substring str i))
+	     )
+	(if (and (> i 0)
+		 (> (length rest) 0)
+		 (eq (elt rest 0) ?\])
+		 )
+	    (cons (cons 'domain-literal (substring str 0 i))
+		  (substring rest 1)
+		  )
+	  ))))
+
+(defun rfc822/analyze-comment (str)
+  (if (and (> (length str) 0)
+	   (eq (elt str 0) ?\()
+	   )
+      (let ((dest "")
+	    chr p ret)
+	(setq str (substring str 1))
+	(catch 'tag
+	  (while (not (string-equal str ""))
+	    (setq p (position-mismatched
+		     (function
+		      (lambda (elt)
+			(not (find elt rfc822/non-ctext-chars))
+			)) str))
+	    (cond ((> p 0)
+		   (setq dest (concat dest (substring str 0 p)))
+		   (setq str (substring str p))
+		   )
+		  ((setq ret (rfc822/analyze-comment str))
+		   (setq dest (concat dest "(" (cdr (car ret)) ")"))
+		   (setq str (cdr ret))
+		   )
+		  (t (throw 'tag nil))
+		  )
+	    ))
+	(if (and (> (length str) 0)
+		 (eq (elt str 0) ?\))
+		 )
+	    (cons (cons 'comment dest)
+		  (substring str 1)
+		  )
+	  ))))
+
+(defun rfc822/lexical-analyze (str)
+  (let (dest
+	(i 0)(len (length str))
+	ret)
+    (while (not (string-equal str ""))
+      (setq ret
+	    (or (rfc822/analyze-quoted-string str)
+		(rfc822/analyze-domain-literal str)
+		(rfc822/analyze-comment str)
+		(rfc822/analyze-spaces str)
+		(rfc822/analyze-special str)
+		(rfc822/analyze-atom str)
+		'((error) . "")
+		))
+      (setq dest (cons (car ret) dest))
+      (setq str (cdr ret))
+      )
+    (reverse dest)
+    ))
+
+
+;;; @ parser
+;;;
+
+(defun rfc822/ignored-token-p (token)
+  (let ((type (car token)))
+    (or (eq type 'spaces)(eq type 'comment))
+    ))
+
+(defun rfc822/parse-token (lal)
+  (let (token itl)
+    (while (and lal
+		(progn
+		  (setq token (car lal))
+		  (rfc822/ignored-token-p token)
+		  ))
+      (setq lal (cdr lal))
+      (setq itl (cons token itl))
+      )
+    (cons (reverse (cons token itl))
+	  (cdr lal))
+    ))
+
+(defun rfc822/parse-token-or-comment (lal)
+  (let (token itl)
+    (while (and lal
+		(progn
+		  (setq token (car lal))
+		  (eq (car token) 'spaces)
+		  ))
+      (setq lal (cdr lal))
+      (setq itl (cons token itl))
+      )
+    (cons (reverse (cons token itl))
+	  (cdr lal))
+    ))
+
+(defun rfc822/parse-word (lal)
+  (let ((ret (rfc822/parse-token lal)))
+    (if ret
+	(let ((elt (car ret))
+	      (rest (cdr ret))
+	      )
+	  (if (or (assq 'atom elt)
+		  (assq 'quoted-string elt))
+	      (cons (cons 'word elt) rest)
+	    )))))
+
+(defun rfc822/parse-word-or-comment (lal)
+  (let ((ret (rfc822/parse-token-or-comment lal)))
+    (if ret
+	(let ((elt (car ret))
+	      (rest (cdr ret))
+	      )
+	  (cond ((or (assq 'atom elt)
+		     (assq 'quoted-string elt))
+		 (cons (cons 'word elt) rest)
+		 )
+		((assq 'comment elt)
+		 (cons (cons 'comment-word elt) rest)
+		 ))
+	  ))))
+
+(defun rfc822/parse-phrase (lal)
+  (let (ret phrase)
+    (while (setq ret (rfc822/parse-word-or-comment lal))
+      (setq phrase (append phrase (cdr (car ret))))
+      (setq lal (cdr ret))
+      )
+    (if phrase
+	(cons (cons 'phrase phrase) lal)
+      )))
+
+(defun rfc822/parse-local-part (lal)
+  (let ((ret (rfc822/parse-word lal)))
+    (if ret
+	(let ((local-part (cdr (car ret))) dot)
+	  (setq lal (cdr ret))
+	  (while (and (setq ret (rfc822/parse-token lal))
+		      (setq dot (car ret))
+		      (equal (cdr (assq 'specials dot)) ".")
+		      (setq ret (rfc822/parse-word (cdr ret)))
+		      (setq local-part
+			    (append local-part dot (cdr (car ret)))
+			    )
+		      (setq lal (cdr ret))
+		      ))
+	  (cons (cons 'local-part local-part) lal)
+	  ))))
+
+(defun rfc822/parse-sub-domain (lal)
+  (let ((ret (rfc822/parse-token lal)))
+    (if ret
+	(let ((sub-domain (car ret)))
+	  (if (or (assq 'atom sub-domain)
+		  (assq 'domain-literal sub-domain)
+		  )
+	      (cons (cons 'sub-domain sub-domain)
+		    (cdr ret)
+		    )
+	    )))))
+
+(defun rfc822/parse-domain (lal)
+  (let ((ret (rfc822/parse-sub-domain lal)))
+    (if ret
+	(let ((domain (cdr (car ret))) dot)
+	  (setq lal (cdr ret))
+	  (while (and (setq ret (rfc822/parse-token lal))
+		      (setq dot (car ret))
+		      (equal (cdr (assq 'specials dot)) ".")
+		      (setq ret (rfc822/parse-sub-domain (cdr ret)))
+		      (setq domain
+			    (append domain dot (cdr (car ret)))
+			    )
+		      (setq lal (cdr ret))
+		      ))
+	  (cons (cons 'domain domain) lal)
+	  ))))
+
+(defun rfc822/parse-at-domain (lal)
+  (let ((ret (rfc822/parse-token lal)) at-sign)
+    (if (and ret
+	     (setq at-sign (car ret))
+	     (equal (cdr (assq 'specials at-sign)) "@")
+	     (setq ret (rfc822/parse-domain (cdr ret)))
+	     )
+	(cons (cons 'at-domain (append at-sign (cdr (car ret))))
+	      (cdr ret))
+      )))
+
+(defun rfc822/parse-addr-spec (lal)
+  (let ((ret (rfc822/parse-local-part lal))
+	addr at-sign)
+    (if (and ret
+	     (prog1
+		 (setq addr (cdr (car ret)))
+	       (setq lal (cdr ret))
+	       (and (setq ret (rfc822/parse-at-domain lal))
+		    (setq addr (append addr (cdr (car ret))))
+		    (setq lal (cdr ret))
+		    )))
+	(cons (cons 'addr-spec addr) lal)
+      )))
+
+(defun rfc822/parse-route (lal)
+  (let ((ret (rfc822/parse-at-domain lal))
+	route comma colon)
+    (if (and ret
+	     (progn
+	       (setq route (cdr (car ret)))
+	       (setq lal (cdr ret))
+	       (while (and (setq ret (rfc822/parse-token lal))
+			   (setq comma (car ret))
+			   (equal (cdr (assq 'specials comma)) ",")
+			   (setq ret (rfc822/parse-at-domain (cdr ret)))
+			   )
+		 (setq route (append route comma (cdr (car ret))))
+		 (setq lal (cdr ret))
+		 )
+	       (and (setq ret (rfc822/parse-token lal))
+		    (setq colon (car ret))
+		    (equal (cdr (assq 'specials colon)) ":")
+		    (setq route (append route colon))
+		    )
+	       ))
+	(cons (cons 'route route)
+	      (cdr ret)
+	      )
+      )))
+
+(defun rfc822/parse-route-addr (lal)
+  (let ((ret (rfc822/parse-token lal))
+	< route addr-spec >)
+    (if (and ret
+	     (setq < (car ret))
+	     (equal (cdr (assq 'specials <)) "<")
+	     (setq lal (cdr ret))
+	     (progn (and (setq ret (rfc822/parse-route lal))
+			 (setq route (cdr (car ret)))
+			 (setq lal (cdr ret))
+			 )
+		    (setq ret (rfc822/parse-addr-spec lal))
+		    )
+	     (setq addr-spec (cdr (car ret)))
+	     (setq lal (cdr ret))
+	     (setq ret (rfc822/parse-token lal))
+	     (setq > (car ret))
+	     (equal (cdr (assq 'specials >)) ">")
+	     )
+	(cons (cons 'route-addr (append route addr-spec))
+	      (cdr ret)
+	      )
+      )))
+
+(defun rfc822/parse-phrase-route-addr (lal)
+  (let ((ret (rfc822/parse-phrase lal)) phrase)
+    (if ret
+	(progn
+	  (setq phrase (cdr (car ret)))
+	  (setq lal (cdr ret))
+	  ))
+    (if (setq ret (rfc822/parse-route-addr lal))
+	(cons (list 'phrase-route-addr
+		    phrase
+		    (cdr (car ret)))
+	      (cdr ret))
+      )))
+
+(defun rfc822/parse-mailbox (lal)
+  (let ((ret (or (rfc822/parse-phrase-route-addr lal)
+		 (rfc822/parse-addr-spec lal)))
+	mbox comment)
+    (if (and ret
+	     (prog1
+		 (setq mbox (car ret))
+	       (setq lal (cdr ret))
+	       (if (and (setq ret (rfc822/parse-token-or-comment lal))
+			(setq comment (cdr (assq 'comment (car ret))))
+			)
+		   (setq lal (cdr ret))
+		 )))
+	(cons (list 'mailbox mbox comment)
+	      lal)
+      )))
+
+(defun rfc822/parse-group (lal)
+  (let ((ret (rfc822/parse-phrase lal))
+	phrase : comma mbox semicolon)
+    (if (and ret
+	     (setq phrase (cdr (car ret)))
+	     (setq lal (cdr ret))
+	     (setq ret (rfc822/parse-token lal))
+	     (setq : (car ret))
+	     (equal (cdr (assq 'specials :)) ":")
+	     (setq lal (cdr ret))
+	     (progn
+	       (and (setq ret (rfc822/parse-mailbox lal))
+		    (setq mbox (list (car ret)))
+		    (setq lal (cdr ret))
+		    (progn
+		      (while (and (setq ret (rfc822/parse-token lal))
+				  (setq comma (car ret))
+				  (equal (cdr (assq 'specials comma)) ",")
+				  (setq lal (cdr ret))
+				  (setq ret (rfc822/parse-mailbox lal))
+				  (setq mbox (cons (car ret) mbox))
+				  (setq lal (cdr ret))
+				  )
+			)))
+	       (and (setq ret (rfc822/parse-token lal))
+		    (setq semicolon (car ret))
+		    (equal (cdr (assq 'specials semicolon)) ";")
+		    )))
+	(cons (list 'group phrase (reverse mbox))
+	      (cdr ret)
+	      )
+      )))
+
+(defun rfc822/parse-address (lal)
+  (or (rfc822/parse-group lal)
+      (rfc822/parse-mailbox lal)
+      ))
+
+(defun rfc822/parse-addresses (lal)
+  (let ((ret (rfc822/parse-address lal)))
+    (if ret
+	(let ((dest (list (car ret))))
+	  (setq lal (cdr ret))
+	  (while (and (setq ret (rfc822/parse-token lal))
+		      (equal (cdr (assq 'specials (car ret))) ",")
+		      (setq ret (rfc822/parse-address (cdr ret)))
+		      )
+	    (setq dest (cons (car ret) dest))
+	    (setq lal (cdr ret))
+	    )
+	  (reverse dest)
+	  ))))
+
+(defun rfc822/addr-to-string (seq)
+  (mapconcat (function
+	      (lambda (token)
+		(if (eq (car token) 'spaces)
+		    ""
+		  (cdr token)
+		  )))
+	     seq "")
+  )
+
+(defun rfc822/address-string (address)
+  (if (eq (car address) 'mailbox)
+      (let ((addr (nth 1 address))
+	    addr-spec)
+	(rfc822/addr-to-string
+	 (if (eq (car addr) 'phrase-route-addr)
+	     (nth 2 addr)
+	   (cdr addr)
+	   )
+	 ))))
+
+(defun rfc822/full-name-string (address)
+  (if (eq (car address) 'mailbox)
+      (let ((addr (nth 1 address))
+	    (comment (nth 2 address))
+	    phrase)
+	(if (eq (car addr) 'phrase-route-addr)
+	    (setq phrase (mapconcat (function
+				     (lambda (token)
+				       (cdr token)
+				       ))
+				    (nth 1 addr) ""))
+	  )
+	(or phrase comment)
+	)))
+
+
+;;; @ end
+;;;
+
+(provide 'tl-822)
