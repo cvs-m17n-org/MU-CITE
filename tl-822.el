@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.14 1996-04-19 19:23:37 morioka Exp $")
+  "$Id: tl-822.el,v 7.15 1996-04-19 19:24:32 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -618,7 +618,7 @@
 	    (setq dest (cons (car ret) dest))
 	    (setq lal (cdr ret))
 	    )
-	  (reverse dest)
+	  (nreverse dest)
 	  ))))
 
 (defun rfc822/addr-to-string (seq)
