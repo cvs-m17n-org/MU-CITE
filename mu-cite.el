@@ -179,9 +179,45 @@
 	      (function mu-bbdb-get-prefix-register-verbose-method))
 	))
 
+(defun mu-cite-method-list ()
+  (mapcar (function car) mu-cite-default-methods-alist))
+
 
 ;;; @ formats
 ;;;
+
+(defvar widget-mu-cite-method-prompt-value-history nil
+  "History of input to `widget-mu-cite-method-prompt-value'.")
+  
+(define-widget 'mu-cite-method 'symbol
+  "A mu-cite-method."
+  :format "%{%t%}: %v"
+  :tag "Method"
+  :prompt-history 'widget-mu-cite-method-prompt-value-history
+  :prompt-value 'widget-mu-cite-method-prompt-value
+  :action 'widget-mu-cite-method-action)
+  
+(defun widget-mu-cite-method-prompt-value (widget prompt value unbound)
+  ;; Read mu-cite-method from minibuffer.
+  (intern
+   (completing-read (format "%s (default %s) " prompt value)
+		    (mapcar (function
+			     (lambda (sym)
+			       (list (symbol-name sym))
+			       ))
+			    (mu-cite-method-list)))))
+
+(defun widget-mu-cite-method-action (widget &optional event)
+  ;; Read a mu-cite-method from the minibuffer.
+  (let ((answer
+	 (widget-mu-cite-method-prompt-value
+	  widget
+	  (widget-apply widget :menu-tag-get)
+	  (widget-value widget)
+	  t)))
+    (widget-value-set widget answer)
+    (widget-apply widget :notify widget event)
+    (widget-setup)))
 
 (defcustom mu-cite-cited-prefix-regexp
   "\\(^[^ \t\n<>]+>+[ \t]*\\|^[ \t]*$\\)"
@@ -193,33 +229,24 @@ If match, mu-cite doesn't insert citation prefix."
 (defcustom mu-cite-prefix-format '(prefix-register-verbose "> ")
   "List to represent citation prefix.
 Each elements must be string or method name."
-  :type (list 'repeat
-	      (nconc '(choice :tag "String or Method name")
-		     (mapcar
-		      (function
-		       (lambda (elem) (list 'choice-item (car elem))))
-		      mu-cite-default-methods-alist)
-		     '((symbol :tag "Other Method")
-		       (item "-")
-		       (choice-item :tag "String: \"> \"" "> ")
-		       (string :tag "Other String"))))
+  :type '(repeat
+	  (choice :tag "String or Method name"
+		  mu-cite-method
+		  (item "-")
+		  (choice-item :tag "String: \"> \"" "> ")
+		  (string :tag "Other String")))
   :group 'mu-cite)
 
 (defcustom mu-cite-top-format '(in-id ">>>>>\t" from " wrote:\n")
   "List to represent top string of citation.
 Each elements must be string or method name."
-  :type (list 'repeat
-	      (nconc
-	       '(choice :tag "String or Method name")
-	       (mapcar
-		(function
-		 (lambda (elem) (list 'choice-item (car elem))))
-		mu-cite-default-methods-alist)
-	       '((symbol :tag "Other Method")
-		 (item "-")
-		 (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
-		 (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
-		 (string :tag "Other String"))))
+  :type '(repeat
+	  (choice :tag "String or Method name"
+		  mu-cite-method
+		  (item "-")
+		  (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
+		  (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
+		  (string :tag "Other String")))
   :group 'mu-cite)
 
 
