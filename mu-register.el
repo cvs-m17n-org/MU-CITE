@@ -50,7 +50,7 @@
   :group 'mu-cite)
 
 (defcustom mu-cite-allow-null-string-registration nil
-  "If non-nil, null-string citation-name is registered."
+  "If non-nil, null-string citation-name can be registered."
   :type 'boolean
   :group 'mu-cite)
 
@@ -61,18 +61,6 @@
   "Coding system used when writing a current registration file.")
 
 (defvar mu-register-history nil)
-
-(static-when (featurep 'xemacs)
-  (define-obsolete-variable-alias
-    'mu-cite/registration-file 'mu-registration-file)
-
-  (define-obsolete-variable-alias
-    'mu-cite/allow-null-string-registration
-    'mu-cite-allow-null-string-registration)
-
-  (define-obsolete-variable-alias
-    'mu-cite/registration-symbol 'mu-registration-symbol)
-  )
 
 
 ;;; @ load / save registration file

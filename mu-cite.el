@@ -27,15 +27,15 @@
 ;;; Commentary:
 
 ;; - How to use
-;;   1. bytecompile this file and copy it to the apropriate directory.
-;;   2. put the following lines to your ~/.emacs:
-;;      for EMACS 19 or later and XEmacs
+;;   1. Bytecompile this file and copy it to the apropriate directory.
+;;   2. Put the following lines in your ~/.emacs file:
+;;      For EMACS 19 or later and XEmacs
 ;;		(autoload 'mu-cite-original "mu-cite" nil t)
 ;;		;; for all but message-mode
 ;;		(add-hook 'mail-citation-hook (function mu-cite-original))
 ;;		;; for message-mode only
 ;;		(setq message-cite-function (function mu-cite-original))
-;;      for EMACS 18
+;;      For EMACS 18
 ;;		;; for all but mh-e
 ;;		(add-hook 'mail-yank-hooks (function mu-cite-original))
 ;;		;; for mh-e only
@@ -62,38 +62,7 @@
 ;;; @ version
 ;;;
 
-(defconst mu-cite-version "8.0")
-
-
-;;; @ obsoletes
-;;;
-
-;; This part will be abolished in the future.
-
-(eval-when-compile
-  (require 'static)
-  (defmacro mu-cite-obsolete-variable-alist ()
-    ''((mu-cite/cited-prefix-regexp	mu-cite-cited-prefix-regexp)
-       (mu-cite/default-methods-alist	mu-cite-default-methods-alist)
-       (mu-cite/get-field-value-method-alist
-	mu-cite-get-field-value-method-alist)
-       (mu-cite/instantiation-hook	mu-cite-instantiation-hook)
-       (mu-cite/ml-count-field-list	mu-cite-ml-count-field-list)
-       (mu-cite/post-cite-hook		mu-cite-post-cite-hook)
-       (mu-cite/pre-cite-hook		mu-cite-pre-cite-hook)
-       (mu-cite/prefix-format		mu-cite-prefix-format)
-       (mu-cite/top-format		mu-cite-top-format))))
-
-(static-if (featurep 'xemacs)
-    (dolist (def (mu-cite-obsolete-variable-alist))
-      (apply (function define-obsolete-variable-alias) def)))
-
-(define-obsolete-function-alias
-  (function mu-cite/cite-original) (function mu-cite-original))
-(define-obsolete-function-alias
-  (function mu-cite/get-field-value) (function mu-cite-get-field-value))
-(define-obsolete-function-alias
-  (function mu-cite/get-value) (function mu-cite-get-value))
+(defconst mu-cite-version "8.1")
 
 
 ;;; @ macro
@@ -114,7 +83,7 @@
 ;;;
 
 (defgroup mu-cite nil
-  "yet another citation tool for GNU Emacs."
+  "Yet another citation tool for GNU Emacs."
   :prefix "mu-cite-"
   :group 'mail
   :group 'news)
@@ -206,7 +175,7 @@ If match, mu-cite doesn't insert citation prefix."
 
 (defcustom mu-cite-prefix-format '(prefix-register-verbose "> ")
   "List to represent citation prefix.
-Each elements must be string or method name."
+Each elements must be a string or a method name."
   :type (list
 	 'repeat
 	 (list
@@ -232,7 +201,7 @@ Each elements must be string or method name."
 
 (defcustom mu-cite-top-format '(in-id ">>>>>\t" from " wrote:\n")
   "List to represent top string of citation.
-Each elements must be string or method name."
+Each elements must be a string or a method name."
   :type (list
 	 'repeat
 	 (list
@@ -300,7 +269,7 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
 
 (defcustom mu-cite-ml-count-field-list
   '("X-Ml-Count" "X-Mail-Count" "X-Seqno" "X-Sequence" "Mailinglist-Id")
-  "List of header fields which contain sequence number of mailing list."
+  "List of header fields which contains a sequence number of the mailing list."
   :type '(repeat (choice :tag "Field Name"
 			 (choice-item "X-Ml-Count")
 			 (choice-item "X-Mail-Count")
@@ -316,12 +285,12 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
 (defun mu-cite-get-ml-count-method ()
   "A mu-cite method to return a ML-count.
 This function searches a field about ML-count, which is specified by
-variable `mu-cite-ml-count-field-list', in a header.
+the variable `mu-cite-ml-count-field-list', in a header.
 If the field is found, the function returns a number part of the
 field.
 
 Notice that please use (mu-cite-get-value 'ml-count)
-instead of call the function directly."
+instead of to call the function directly."
   (let ((field-list mu-cite-ml-count-field-list))
     (catch 'tag
       (while field-list
@@ -343,7 +312,7 @@ instead of call the function directly."
   (run-hooks 'mu-cite-instantiation-hook))
 
 (defun mu-cite-get-value (item)
-  "Return current value of ITEM."
+  "Return a current value of ITEM."
   (let ((ret (cdr (assoc item mu-cite-methods-alist))))
     (if (functionp ret)
 	(prog1
@@ -405,8 +374,8 @@ function according to the agreed upon standard."
   :group 'mu-cite)
 
 (defun-maybe-cond char-category (character)
-  "Return string of category mnemonics for CHAR in TABLE.
-CHAR can be any multilingual character
+  "Return a string of category mnemonics for CHAR in TABLE.
+CHAR can be any multilingual character,
 TABLE defaults to the current buffer's category table."
   ((and (subr-fboundp 'char-category-set)
 	(subr-fboundp 'category-set-mnemonics))
@@ -573,24 +542,5 @@ TABLE defaults to the current buffer's category table."
 (provide 'mu-cite)
 
 (run-hooks 'mu-cite-load-hook)
-
-;; This part will be abolished in the future.
-
-(static-unless (featurep 'xemacs)
-  (let ((rest (mu-cite-obsolete-variable-alist))
-	def new-sym old-sym)
-    (while rest
-      (setq def (car rest))
-      (apply (function make-obsolete-variable) def)
-      (setq old-sym (car def)
-	    new-sym (car (cdr def)))
-      (or (get new-sym 'saved-value) ; saved?
-	  (not (eq (eval (car (get new-sym 'standard-value)))
-		   (symbol-value new-sym))) ; set as new name?
-	  (and (boundp old-sym) ; old name seems used
-	       (or (eq (symbol-value new-sym)
-		       (symbol-value old-sym))
-		   (set new-sym (symbol-value old-sym)))))
-      (setq rest (cdr rest)))))
 
 ;;; mu-cite.el ends here
