@@ -194,12 +194,6 @@ Each elements must be string or method name."
 ;;; @ hooks
 ;;;
 
-(defcustom mu-cite-load-hook nil
-  "List of functions called after mu-cite is loaded.
-Use this hook to add your own methods to `mu-cite-default-methods-alist'."
-  :type 'hook
-  :group 'mu-cite)
-
 (defcustom mu-cite-instantiation-hook nil
   "List of functions called just before narrowing to the message."
   :type 'hook
