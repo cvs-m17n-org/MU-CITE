@@ -1,3 +1,8 @@
+2001-02-23  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el: Require `emu' as well as `poem' because we have need
+	to pickup the function `char-category' for XEmacs.
+
 2001-02-02  Keiichi Suzuki  <keiichi@nanap.org>
 
 	* mu-cite.el (top level): Require `poem' instead of `poe' for

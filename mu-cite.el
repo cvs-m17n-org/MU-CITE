@@ -1,6 +1,6 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
-
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;;        Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
@@ -43,8 +43,10 @@
 
 ;;; Code:
 
-;; Pickup the macros `char-next-index', `with-temp-buffer', etc.
-(require 'poem)
+;; We have need to pickup the function `char-category' for XEmacs which
+;; is defined in `emu'.  It requires `poem' recursively for picking up
+;; the macros `char-next-index', `with-temp-buffer', etc.
+(require 'emu)
 
 (require 'pcustom)
 (require 'std11)
