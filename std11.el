@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.29 1996-09-08 18:03:51 morioka Exp $
+;; Version: $Id: std11.el,v 0.30 1996-09-08 18:07:44 morioka Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -199,8 +199,8 @@ If BOUNDARY is not nil, it is used as message header separator.
 
 (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
 
-(defun rfc822/wrap-as-quoted-string (str)
-  "Wrap string STR as RFC 822 quoted-string. [tl-822.el]"
+(defun std11-wrap-as-quoted-string (string)
+  "Wrap STRING as RFC 822 quoted-string. [std11.el]"
   (concat "\""
 	  (mapconcat (function
 		      (lambda (chr)
