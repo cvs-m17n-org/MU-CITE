@@ -5,7 +5,7 @@
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822
 
-;; This file is part of tl (Tiny Library).
+;; This file is part of MU (Message Utilities).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.62 1996-09-02 07:49:38 morioka Exp $")
+  "$Id: tl-822.el,v 7.63 1996-09-02 15:48:07 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -127,17 +127,8 @@
 (defalias 'rfc822/parse-addresses	'std11-parse-addresses)
 (defalias 'rfc822/address-string	'std11-address-string)
 (defalias 'rfc822/full-name-string	'std11-full-name-string)
-
-(defun rfc822/extract-address-components (string)
-  "Extract full name and canonical address from STRING.
-Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
-If no name can be extracted, FULL-NAME will be nil. [tl-822.el]"
-  (let* ((structure (car (std11-parse-address-string string)))
-         (phrase  (rfc822/full-name-string structure))
-         (address (rfc822/address-string structure))
-         )
-    (list phrase address)
-    ))
+(defalias 'rfc822/extract-address-components
+  'std11-extract-address-components)
 
 
 ;;; @ end
