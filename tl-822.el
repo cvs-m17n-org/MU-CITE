@@ -6,13 +6,95 @@
 ;;;
 ;;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Version:
-;;;	$Id: tl-822.el,v 1.1 1995-10-03 05:17:31 morioka Exp $
+;;;	$Id: tl-822.el,v 2.0 1995-10-05 11:26:43 morioka Exp $
 ;;; Keywords: mail, news, RFC 822
 ;;;
 ;;; This file is part of tm (Tools for MIME).
 ;;;
 
 (require 'tl-seq)
+
+
+;;; @ field
+;;;
+
+(defconst rfc822/field-name-regexp "[!-9;-~]+")
+
+(defconst rfc822::next-field-top-regexp
+  (concat "\n" rfc822/field-name-regexp ":"))
+
+(defun rfc822/field-end ()
+  (if (re-search-forward rfc822::next-field-top-regexp nil t)
+      (goto-char (match-beginning 0))
+    (if (re-search-forward "^$" nil t)
+	(goto-char (1- (match-beginning 0)))
+      (end-of-line)
+      ))
+  (point)
+  )
+
+(defun rfc822/get-field-body (name)
+  (let ((case-fold-search t))
+    (save-excursion
+      (save-restriction
+	(narrow-to-region
+	 (goto-char (point-min))
+	 (or (and (re-search-forward "^$" nil t) (match-end 0))
+	     (point-max)
+	     ))
+	(goto-char (point-min))
+	(if (re-search-forward (concat "^" name ":[ \t]*") nil t)
+	    (buffer-substring-no-properties
+	     (match-end 0)
+	     (rfc822/field-end)
+	     ))
+	))))
+
+
+;;; @ quoted-string
+;;;
+
+(defun rfc822/strip-quoted-pair (str)
+  (let ((dest "")
+	(i 0)
+	(len (length str))
+	chr flag)
+    (while (< i len)
+      (setq chr (elt str i))
+      (if (or flag (not (eq chr ?\\)))
+	  (progn
+	    (setq dest (concat dest (char-to-string chr)))
+	    (setq flag nil)
+	    )
+	(setq flag t)
+	)
+      (setq i (+ i 1))
+      )
+    dest))
+
+(defun rfc822/strip-quoted-string (str)
+  (rfc822/strip-quoted-pair
+   (let ((max (- (length str) 1))
+	 )
+     (if (and (eq (elt str 0) ?\")
+	      (eq (elt str max) ?\")
+	      )
+	 (substring str 1 max)
+       str)
+     )))
+
+
+;;; @ unfolding
+;;;
+
+(defun rfc822/unfolding-string (str)
+  (let ((dest ""))
+    (while (string-match "\n\\s +" str)
+      (setq dest (concat dest (substring str 0 (match-beginning 0)) " "))
+      (setq str (substring str (match-end 0)))
+      )
+    (concat dest str)
+    ))
 
 
 ;;; @ lexical analyze
