@@ -9,7 +9,7 @@
 			  (lambda (path)
 			    (expand-file-name path (getenv "PWD"))
 			    ))
-			 '("." "../emu" "../apel" "../tl")
+			 '("." "../apel" "../flim")
 			 )
 		 load-path))
 
