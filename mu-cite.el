@@ -43,8 +43,8 @@
 
 ;;; Code:
 
-;; Pickup some macros, e.g. `with-temp-buffer', for old Emacsen.
-(require 'poe)
+;; Pickup the macros `char-next-index', `with-temp-buffer', etc.
+(require 'poem)
 
 (require 'pcustom)
 (require 'std11)
