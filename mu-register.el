@@ -7,7 +7,7 @@
 ;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.11 1996-01-16 21:54:27 morioka Exp $
+;;;	$Id: mu-register.el,v 1.12 1996-01-17 05:35:06 morioka Exp $
 ;;;
 ;;; This file is part of tl (Tiny Library).
 ;;;
@@ -125,18 +125,11 @@
 	  (tl:read-string "Citation name? "
 			  return1
 			  'mu-register/minibuffer-history))
-    (if (not (string-equal return return1))
-	(let ((ans)
-	      (cursor-in-echo-area t))
-	  (while (null ans)
- 	    (message (format "Register \"%s\" (y/n)? " return))
-	    (setq ans (read-event))
-	    (if (not (or (eq ans ?y)
-			 (eq ans ?n)))
-		(setq ans nil)))
-	  (message "")
-	  (if (eq ans ?y)
-	      (mu-register/add-citation-name return from))))
+    (if (and (not (string-equal return return1))
+	     (y-or-n-p (format "Register \"%s\"? " return))
+	     )
+	(mu-register/add-citation-name return from)
+      )
     return))
 
 (defun mu-register/citation-name-quietly ()
@@ -155,21 +148,11 @@
 		(tl:read-string "Citation name? "
 				fullname
 				'mu-register/minibuffer-history))
-	  (if (not (string-equal return return1))
-	      (let ((ans)
-		    (cursor-in-echo-area t))
-		(while (null ans)
-		  (message (format "Register \"%s\" (y/n)? " return))
-		  (setq ans (read-event))
-		  (if (not (or (eq ans ?y)
-			       (eq ans ?n)))
-		      (setq ans nil)))
-		(message "")
-		(if (eq ans ?y)
-		    (mu-register/add-citation-name return from)
-		  )
-		))
-	  )
+	  (if (and (not (string-equal return return1))
+		   (y-or-n-p (format "Register \"%s\"? " return))
+		   )
+	      (mu-register/add-citation-name return from)
+	    ))
       (setq return return1)
       )
     return))
