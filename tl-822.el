@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.28 1996-06-13 17:09:18 morioka Exp $")
+  "$Id: tl-822.el,v 7.29 1996-06-13 17:10:24 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -266,14 +266,14 @@
 	      ))
     ))
 
-(defun rfc822/analyze-quoted-pair (str)
-  (if (and (>= (length str) 2)
-	   (eq (elt str 0) ?\\)
-	   )
-      (cons (cons 'quoted-pair (substring str 0 2))
-	    (substring str 2)
-	    ))
-  )
+;; (defun rfc822/analyze-quoted-pair (str)
+;;   (if (and (>= (length str) 2)
+;;            (eq (elt str 0) ?\\)
+;;            )
+;;       (cons (cons 'quoted-pair (substring str 0 2))
+;;             (substring str 2)
+;;             ))
+;;   )
 
 (defun rfc822/analyze-quoted-string (str)
   (let ((len (length str)))
