@@ -110,12 +110,14 @@
 	    (symbol-name mu-registration-symbol)
 	    "\n      '(")
     (insert (mapconcat
-	     (function prin1-to-string)
+	     (function
+	      (lambda (elem)
+		(format "(\"%s\" . \"%s\")" (car elem) (cdr elem))))
 	     (symbol-value mu-registration-symbol) "\n        "))
     (insert "\n        ))\n\n")
     (insert ";;; "
 	    (file-name-nondirectory mu-registration-file)
-	    " ends here.\n")
+	    " ends here\n")
     (write-region-as-coding-system mu-registration-file-coding-system
 				   (point-min)(point-max)
 				   mu-registration-file nil 'nomsg)
@@ -149,31 +151,36 @@
 (defun mu-cite-get-prefix-register-method ()
   (let ((addr (mu-cite-get-value 'address)))
     (or (mu-register-get-citation-name addr)
-	(let ((return
-	       (read-string "Citation name? "
-			    (or (mu-cite-get-value 'x-attribution)
-				(mu-cite-get-value 'full-name))
-			    'mu-register-history)))
-	  (when (and (or mu-cite-allow-null-string-registration
-			 (not (string-equal return "")))
-		     (y-or-n-p (format "Register \"%s\"? " return)))
-	    (mu-register-add-citation-name return addr))
+	(let* ((minibuffer-allow-text-properties nil)
+	       (return
+		(mu-cite-remove-text-properties
+		 (read-string "Citation name? "
+			      (or (mu-cite-get-value 'x-attribution)
+				  (mu-cite-get-value 'full-name))
+			      'mu-register-history))))
+
+	  (if (and (or mu-cite-allow-null-string-registration
+		       (not (string-equal return "")))
+		   (y-or-n-p (format "Register \"%s\"? " return)))
+	      (mu-register-add-citation-name return addr))
 	  return))))
 
 ;;;###autoload
 (defun mu-cite-get-prefix-register-verbose-method ()
   (let* ((addr (mu-cite-get-value 'address))
 	 (return1 (mu-register-get-citation-name addr))
-	 (return (read-string "Citation name? "
-			      (or return1
-				  (mu-cite-get-value 'x-attribution)
-				  (mu-cite-get-value 'full-name))
-			      'mu-register-history)))
-    (when (and (or mu-cite-allow-null-string-registration
-		   (not (string-equal return "")))
-	       (not (string-equal return return1))
-	       (y-or-n-p (format "Register \"%s\"? " return)))
-      (mu-register-add-citation-name return addr))
+	 (minibuffer-allow-text-properties nil)
+	 (return (mu-cite-remove-text-properties
+		  (read-string "Citation name? "
+			       (or return1
+				   (mu-cite-get-value 'x-attribution)
+				   (mu-cite-get-value 'full-name))
+			       'mu-register-history))))
+    (if (and (or mu-cite-allow-null-string-registration
+		 (not (string-equal return "")))
+	     (not (string-equal return return1))
+	     (y-or-n-p (format "Register \"%s\"? " return)))
+	(mu-register-add-citation-name return addr))
     return))
 
 
