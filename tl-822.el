@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.13 1996-04-19 19:21:49 morioka Exp $")
+  "$Id: tl-822.el,v 7.14 1996-04-19 19:23:37 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -596,7 +596,7 @@
 		    (setq semicolon (car ret))
 		    (string-equal (cdr (assq 'specials semicolon)) ";")
 		    )))
-	(cons (list 'group phrase (reverse mbox))
+	(cons (list 'group phrase (nreverse mbox))
 	      (cdr ret)
 	      )
       )))
