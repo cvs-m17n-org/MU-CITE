@@ -1,11 +1,11 @@
 ;;; mu-bbdb.el --- `attribution' function for mu-cite with BBDB.
 
-;; Copyright (C) 1996 Shuhei KOBAYASHI
+;; Copyright (C) 1996,1997 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Version: $Id: mu-bbdb.el,v 3.3 1996/12/10 11:57:23 shuhei-k Exp $
 
-;; This file is part of tl (Tiny Library).
+;; This file is part of MU (Message Utilities).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -27,12 +27,11 @@
 ;;  - How to use
 ;;    1. bytecompile this file and copy it to the apropriate directory.
 ;;    2. put the following lines to your ~/.emacs:
-;;		(require 'tl-misc)
-;;		(call-after-loaded 'mu-cite
-;;				   (function
-;;				    (lambda ()
-;;				      (require 'mu-bbdb)
-;;				      )))
+;;             (add-hook 'mu-cite-load-hook
+;;                       (function
+;;                        (lambda ()
+;;                          (require 'mu-bbdb)
+;;                          )))
 
 
 ;;; Code:

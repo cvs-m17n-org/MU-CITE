@@ -1,12 +1,12 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.49 $
+;; Version: $Revision: 7.51 $
 ;; Keywords: mail, news, citation
 
 ;; This file is part of MU (Message Utilities).
@@ -46,15 +46,22 @@
 ;;; Code:
 
 (require 'std11)
-(require 'tl-str)
-(require 'tl-list)
+;;(require 'tl-str)
+;;(require 'tl-list)
+(require 'alist)
 
 
 ;;; @ version
 ;;;
 
+(defsubst get-version-string (id)
+  "Return a version-string from RCS ID."
+  (and (string-match ",v \\([0-9][0-9.][0-9.]+\\)" id)
+       (substring id (match-beginning 1)(match-end 1))
+       ))
+
 (defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.49 1997/03/18 15:07:56 morioka Exp $")
+  "$Id: mu-cite.el,v 7.51 1998/02/13 10:11:54 morioka Exp $")
 (defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
 
 
@@ -126,7 +133,7 @@ Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
 
 ;; get citation-name from the database
 (defun mu-cite/get-citation-name (from)
-  (assoc-value from mu-cite/citation-name-alist)
+  (cdr (assoc from mu-cite/citation-name-alist))
   )
 
 ;; register citation-name to the database
@@ -337,7 +344,7 @@ Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
   )
 
 (defun mu-cite/get-value (item)
-  (let ((ret (assoc-value item mu-cite/methods-alist)))
+  (let ((ret (cdr (assoc item mu-cite/methods-alist))))
     (if (functionp ret)
 	(prog1
 	    (setq ret (funcall ret))
@@ -524,6 +531,30 @@ function according to the agreed upon standard."
           (concat "^" (regexp-quote old)) nil t)
     (replace-match new)
     ))
+
+(defun string-compare-from-top (str1 str2)
+  (let* ((len1 (length str1))
+	 (len2 (length str2))
+	 (len (min len1 len2))
+	 (p 0)
+	 c1 c2)
+    (while (and (< p len)
+		(progn
+		  (setq c1 (sref str1 p)
+			c2 (sref str2 p))
+		  (eq c1 c2)
+		  ))
+      (setq p (+ p (char-length c1)))
+      )
+    (and (> p 0)
+	 (let ((matched (substring str1 0 p))
+	       (r1 (and (< p len1)(substring str1 p)))
+	       (r2 (and (< p len2)(substring str2 p)))
+	       )
+	   (if (eq r1 r2)
+	       matched
+	     (list 'seq matched (list 'or r1 r2))
+	     )))))
 
 
 ;;; @ end
