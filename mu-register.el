@@ -4,6 +4,7 @@
 
 ;; Author: MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         MORIOKA Tomohiko <tomo@m17n.org>
+;;; Created: 1995-12-27 by MINOURA Makoto
 ;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: registration, citation, mail, news
 
@@ -24,17 +25,13 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
-;;; Commentary:
-
-;; ChangeLog.
-
-;;   Wed Dec 27 14:28:17 1995  MINOURA Makoto <minoura@leo.bekkoame.or.jp>
-;;
-;;	* Written.
-
 ;;; Code:
 
 (require 'mu-cite)
+
+
+;;; @ variables
+;;;
 
 (defcustom mu-registration-file (expand-file-name "~/.mu-cite.el")
   "The name of the user environment file for mu-cite."
@@ -119,7 +116,7 @@
       (error nil))))
 
 
-;;; @ accessors
+;;; @ database accessors
 ;;;
 
 ;; get citation-name from the database
