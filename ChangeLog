@@ -1,5 +1,36 @@
 1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* mu-bbdb.el (TopLevel): Use `mu-cite-default-methods-alist'
+	instead of `mu-cite/default-methods-alist'.
+	(mu-cite/get-bbdb-prefix-register-method): Use
+	`mu-cite-minibuffer-history' instead of
+	`mu-cite/minibuffer-history'.
+	(mu-bbdb-get-prefix-register-verbose-method): Use
+	`mu-cite-get-value' instead of `mu-cite/get-value'.
+	(mu-bbdb-get-prefix-register-method): Likewise.
+	(mu-bbdb-get-prefix-method): Likewise.
+
+	(mu-bbdb-load-hook): Use `defcustom' instead of `defvar'.
+	(mu-bbdb): New customization group.
+
+	(TopLevel): Define old functions as obsolete aliases.
+
+	(mu-bbdb-set-attr): Renamed from `mu-cite/set-bbdb-attr'.
+	(mu-bbdb-get-prefix-register-verbose-method): Renamed from
+	`mu-cite/get-bbdb-prefix-register-verbose-method'.
+	(mu-bbdb-get-prefix-register-method): Renamed from
+	`mu-cite/get-bbdb-prefix-register-method'.
+	(mu-bbdb-get-prefix-method): Renamed from
+	`mu-cite/get-bbdb-prefix-method'.
+	(mu-bbdb-get-attr): Renamed from `mu-cite/get-bbdb-attr'.
+
+	(TopLevel): Require `path-util' for picking up `module-installed-p'.
+	(TopLevel): Require `cl' at the compile time.
+
+	(Keywords, Maintainer): Add comments.
+	(Author): Change mail address.
+	(Copyright): Belong FSF.
+
 	* ftp.in: New file.
 
 	* Makefile (ARC_DIR): Default to "/pub/elisp/mu".
@@ -40,28 +71,28 @@
 
 1999-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
 
-	* (mu-cite-version): Update to 8.0.
+	* mu-cite.el (mu-cite-version): Update to 8.0.
 
-	* (mu-cite-eval-format): Don't use `save-excursion'.
-	* (mu-cite-get-value): Save excursion while evaluating a function.
+	(mu-cite-eval-format): Don't use `save-excursion'.
+	(mu-cite-get-value): Save excursion while evaluating a function.
 
-	* (mu-cite-save-registration-file): New implementation.
-	* (mu-cite-load-registration-file): Likewise.
+	(mu-cite-save-registration-file): New implementation.
+	(mu-cite-load-registration-file): Likewise.
 
-	* (mu-cite-registration-file-modes): New user option.
-	* (mu-cite-registration-file-coding-system-for-write): Likewise.
-	* (mu-cite-registration-file-coding-system-for-read): Likewise.
+	(mu-cite-registration-file-modes): New user option.
+	(mu-cite-registration-file-coding-system-for-write): Likewise.
+	(mu-cite-registration-file-coding-system-for-read): Likewise.
 
-	* (TopLevel): Treat old variables and functions as obsolete.
+	(TopLevel): Treat old variables and functions as obsolete.
 
-	* (TopLevel): Require `custom'.
-	* (TopLevel): Require `emu' for picking up `char-category' for
+	(TopLevel): Require `custom'.
+	(TopLevel): Require `emu' for picking up `char-category' for
 	XEmacs.
-	* (TopLevel): Require `poe' for picking up some macros, e.g.
-	`with-temp-buffer', for old Emacsen.
-	* (TopLevel): Require `cl' at the compile time.
+	(TopLevel): Require `poe' for picking up some macros,
+	e.g. `with-temp-buffer', for old Emacsen.
+	(TopLevel): Require `cl' at the compile time.
 
-	* (mu-cite-top-format, mu-cite-registration-file,
+	(mu-cite-top-format, mu-cite-registration-file,
 	mu-cite-prefix-format, mu-cite-pre-cite-hook,
 	mu-cite-post-cite-hook, mu-cite-ml-count-field-list,
 	mu-cite-load-hook, mu-cite-instantiation-hook,
@@ -69,10 +100,10 @@
 	mu-cite-allow-null-string-registration, citation-mark-chars,
 	citation-disable-chars): Use `defcustom' instead of `defvar'.
 
-	* (mu-cite): New customization group.
+	(mu-cite): New customization group.
 
-	* (mu-cite-original): Renamed from `mu-cite/cite-original'.
-	* (mu-cite-version, mu-cite-top-format,
+	(mu-cite-original): Renamed from `mu-cite/cite-original'.
+	(mu-cite-version, mu-cite-top-format,
 	mu-cite-save-registration-file, mu-cite-registration-symbol,
 	mu-cite-registration-file, mu-cite-prefix-format,
 	mu-cite-pre-cite-hook, mu-cite-post-cite-hook, mu-cite-mu-cite.el,
