@@ -506,6 +506,7 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
 ;;; @ main function
 ;;;
 
+;;;###autoload
 (defun mu-cite-original ()
   "Citing filter function.
 This is callable from the various mail and news readers' reply
