@@ -15,7 +15,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.1 1995-12-19 17:57:08 morioka Exp $")
+  "$Id: tl-822.el,v 7.2 1996-01-18 14:48:33 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -89,7 +89,9 @@
 
 (defconst rfc822/linear-white-space-regexp "\\(\n?[ \t]\\)+")
 (defconst rfc822/quoted-pair-regexp "\\\\.")
-(defconst rfc822/qtext-regexp "[^\"\\\n\t \t]")
+(defconst rfc822/non-qtext-char-list '(?\" ?\\ ?\r ?\n))
+(defconst rfc822/qtext-regexp
+  (concat "[^" (char-list-to-string rfc822/non-qtext-char-list) " \t]"))
 (defconst rfc822/quoted-string-regexp
   (concat "\""
 	  (regexp-*
@@ -98,6 +100,18 @@
 	    (regexp-or rfc822/qtext-regexp rfc822/quoted-pair-regexp)
 	    "\\)"))
 	  rfc822/linear-white-space-regexp "?"
+	  "\""))
+
+(defun rfc822/wrap-as-quoted-string (str)
+  "Wrap string STR as RFC 822 quoted-string. [tl-822.el]"
+  (concat "\""
+	  (mapconcat (function
+		      (lambda (chr)
+			(if (memq chr rfc822/non-qtext-char-list)
+			    (concat "\\" (char-to-string chr))
+			  (char-to-string chr)
+			  )
+			)) str "")
 	  "\""))
 
 (defun rfc822/strip-quoted-pair (str)
@@ -150,7 +164,6 @@
 (defconst rfc822/space-chars " \t\n")
 (defconst rfc822/non-atom-chars
   (concat rfc822/special-chars rfc822/space-chars))
-(defconst rfc822/non-qtext-chars "\"")
 (defconst rfc822/non-dtext-chars "[]")
 (defconst rfc822/non-ctext-chars "()")
 
@@ -205,7 +218,7 @@
       (let* ((i (position-mismatched
 		 (function
 		  (lambda (elt)
-		    (not (find elt rfc822/non-qtext-chars))
+		    (not (memq elt rfc822/non-qtext-char-list))
 		    ))
 		 (setq str (substring str 1))
 		 ))
