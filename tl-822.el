@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.59 1996-08-28 21:06:38 morioka Exp $")
+  "$Id: tl-822.el,v 7.60 1996-08-28 22:52:29 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -132,7 +132,7 @@
   "Extract full name and canonical address from STRING.
 Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
 If no name can be extracted, FULL-NAME will be nil. [tl-822.el]"
-  (let* ((structure (car (std11-parse-address-string str)))
+  (let* ((structure (car (std11-parse-address-string string)))
          (phrase  (rfc822/full-name-string structure))
          (address (rfc822/address-string structure))
          )
