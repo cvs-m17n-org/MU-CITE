@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.37 1996-12-16 07:12:38 morioka Exp $
+;; Version: $Id: std11.el,v 0.38 1996-12-17 11:01:47 morioka Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -200,18 +200,29 @@ If BOUNDARY is not nil, it is used as message header separator.
 ;;; @ quoted-string
 ;;;
 
+(defun std11-wrap-as-quoted-pairs (string specials)
+  (let (dest
+	(i 0)
+	(b 0)
+	(len (length string))
+	)
+    (while (< i len)
+      (let ((chr (aref string i)))
+	(if (memq chr specials)
+	    (setq dest (concat dest (substring string b i) "\\")
+		  b i)
+	  ))
+      (setq i (1+ i))
+      )
+    (concat dest (substring string b))
+    ))
+
 (defconst std11-non-qtext-char-list '(?\" ?\\ ?\r ?\n))
 
 (defun std11-wrap-as-quoted-string (string)
   "Wrap STRING as RFC 822 quoted-string. [std11.el]"
   (concat "\""
-	  (mapconcat (function
-		      (lambda (chr)
-			(if (memq chr std11-non-qtext-char-list)
-			    (concat "\\" (char-to-string chr))
-			  (char-to-string chr)
-			  )
-			)) string "")
+	  (std11-wrap-as-quoted-pairs string std11-non-qtext-char-list)
 	  "\""))
 
 (defun std11-strip-quoted-pair (string)
