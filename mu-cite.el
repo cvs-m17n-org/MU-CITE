@@ -3,7 +3,7 @@
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
-;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
+;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: mail, news, citation
 
@@ -43,21 +43,21 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-
 ;; Pickup some macros, e.g. `with-temp-buffer', for old Emacsen.
 (require 'poe)
 
-;; Pickup `char-category' for XEmacs.
-(require 'emu)
-
-(require 'custom)
+(require 'pcustom)
+(require 'widget)
 (require 'std11)
 (require 'alist)
 
 (autoload 'mu-cite-get-prefix-method "mu-register")
 (autoload 'mu-cite-get-prefix-register-method "mu-register")
 (autoload 'mu-cite-get-prefix-register-verbose-method "mu-register")
+
+(autoload 'mu-bbdb-get-prefix-method "mu-bbdb")
+(autoload 'mu-bbdb-get-prefix-register-method "mu-bbdb")
+(autoload 'mu-bbdb-get-prefix-register-verbose-method "mu-bbdb")
 
 
 ;;; @ version
@@ -69,53 +69,30 @@
 ;;; @ obsoletes
 ;;;
 
-;; This part will be abolished in the near future.
+;; This part will be abolished in the future.
 
-;; variables
 (eval-when-compile (require 'static))
 
-(eval-and-compile
-  (defconst mu-cite-obsolete-variable-alist
-    '((mu-cite/cited-prefix-regexp	mu-cite-cited-prefix-regexp)
-      (mu-cite/default-methods-alist	mu-cite-default-methods-alist)
-      (mu-cite/instantiation-hook	mu-cite-instantiation-hook)
-      (mu-cite/ml-count-field-list	mu-cite-ml-count-field-list)
-      (mu-cite/post-cite-hook		mu-cite-post-cite-hook)
-      (mu-cite/pre-cite-hook		mu-cite-pre-cite-hook)
-      (mu-cite/prefix-format		mu-cite-prefix-format)
-      (mu-cite/top-format		mu-cite-top-format)))
+(defconst mu-cite-obsolete-variable-alist
+  '((mu-cite/cited-prefix-regexp	mu-cite-cited-prefix-regexp)
+    (mu-cite/default-methods-alist	mu-cite-default-methods-alist)
+    (mu-cite/get-field-value-method-alist
+     mu-cite-get-field-value-method-alist)
+    (mu-cite/instantiation-hook		mu-cite-instantiation-hook)
+    (mu-cite/ml-count-field-list	mu-cite-ml-count-field-list)
+    (mu-cite/post-cite-hook		mu-cite-post-cite-hook)
+    (mu-cite/pre-cite-hook		mu-cite-pre-cite-hook)
+    (mu-cite/prefix-format		mu-cite-prefix-format)
+    (mu-cite/top-format			mu-cite-top-format)))
 
-  (mapcar
-   (function
-    (lambda (elem)
-      (apply (function make-obsolete-variable) elem)
-      (when (and (not noninteractive)
-		 (boundp (car elem)))
-	(apply (function message)
-	       "WARNING: `%s' is an obsolete variable, use `%s' instead."
-	       elem))
-      (static-if (fboundp 'defvaralias) ; It may exists in XEmacs.
-	  (apply (function defvaralias) elem)
-	(when (boundp (car elem))
-	  (eval (list 'defvar (cadr elem) (car elem)))))))
-   mu-cite-obsolete-variable-alist)
-  )
+(static-if (featurep 'xemacs)
+    (dolist (def mu-cite-obsolete-variable-alist)
+      (apply (function define-obsolete-variable-alias) def)))
 
-;; functions
-(eval-and-compile
-  (defconst mu-cite-obsolete-function-alist
-    '((mu-cite/cite-original		mu-cite-original)
-      (mu-cite/eval-format		mu-cite-eval-format)
-      (mu-cite/get-field-value		mu-cite-get-field-value)
-      (mu-cite/get-ml-count-method	mu-cite-get-ml-count-method)
-      (mu-cite/get-value		mu-cite-get-value)
-      (mu-cite/make-methods		mu-cite-make-methods)))
-
-  (mapcar
-   (function (lambda (elem)
-	       (apply (function define-obsolete-function-alias) elem)))
-   mu-cite-obsolete-function-alist)
-  )
+(dolist (def '((mu-cite/cite-original	mu-cite-original)
+	       (mu-cite/get-field-value	mu-cite-get-field-value)
+	       (mu-cite/get-value	mu-cite-get-value)))
+  (apply (function define-obsolete-function-alias) def))
 
 
 ;;; @ set up
@@ -182,20 +159,64 @@
 		   (if id
 		       (format ">>>>> In %s \n" id)
 		     "")))))
+	(cons 'x-attribution
+	      (function
+	       (lambda ()
+		 (mu-cite-get-field-value "X-Attribution"))))
+	;; mu-register
 	(cons 'prefix (function mu-cite-get-prefix-method))
 	(cons 'prefix-register
 	      (function mu-cite-get-prefix-register-method))
 	(cons 'prefix-register-verbose
 	      (function mu-cite-get-prefix-register-verbose-method))
-	(cons 'x-attribution
-	      (function
-	       (lambda ()
-		 (mu-cite-get-field-value "X-Attribution"))))
+	;; mu-bbdb
+	(cons 'bbdb-prefix
+	      (function mu-bbdb-get-prefix-method))
+	(cons 'bbdb-prefix-register
+	      (function mu-bbdb-get-prefix-register-method))
+	(cons 'bbdb-prefix-register-verbose
+	      (function mu-bbdb-get-prefix-register-verbose-method))
 	))
+
+(defun mu-cite-method-list ()
+  (mapcar (function car) mu-cite-default-methods-alist))
 
 
 ;;; @ formats
 ;;;
+
+(defvar widget-mu-cite-method-prompt-value-history nil
+  "History of input to `widget-mu-cite-method-prompt-value'.")
+
+(define-widget 'mu-cite-method 'symbol
+  "A mu-cite-method."
+  :format "%{%t%}: %v"
+  :tag "Method"
+  :prompt-history 'widget-mu-cite-method-prompt-value-history
+  :prompt-value 'widget-mu-cite-method-prompt-value
+  :action 'widget-mu-cite-method-action)
+
+(defun widget-mu-cite-method-prompt-value (widget prompt value unbound)
+  ;; Read mu-cite-method from minibuffer.
+  (intern
+   (completing-read (format "%s (default %s) " prompt value)
+		    (mapcar (function
+			     (lambda (sym)
+			       (list (symbol-name sym))
+			       ))
+			    (mu-cite-method-list)))))
+
+(defun widget-mu-cite-method-action (widget &optional event)
+  ;; Read a mu-cite-method from the minibuffer.
+  (let ((answer
+	 (widget-mu-cite-method-prompt-value
+	  widget
+	  (widget-apply widget :menu-tag-get)
+	  (widget-value widget)
+	  t)))
+    (widget-value-set widget answer)
+    (widget-apply widget :notify widget event)
+    (widget-setup)))
 
 (defcustom mu-cite-cited-prefix-regexp
   "\\(^[^ \t\n<>]+>+[ \t]*\\|^[ \t]*$\\)"
@@ -207,44 +228,29 @@ If match, mu-cite doesn't insert citation prefix."
 (defcustom mu-cite-prefix-format '(prefix-register-verbose "> ")
   "List to represent citation prefix.
 Each elements must be string or method name."
-  :type (list 'repeat
-	      (nconc '(choice :tag "String or Method name")
-		     (mapcar
-		      (function
-		       (lambda (elem) (list 'choice-item (car elem))))
-		      mu-cite-default-methods-alist)
-		     '((symbol :tag "Other Method")
-		       (item "-")
-		       (choice-item :tag "String: \"> \"" "> ")
-		       (string :tag "Other String"))))
+  :type '(repeat
+	  (choice :tag "String or Method name"
+		  mu-cite-method
+		  (item "-")
+		  (choice-item :tag "String: \"> \"" "> ")
+		  (string :tag "Other String")))
   :group 'mu-cite)
 
 (defcustom mu-cite-top-format '(in-id ">>>>>\t" from " wrote:\n")
   "List to represent top string of citation.
 Each elements must be string or method name."
-  :type (list 'repeat
-	      (nconc
-	       '(choice :tag "String or Method name")
-	       (mapcar
-		(function
-		 (lambda (elem) (list 'choice-item (car elem))))
-		mu-cite-default-methods-alist)
-	       '((symbol :tag "Other Method")
-		 (item "-")
-		 (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
-		 (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
-		 (string :tag "Other String"))))
+  :type '(repeat
+	  (choice :tag "String or Method name"
+		  mu-cite-method
+		  (item "-")
+		  (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
+		  (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
+		  (string :tag "Other String")))
   :group 'mu-cite)
 
 
 ;;; @ hooks
 ;;;
-
-(defcustom mu-cite-load-hook nil
-  "List of functions called after mu-cite is loaded.
-Use this hook to add your own methods to `mu-cite-default-methods-alist'."
-  :type 'hook
-  :group 'mu-cite)
 
 (defcustom mu-cite-instantiation-hook nil
   "List of functions called just before narrowing to the message."
@@ -269,10 +275,13 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
   "Alist major-mode vs. function to get field-body of header.")
 
 (defun mu-cite-get-field-value (name)
+  "Return the value of the header field NAME.
+If the field is not found in the header, a method function which is
+registered in variable `mu-cite-get-field-value-method-alist' is called."
   (or (std11-field-body name)
       (let ((method (assq major-mode mu-cite-get-field-value-method-alist)))
-	(when method
-	  (funcall (cdr method) name)))))
+	(if method
+	    (funcall (cdr method) name)))))
 
 
 ;;; @ item methods
@@ -294,15 +303,21 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
   :group 'mu-cite)
 
 (defun mu-cite-get-ml-count-method ()
+  "A mu-cite method to return a ML-count.
+This function searches a field about ML-count, which is specified by
+variable `mu-cite-ml-count-field-list', in a header.
+If the field is found, the function returns a number part of the
+field.
+
+Notice that please use (mu-cite-get-value 'ml-count)
+instead of call the function directly."
   (let ((field-list mu-cite-ml-count-field-list))
     (catch 'tag
       (while field-list
 	(let* ((field (car field-list))
 	       (ml-count (mu-cite-get-field-value field)))
-	  (when (and ml-count (string-match "[0-9]+" ml-count))
-	    (throw 'tag
-		   (substring ml-count
-			      (match-beginning 0)(match-end 0))))
+	  (if (and ml-count (string-match "[0-9]+" ml-count))
+	      (throw 'tag (match-string 0 ml-count)))
 	  (setq field-list (cdr field-list)))))))
 
 
@@ -317,6 +332,7 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
   (run-hooks 'mu-cite-instantiation-hook))
 
 (defun mu-cite-get-value (item)
+  "Return current value of ITEM."
   (let ((ret (cdr (assoc item mu-cite-methods-alist))))
     (if (functionp ret)
 	(prog1
@@ -343,22 +359,22 @@ function according to the agreed upon standard."
   (interactive)
   (mu-cite-make-methods)
   (save-restriction
-    (when (< (mark t) (point))
-      (exchange-point-and-mark))
+    (if (< (mark t) (point))
+	(exchange-point-and-mark))
     (narrow-to-region (point)(point-max))
     (run-hooks 'mu-cite-pre-cite-hook)
     (let ((last-point (point))
 	  (top (mu-cite-eval-format mu-cite-top-format))
 	  (prefix (mu-cite-eval-format mu-cite-prefix-format)))
-      (when (re-search-forward "^-*$" nil nil)
-	(forward-line 1))
+      (if (re-search-forward "^-*$" nil nil)
+	  (forward-line 1))
       (widen)
       (delete-region last-point (point))
       (insert top)
       (setq last-point (point))
       (while (< (point)(mark t))
-	(unless (looking-at mu-cite-cited-prefix-regexp)
-	  (insert prefix))
+	(or (looking-at mu-cite-cited-prefix-regexp)
+	    (insert prefix))
 	(forward-line 1))
       (goto-char last-point))
     (run-hooks 'mu-cite-post-cite-hook)))
@@ -377,14 +393,38 @@ function according to the agreed upon standard."
   :type 'string
   :group 'mu-cite)
 
+(defun-maybe-cond char-category (character)
+  "Return string of category mnemonics for CHAR in TABLE.
+CHAR can be any multilingual character
+TABLE defaults to the current buffer's category table."
+  ((and (subr-fboundp 'char-category-set)
+	(subr-fboundp 'category-set-mnemonics))
+   (category-set-mnemonics (char-category-set character))
+   )
+  ((fboundp 'char-category-list)
+   (mapconcat (lambda (chr)
+		(char-to-string (int-char chr)))
+	      (char-category-list character)
+	      "")
+   )
+  ((boundp 'NEMACS)
+   (if (< (char-int character) 128)
+       "al"
+     "j")
+   )
+  (t
+   (if (< (char-int character) 128)
+       "al"
+     "l")
+   ))
+
 (defun detect-paragraph-cited-prefix ()
   (save-excursion
     (goto-char (point-min))
     (let ((i 0)
 	  (prefix
-	   (buffer-substring
-	    (progn (beginning-of-line)(point))
-	    (progn (end-of-line)(point))))
+	   (buffer-substring (line-beginning-position)
+			     (line-end-position)))
 	  str ret)
       (while (and (= (forward-line) 0)
 		  (setq str (buffer-substring
@@ -395,7 +435,7 @@ function according to the agreed upon standard."
 	      (if (stringp ret)
 		  ret
 		(cadr ret)))
-	(incf i))
+	(setq i (1+ i)))
       (cond ((> i 1) prefix)
 	    ((> i 0)
 	     (goto-char (point-min))
@@ -407,8 +447,8 @@ function according to the agreed upon standard."
 		    (concat "[" citation-mark-chars "]") nil t)
 		   (progn
 		     (goto-char (match-end 0))
-		     (when (looking-at "[ \t]+")
-		       (goto-char (match-end 0)))
+		     (if (looking-at "[ \t]+")
+			 (goto-char (match-end 0)))
 		     (buffer-substring (point-min)(point)))
 		 prefix)))
 	    ((progn
@@ -418,12 +458,14 @@ function according to the agreed upon standard."
 	       (re-search-backward
 		(concat "[" citation-mark-chars "]") nil t))
 	     (goto-char (match-end 0))
-	     (when (looking-at "[ \t]+")
-	       (goto-char (match-end 0)))
+	     (if (looking-at "[ \t]+")
+		 (goto-char (match-end 0)))
 	     (buffer-substring (point-min)(point)))
 	    (t "")))))
 
+;;;###autoload
 (defun fill-cited-region (beg end)
+  "Fill each of the paragraphs in the region as a cited text."
   (interactive "*r")
   (save-excursion
     (save-restriction
@@ -438,16 +480,18 @@ function according to the agreed upon standard."
 	  (let ((b (match-beginning 0))
 		(e (match-end 0)))
 	    (delete-region b e)
-	    (when (and (> b (point-min))
-		       (let ((cat (char-category
-				   (char-before b))))
-			 (or (string-match "a" cat)
-			     (string-match "l" cat))))
-	      (insert " "))))
+	    (if (and (> b (point-min))
+		     (let ((cat (char-category
+				 (char-before b))))
+		       (or (string-match "a" cat)
+			   (string-match "l" cat))))
+		(insert " "))))
 	(goto-char (point-min))
 	(fill-region (point-min) (point-max))))))
 
+;;;###autoload
 (defun compress-cited-prefix ()
+  "Compress nested cited prefixes."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -461,8 +505,9 @@ function according to the agreed upon standard."
 	     (prefix (buffer-substring b e))
 	     ps pe (s 0)
 	     (nest (let ((i 0))
-		     (when (string-match "<[^<>]+>" prefix)
-		       (setq prefix (substring prefix 0 (match-beginning 0))))
+		     (if (string-match "<[^<>]+>" prefix)
+			 (setq prefix
+			       (substring prefix 0 (match-beginning 0))))
 		     (while (string-match
 			     (concat "\\([" citation-mark-chars "]+\\)[ \t]*")
 			     prefix s)
@@ -493,7 +538,7 @@ function according to the agreed upon standard."
 		  (setq c1 (aref str1 p)
 			c2 (aref str2 p))
 		  (eq c1 c2)))
-      (setq p (+ p (char-length c1))))
+      (setq p (char-next-index c1 p)))
     (and (> p 0)
 	 (let ((matched (substring str1 0 p))
 	       (r1 (and (< p len1)(substring str1 p)))
@@ -503,24 +548,30 @@ function according to the agreed upon standard."
 	     (list 'seq matched (list 'or r1 r2)))))))
 
 
-;;; @ obsoletes
-;;;
-
-;; This part will be abolished in the near future.
-
-(static-unless (fboundp 'defvaralias)
-  (mapcar
-   (function
-    (lambda (elem)
-      (eval (list 'defvar (car elem) (cadr elem)))))
-   mu-cite-obsolete-variable-alist))
-
-
 ;;; @ end
 ;;;
 
 (provide 'mu-cite)
 
 (run-hooks 'mu-cite-load-hook)
+
+;; This part will be abolished in the future.
+
+(static-unless (featurep 'xemacs)
+  (let ((rest mu-cite-obsolete-variable-alist)
+	def new-sym old-sym)
+    (while rest
+      (setq def (car rest))
+      (apply (function make-obsolete-variable) def)
+      (setq old-sym (car def)
+	    new-sym (car (cdr def)))
+      (or (get new-sym 'saved-value) ; saved?
+	  (not (eq (eval (car (get new-sym 'standard-value)))
+		   (symbol-value new-sym))) ; set as new name?
+	  (and (boundp old-sym) ; old name seems used
+	       (or (eq (symbol-value new-sym)
+		       (symbol-value old-sym))
+		   (set new-sym (symbol-value old-sym)))))
+      (setq rest (cdr rest)))))
 
 ;;; mu-cite.el ends here
