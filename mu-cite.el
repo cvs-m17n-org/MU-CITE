@@ -6,7 +6,7 @@
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.44 $
+;; Version: $Revision: 7.45 $
 ;; Keywords: mail, news, citation
 
 ;; This file is part of MU (Message Utilities).
@@ -54,7 +54,7 @@
 ;;;
 
 (defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.44 1997/01/13 15:49:13 morioka Exp $")
+  "$Id: mu-cite.el,v 7.45 1997/01/31 12:31:20 morioka Exp $")
 (defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
 
 
@@ -410,7 +410,10 @@ function according to the agreed upon standard."
 			     (progn (end-of-line)(point))))
 		  (setq ret (string-compare-from-top prefix str))
 		  )
-	(setq prefix (second ret))
+	(setq prefix
+	      (if (stringp ret)
+		  ret
+		(second ret)))
 	(setq i (1+ i))
 	)
       (cond ((> i 1) prefix)
