@@ -43,11 +43,14 @@
 (defvar mu-bbdb-load-hook nil
   "*List of functions called after mu-bbdb is loaded.")
 
-;;; @@ prefix and registration using BBDB
+(defvar mu-bbdb-history nil)
+
+
+;;; @ prefix and registration using BBDB
 ;;;
 
 (defun mu-cite/get-bbdb-prefix-method ()
-  (or (mu-cite/get-bbdb-attr (mu-cite/get-value 'address))
+  (or (mu-cite/get-bbdb-attr (mu-cite-get-value 'address))
       ">")
   )
 
@@ -73,13 +76,13 @@
       )))
 
 (defun mu-cite/get-bbdb-prefix-register-method ()
-  (let ((addr (mu-cite/get-value 'address)))
+  (let ((addr (mu-cite-get-value 'address)))
     (or (mu-cite/get-bbdb-attr addr)
     	(let ((return
 	       (read-string "Citation name? "
-			    (or (mu-cite/get-value 'x-attribution)
-				(mu-cite/get-value 'full-name))
-			    'mu-cite/minibuffer-history)
+			    (or (mu-cite-get-value 'x-attribution)
+				(mu-cite-get-value 'full-name))
+			    'mu-bbdb-history)
 	       ))
 	  (if (and (not (string-equal return ""))
                    (y-or-n-p (format "Register \"%s\"? " return)))
@@ -88,13 +91,13 @@
 	  return))))
 
 (defun mu-cite/get-bbdb-prefix-register-verbose-method ()
-  (let* ((addr (mu-cite/get-value 'address))
+  (let* ((addr (mu-cite-get-value 'address))
          (attr (mu-cite/get-bbdb-attr addr))
 	 (return (read-string "Citation name? "
 			      (or attr
-				  (mu-cite/get-value 'x-attribution)
-				  (mu-cite/get-value 'full-name))
-			      'mu-cite/minibuffer-history))
+				  (mu-cite-get-value 'x-attribution)
+				  (mu-cite-get-value 'full-name))
+			      'mu-bbdb-history))
 	 )
     (if (and (not (string-equal return ""))
              (not (string-equal return attr))
