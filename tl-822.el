@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.7 1996-04-15 08:56:37 morioka Exp $")
+  "$Id: tl-822.el,v 7.8 1996-04-15 08:57:58 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -350,8 +350,9 @@
   (let (token itl parsed token-value)
     (while (and lal
 		(setq token (car lal))
-		(setq token-value (cdr token))
-		(if (find-charset-string token-value)
+		(if (and (setq token-value (cdr token))
+			 (find-charset-string token-value)
+			 )
 		    (setq token nil)
 		  (rfc822/ignored-token-p token)
 		  ))
