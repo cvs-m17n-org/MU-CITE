@@ -26,18 +26,8 @@
 
 ;;; Commentary:
 
-;; - How to install.
-;;   1. bytecompile this file and copy it to the apropriate directory.
-;;   2. put the following lines to your .emacs.
-;;     (add-hook 'mu-cite-load-hook
-;;                (function
-;;                 (lambda ()
-;;                   (require 'mu-register))))
-;;   3. you can use the keyword `registered' in your
-;;    mu-cite/top-form and mu-cite/prefix-form, for example:
-;;     (setq mu-cite/prefix-format (list 'registered "> "))
-;;
-;; - ChangeLog.
+;; ChangeLog.
+
 ;;   Wed Dec 27 14:28:17 1995  MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;
 ;;	* Written.
