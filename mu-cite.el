@@ -429,12 +429,12 @@ TABLE defaults to the current buffer's category table."
 	  (let ((b (match-beginning 0))
 		(e (match-end 0)))
 	    (delete-region b e)
-	    (when (and (> b (point-min))
-		       (let ((cat (char-category
-				   (char-before b))))
-			 (or (string-match "a" cat)
-			     (string-match "l" cat))))
-	      (insert " "))))
+	    (if (and (> b (point-min))
+		     (let ((cat (char-category
+				 (char-before b))))
+		       (or (string-match "a" cat)
+			   (string-match "l" cat))))
+		(insert " "))))
 	(goto-char (point-min))
 	(fill-region (point-min) (point-max))))))
 
