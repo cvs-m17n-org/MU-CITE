@@ -1,3 +1,7 @@
+1999-08-02  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* NEWS: New file.
+
 1999-07-30  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-cite.el (mu-cite-ml-count-field-list): Don't use
