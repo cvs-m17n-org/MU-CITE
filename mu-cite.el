@@ -6,7 +6,7 @@
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.36 $
+;; Version: $Revision: 7.38 $
 ;; Keywords: mail, news, citation
 
 ;; This file is part of tl (Tiny Library).
@@ -54,7 +54,7 @@
 ;;;
 
 (defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.36 1996/08/30 04:25:34 morioka Exp $")
+  "$Id: mu-cite.el,v 7.38 1996/09/17 07:03:39 morioka Exp $")
 (defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
 
 
@@ -415,14 +415,19 @@ function according to the agreed upon standard."
 	     )
 	(goto-char (point-min))
 	(while (search-forward pat nil t)
-	  (if (and (> (match-beginning 0) (point-min))
-		   (member (char-category
-			    (char-before (match-beginning 0)))
-			   '("a" "l"))
-		   )
-	      (replace-match " ")
-	    (replace-match "")
-	    )
+	  (let ((b (match-beginning 0))
+		(e (match-end 0))
+		)
+	    (delete-region b e)
+	    (if (and (> b (point-min))
+		     (let ((cat (char-category
+				 (char-before b))))
+		       (or (string-match "a" cat)
+			   (string-match "l" cat)
+			   ))
+		     )
+		(insert " ")
+	      ))
 	  )
 	(goto-char (point-min))
 	(fill-region (point-min) (point-max))
