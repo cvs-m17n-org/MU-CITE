@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.42 1996-08-28 13:10:17 morioka Exp $")
+  "$Id: tl-822.el,v 7.43 1996-08-28 14:40:33 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -111,14 +111,7 @@
 ;;; @ unfolding
 ;;;
 
-(defun rfc822/unfolding-string (str)
-  (let ((dest ""))
-    (while (string-match "\n\\s +" str)
-      (setq dest (concat dest (substring str 0 (match-beginning 0)) " "))
-      (setq str (substring str (match-end 0)))
-      )
-    (concat dest str)
-    ))
+(defalias 'rfc822/unfolding-string 'std11-unfold-string)
 
 
 ;;; @ lexical analyze
