@@ -79,11 +79,13 @@ Notice that please use (mu-cite-get-value 'bbdb-prefix-register)
 instead of call the function directly."
   (let ((addr (mu-cite-get-value 'address)))
     (or (mu-bbdb-get-attr addr)
-	(let ((return
-	       (read-string "Citation name? "
-			    (or (mu-cite-get-value 'x-attribution)
-				(mu-cite-get-value 'full-name))
-			    'mu-bbdb-history)))
+	(let* ((minibuffer-allow-text-properties nil)
+	       (return
+		(mu-cite-remove-text-properties
+		 (read-string "Citation name? "
+			      (or (mu-cite-get-value 'x-attribution)
+				  (mu-cite-get-value 'full-name))
+			      'mu-bbdb-history))))
 	  (if (and (not (string-equal return ""))
 		   (y-or-n-p (format "Register \"%s\"? " return)))
 	      (mu-bbdb-set-attr return addr))
@@ -102,11 +104,13 @@ Notice that please use (mu-cite-get-value 'bbdb-prefix-register-verbose)
 instead of call the function directly."
   (let* ((addr (mu-cite-get-value 'address))
 	 (attr (mu-bbdb-get-attr addr))
-	 (return (read-string "Citation name? "
-			      (or attr
-				  (mu-cite-get-value 'x-attribution)
-				  (mu-cite-get-value 'full-name))
-			      'mu-bbdb-history)))
+	 (minibuffer-allow-text-properties nil)
+	 (return (mu-cite-remove-text-properties
+		  (read-string "Citation name? "
+			       (or attr
+				   (mu-cite-get-value 'x-attribution)
+				   (mu-cite-get-value 'full-name))
+			       'mu-bbdb-history))))
     (if (and (not (string-equal return ""))
 	     (not (string-equal return attr))
 	     (y-or-n-p (format "Register \"%s\"? " return)))
