@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.27 1996-05-22 02:51:33 morioka Exp $")
+  "$Id: tl-822.el,v 7.28 1996-06-13 17:09:18 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -158,15 +158,12 @@
 (defconst rfc822/quoted-pair-regexp "\\\\.")
 (defconst rfc822/non-qtext-char-list '(?\" ?\\ ?\r ?\n))
 (defconst rfc822/qtext-regexp
-  (concat "[^" (char-list-to-string rfc822/non-qtext-char-list) " \t]"))
+  (concat "[^" (char-list-to-string rfc822/non-qtext-char-list) "]"))
 (defconst rfc822/quoted-string-regexp
   (concat "\""
 	  (regexp-*
-	   (concat
-	    "\\(" rfc822/linear-white-space-regexp "?"
-	    (regexp-or rfc822/qtext-regexp rfc822/quoted-pair-regexp)
-	    "\\)"))
-	  rfc822/linear-white-space-regexp "?"
+	   (regexp-or rfc822/qtext-regexp rfc822/quoted-pair-regexp)
+	   )
 	  "\""))
 
 (defun rfc822/wrap-as-quoted-string (str)
@@ -279,26 +276,32 @@
   )
 
 (defun rfc822/analyze-quoted-string (str)
-  (if (and (> (length str) 0)
-	   (eq (elt str 0) ?\")
-	   )
-      (let* ((i (position-mismatched
-		 (function
-		  (lambda (elt)
-		    (not (memq elt rfc822/non-qtext-char-list))
-		    ))
-		 (setq str (substring str 1))
-		 ))
-	     (rest (substring str i))
+  (let ((len (length str)))
+    (if (and (> len 0)
+	     (eq (elt str 0) ?\")
 	     )
-	(if (and (> i 0)
-		 (> (length rest) 0)
-		 (eq (elt rest 0) ?\")
-		 )
-	    (cons (cons 'quoted-string (substring str 0 i))
-		  (substring rest 1)
-		  )
-	  ))))
+	(let ((i 1) chr dest)
+	  (catch 'tag
+	    (while (< i len)
+	      (setq chr (aref str i))
+	      (cond ((eq chr ?\\)
+		     (setq i (1+ i))
+		     (if (>= i len)
+			 (throw 'tag nil)
+		       )
+		     (setq dest (concat dest (char-to-string (aref str i))))
+		     )
+		    ((eq chr ?\")
+		     (throw 'tag
+			    (cons (cons 'quoted-string dest)
+				  (substring str (1+ i)))
+			    )
+		     )
+		    (t
+		     (setq dest (concat dest (char-to-string (aref str i))))
+		     ))
+	      (setq i (1+ i))
+	      ))))))
 
 (defun rfc822/analyze-domain-literal (str)
   (if (and (> (length str) 0)
