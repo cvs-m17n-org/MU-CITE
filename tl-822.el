@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.58 1996-08-28 21:01:01 morioka Exp $")
+  "$Id: tl-822.el,v 7.59 1996-08-28 21:06:38 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -126,28 +126,7 @@
 (defalias 'rfc822/parse-address		'std11-parse-address)
 (defalias 'rfc822/parse-addresses	'std11-parse-addresses)
 (defalias 'rfc822/address-string	'std11-address-string)
-
-(defun rfc822/full-name-string (address)
-  (cond ((eq (car address) 'group)
-	 (mapconcat (function
-		     (lambda (token)
-		       (cdr token)
-		       ))
-		    (nth 1 address) "")
-	 )
-	((eq (car address) 'mailbox)
-	 (let ((addr (nth 1 address))
-	       (comment (nth 2 address))
-	       phrase)
-	   (if (eq (car addr) 'phrase-route-addr)
-	       (setq phrase (mapconcat (function
-					(lambda (token)
-					  (cdr token)
-					  ))
-				       (nth 1 addr) ""))
-	     )
-	   (or phrase comment)
-	   ))))
+(defalias 'rfc822/full-name-string	'std11-full-name-string)
 
 (defun rfc822/extract-address-components (string)
   "Extract full name and canonical address from STRING.
