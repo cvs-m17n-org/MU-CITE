@@ -10,6 +10,22 @@ Copyright (C) 1999 Free Software Foundation, Inc.
 ** Requires FLIM 1.12.2 or later
 
 
+** Text properties in the registration file is not recommended
+If you are using Emacs v19, e.g. Mule 2.3, and if you find text properties
+as below in your registration file (~/.mu-cite.el in default):
+
+	("foo@bar.com" . #("Foo" 0 3 (face bold)))
+
+please copy the following program in *scratch* buffer and type C-j key
+after the end of parenthesis for cleaning up the sort of things.
+
+	(progn
+	  (require 'mu-register)
+	  (mu-cite-load-registration-file)
+	  (mu-cite-save-registration-file)
+	  )
+
+
 ** New user option `mu-registration-file-modes'
 Mode bits of `mu-registration-file', as an integer.
 
