@@ -7,7 +7,7 @@
 ;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.9 1996-01-16 14:04:24 morioka Exp $
+;;;	$Id: mu-register.el,v 1.10 1996-01-16 17:42:01 morioka Exp $
 ;;;
 ;;; This file is part of tl (Tiny Library).
 ;;;
@@ -47,7 +47,6 @@
 ;;; Code:
 
 (require 'mu-cite)
-(require 'pp)
 
 
 ;;; @ variables
