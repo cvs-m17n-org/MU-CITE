@@ -1,0 +1,30 @@
+;;; -*-Emacs-Lisp-*-
+;;;
+;;; $Id: MU-MK,v 0.0 1997-03-14 07:27:50 morioka Exp $
+;;;
+
+(defun config-mu ()
+  (let (prefix)
+    (setq prefix (car command-line-args-left))
+    (and prefix
+	 (not (string-equal "NONE" prefix))
+	 (progn
+	   (defvar PREFIX prefix)
+	   (setq command-line-args-left (cdr command-line-args-left))
+	   ))
+    (load-file "MU-CFG")
+    (load-file "MU-ELS")
+    (princ (format "PREFIX=%s\n" PREFIX))
+    ))
+
+(defun compile-mu ()
+  (config-mu)
+  (compile-elisp-modules mu-modules	".")
+  )
+
+(defun install-mu ()
+  (config-mu)
+  (install-elisp-modules mu-modules	"./"	MU_DIR)
+  )
+
+;;; MU-MK ends here
