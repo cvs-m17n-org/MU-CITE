@@ -371,9 +371,8 @@ TABLE defaults to the current buffer's category table."
     (goto-char (point-min))
     (let ((i 0)
 	  (prefix
-	   (buffer-substring
-	    (progn (beginning-of-line)(point))
-	    (progn (end-of-line)(point))))
+	   (buffer-substring (line-beginning-position)
+			     (line-end-position)))
 	  str ret)
       (while (and (= (forward-line) 0)
 		  (setq str (buffer-substring
