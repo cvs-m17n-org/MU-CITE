@@ -1,11 +1,12 @@
 ;;; mu-bbdb.el --- `attribution' function for mu-cite with BBDB.
 
-;; Copyright (C) 1996 Shuhei KOBAYASHI
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
-;; Author: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Id: mu-bbdb.el,v 3.1 1996/08/18 07:19:53 morioka Exp $
+;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
+;; Keywords: mail, news, citation, bbdb
 
-;; This file is part of tl (Tiny Library).
+;; This file is part of MU (Message Utilities).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -27,95 +28,125 @@
 ;;  - How to use
 ;;    1. bytecompile this file and copy it to the apropriate directory.
 ;;    2. put the following lines to your ~/.emacs:
-;;		(require 'tl-misc)
-;;		(call-after-loaded 'mu-cite
-;;				   (function
-;;				    (lambda ()
-;;				      (require 'mu-bbdb)
-;;				      )))
+;;             (add-hook 'mu-cite-load-hook
+;;                       (function
+;;                        (lambda ()
+;;                          (require 'mu-bbdb)
+;;                          )))
 
 
 ;;; Code:
 
-(require 'mu-cite)
-(require 'bbdb)
+(eval-when-compile (require 'cl))
 
-(defvar mu-bbdb-load-hook nil
-  "*List of functions called after mu-bbdb is loaded.")
+;; Pickup `module-installed-p'.
+(require 'path-util)
+
+(require 'mu-cite)
+(when (module-installed-p 'bbdb)
+  (require 'bbdb))
+
+
+;;; @ obsolete functions
+;;;
+
+;; This part will be abolished in the future.
+
+(eval-and-compile
+  (defconst mu-bbdb-obsolete-function-alist
+    '((mu-cite/get-bbdb-attr		mu-bbdb-get-attr)
+      (mu-cite/get-bbdb-prefix-method	mu-bbdb-get-prefix-method)
+      (mu-cite/get-bbdb-prefix-register-method
+       mu-bbdb-get-prefix-register-method)
+      (mu-cite/get-bbdb-prefix-register-verbose-method
+       mu-bbdb-get-prefix-register-verbose-method)
+      (mu-cite/set-bbdb-attr		mu-bbdb-set-attr)))
+
+  (mapcar
+   (function (lambda (elem)
+	       (apply (function define-obsolete-function-alias) elem)))
+   mu-bbdb-obsolete-function-alist)
+  )
+
+
+;;; @ set up
+;;;
+
+(defgroup mu-bbdb nil
+  "`attribution' function for mu-cite with BBDB."
+  :prefix "mu-bbdb-"
+  :group 'mu-cite
+  :group 'bbdb)
+
+(defcustom mu-bbdb-load-hook nil
+  "List of functions called after mu-bbdb is loaded."
+  :type 'hook
+  :group 'mu-bbdb)
+
 
 ;;; @@ prefix and registration using BBDB
 ;;;
 
-(defun mu-cite/get-bbdb-prefix-method ()
-  (or (mu-cite/get-bbdb-attr (mu-cite/get-value 'address))
-      ">")
-  )
+(defun mu-bbdb-get-prefix-method ()
+  (or (mu-bbdb-get-attr (mu-cite-get-value 'address))
+      ">"))
 
-(defun mu-cite/get-bbdb-attr (addr)
+(defun mu-bbdb-get-attr (addr)
   "Extract attribute information from BBDB."
   (let ((record (bbdb-search-simple nil addr)))
-    (and record
-         (bbdb-record-getprop record 'attribution))
-    ))
+    (when record
+      (bbdb-record-getprop record 'attribution))))
 
-(defun mu-cite/set-bbdb-attr (attr addr)
+(defun mu-bbdb-set-attr (attr addr)
   "Add attribute information to BBDB."
   (let* ((bbdb-notice-hook nil)
-         (record (bbdb-annotate-message-sender 
-                  addr t
-	          (bbdb-invoke-hook-for-value 
-	           bbdb/mail-auto-create-p)
+	 (record (bbdb-annotate-message-sender
+		  addr t
+		  (bbdb-invoke-hook-for-value
+		   bbdb/mail-auto-create-p)
 		  t)))
-    (if record
-        (progn
-          (bbdb-record-putprop record 'attribution attr)
-          (bbdb-change-record record nil))
-      )))
+    (when record
+      (bbdb-record-putprop record 'attribution attr)
+      (bbdb-change-record record nil))))
 
-(defun mu-cite/get-bbdb-prefix-register-method ()
-  (let ((addr (mu-cite/get-value 'address)))
-    (or (mu-cite/get-bbdb-attr addr)
-    	(let ((return
+(defun mu-bbdb-get-prefix-register-method ()
+  (let ((addr (mu-cite-get-value 'address)))
+    (or (mu-bbdb-get-attr addr)
+	(let ((return
 	       (read-string "Citation name? "
-			    (or (mu-cite/get-value 'x-attribution)
-				(mu-cite/get-value 'full-name))
-			    'mu-cite/minibuffer-history)
-	       ))
+			    (or (mu-cite-get-value 'x-attribution)
+				(mu-cite-get-value 'full-name))
+			    'mu-cite-minibuffer-history)))
 	  (if (and (not (string-equal return ""))
-                   (y-or-n-p (format "Register \"%s\"? " return)))
-	      (mu-cite/set-bbdb-attr return addr)
-	    )
+		   (y-or-n-p (format "Register \"%s\"? " return)))
+	      (mu-bbdb-set-attr return addr))
 	  return))))
 
-(defun mu-cite/get-bbdb-prefix-register-verbose-method ()
-  (let* ((addr (mu-cite/get-value 'address))
-         (attr (mu-cite/get-bbdb-attr addr))
+(defun mu-bbdb-get-prefix-register-verbose-method ()
+  (let* ((addr (mu-cite-get-value 'address))
+	 (attr (mu-bbdb-get-attr addr))
 	 (return (read-string "Citation name? "
 			      (or attr
-				  (mu-cite/get-value 'x-attribution)
-				  (mu-cite/get-value 'full-name))
-			      'mu-cite/minibuffer-history))
-	 )
+				  (mu-cite-get-value 'x-attribution)
+				  (mu-cite-get-value 'full-name))
+			      'mu-cite-minibuffer-history)))
     (if (and (not (string-equal return ""))
-             (not (string-equal return attr))
-	     (y-or-n-p (format "Register \"%s\"? " return))
-	     )
-	(mu-cite/set-bbdb-attr return addr)
-      )
+	     (not (string-equal return attr))
+	     (y-or-n-p (format "Register \"%s\"? " return)))
+	(mu-bbdb-set-attr return addr))
     return))
 
-(or (assoc 'bbdb-prefix mu-cite/default-methods-alist)
-    (setq mu-cite/default-methods-alist
-          (append mu-cite/default-methods-alist
-                  (list
-                   (cons 'bbdb-prefix
-                         (function mu-cite/get-bbdb-prefix-method))
-                   (cons 'bbdb-prefix-register
-                         (function mu-cite/get-bbdb-prefix-register-method))
-                   (cons 'bbdb-prefix-register-verbose
-                         (function
-                          mu-cite/get-bbdb-prefix-register-verbose-method))
-                   ))))
+(unless (assoc 'bbdb-prefix mu-cite-default-methods-alist)
+  (setq mu-cite-default-methods-alist
+	(append mu-cite-default-methods-alist
+		(list
+		 (cons 'bbdb-prefix
+		       (function mu-bbdb-get-prefix-method))
+		 (cons 'bbdb-prefix-register
+		       (function mu-bbdb-get-prefix-register-method))
+		 (cons 'bbdb-prefix-register-verbose
+		       (function
+			mu-bbdb-get-prefix-register-verbose-method))))))
 
 
 ;;; @ end
