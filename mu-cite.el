@@ -228,8 +228,8 @@ If the field is not found in the header, a method function which is
 registered in variable `mu-cite-get-field-value-method-alist' is called."
   (or (std11-field-body name)
       (let ((method (assq major-mode mu-cite-get-field-value-method-alist)))
-	(when method
-	  (funcall (cdr method) name)))))
+	(if method
+	    (funcall (cdr method) name)))))
 
 
 ;;; @ item methods
