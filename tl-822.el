@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.22 1996-04-25 22:15:52 morioka Exp $")
+  "$Id: tl-822.el,v 7.23 1996-05-15 14:19:45 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -357,7 +357,7 @@
 
 (defun rfc822/lexical-analyze (str)
   (let (dest
-	(i 0)(len (length str))
+	(len (length str))
 	ret)
     (while (not (string-equal str ""))
       (setq ret
