@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.67 1996-09-14 08:30:40 morioka Exp $")
+  "$Id: tl-822.el,v 7.68 1996-09-14 08:44:17 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -65,35 +65,7 @@
 	  "\""))
 
 (defalias 'rfc822/wrap-as-quoted-string 'std11-wrap-as-quoted-string)
-
-(defun rfc822/strip-quoted-pair (str)
-  (let ((dest "")
-	(i 0)
-	(len (length str))
-	chr flag)
-    (while (< i len)
-      (setq chr (elt str i))
-      (if (or flag (not (eq chr ?\\)))
-	  (progn
-	    (setq dest (concat dest (char-to-string chr)))
-	    (setq flag nil)
-	    )
-	(setq flag t)
-	)
-      (setq i (+ i 1))
-      )
-    dest))
-
-(defun rfc822/strip-quoted-string (str)
-  (rfc822/strip-quoted-pair
-   (let ((max (- (length str) 1))
-	 )
-     (if (and (eq (elt str 0) ?\")
-	      (eq (elt str max) ?\")
-	      )
-	 (substring str 1 max)
-       str)
-     )))
+(defalias 'rfc822/strip-quoted-string	'std11-strip-quoted-string)
 
 
 ;;; @ unfolding
