@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.57 1996-08-28 20:44:25 morioka Exp $")
+  "$Id: tl-822.el,v 7.58 1996-08-28 21:01:01 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -125,31 +125,7 @@
 
 (defalias 'rfc822/parse-address		'std11-parse-address)
 (defalias 'rfc822/parse-addresses	'std11-parse-addresses)
-
-(defun rfc822/addr-to-string (seq)
-  (mapconcat (function
-	      (lambda (token)
-		(if (eq (car token) 'spaces)
-		    ""
-		  (cdr token)
-		  )))
-	     seq "")
-  )
-
-(defun rfc822/address-string (address)
-  (cond ((eq (car address) 'group)
-	 (mapconcat (function rfc822/address-string)
-		    (nth 2 address)
-		    ", ")
-	 )
-	((eq (car address) 'mailbox)
-	 (let ((addr (nth 1 address)))
-	   (rfc822/addr-to-string
-	    (if (eq (car addr) 'phrase-route-addr)
-		(nth 2 addr)
-	      (cdr addr)
-	      )
-	    )))))
+(defalias 'rfc822/address-string	'std11-address-string)
 
 (defun rfc822/full-name-string (address)
   (cond ((eq (car address) 'group)
