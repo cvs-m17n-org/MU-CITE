@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.30 1996-09-08 18:07:44 morioka Exp $
+;; Version: $Id: std11.el,v 0.31 1996-09-08 19:35:20 morioka Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -208,7 +208,7 @@ If BOUNDARY is not nil, it is used as message header separator.
 			    (concat "\\" (char-to-string chr))
 			  (char-to-string chr)
 			  )
-			)) str "")
+			)) string "")
 	  "\""))
 
 
