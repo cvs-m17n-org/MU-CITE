@@ -4,7 +4,7 @@ Copyright (C) 1999 Free Software Foundation, Inc.
 * Changes in MU-CITE 8.2
 ========================
 
-** MU-CITE now support X-Cite-Me header as well as X-Attribution.
+** MU-CITE now supports X-Cite-Me header as well as X-Attribution.
 
 ** New user option `fill-column-for-fill-cited-region' specifies an
 integer value to override `fill-column' while `fill-cited-region' is
