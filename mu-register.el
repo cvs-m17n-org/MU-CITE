@@ -7,7 +7,7 @@
 ;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.7 1996-01-15 21:07:05 morioka Exp $
+;;;	$Id: mu-register.el,v 1.8 1996-01-15 21:19:11 morioka Exp $
 ;;;
 ;;; This file is part of tl (Tiny Library).
 ;;;
@@ -72,8 +72,8 @@
 ;;;
 
 ;; get citation-name from the database
-(defsubst mu-register/get-citation-name (from)
-  (cdr (assoc from mu-register/citation-name-alist)))
+(defmacro mu-register/get-citation-name (from)
+  (` (cdr (assoc (, from) mu-register/citation-name-alist))))
 
 ;; register citation-name to the database
 (defun mu-register/add-citation-name (name from)
