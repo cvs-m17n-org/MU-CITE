@@ -1,5 +1,44 @@
 1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* mu-register.el: New file.
+
+	* mu-cite.el (mu-cite-get-prefix-register-verbose-method): Move
+	function to mu-register.el.
+	(mu-cite-get-prefix-register-method): Likewise.
+	(mu-cite-get-prefix-method): Likewise.
+	(mu-cite-save-registration-file): Likewise.
+	(mu-cite-load-registration-file): Likewise.
+	(mu-cite-add-citation-name): Likewise.
+	(mu-cite-get-citation-name): Likewise.
+
+	(mu-cite-minibuffer-history): Move variable to mu-register.el.
+	(mu-cite-citation-name-alist): Likewise.
+	(mu-cite-registration-symbol): Likewise.
+	(mu-cite-registration-file-modes): Likewise.
+	(mu-cite-registration-file-coding-system-for-write): Likewise.
+	(mu-cite-registration-file-coding-system-for-read): Likewise.
+	(mu-cite-allow-null-string-registration): Likewise.
+	(mu-cite-registration-file): Likewise.
+
+	(mu-cite-registration-file): Move macro to mu-register.el.
+
+	* MU-ELS: (mu-modules-to-compile): Add `mu-register'.
+
+1999-07-19  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-cite.el (TopLevel): Add autoload setting for
+	`mu-cite-get-prefix-method', `mu-cite-get-prefix-register-method'
+	and `mu-cite-get-prefix-register-verbose-method'.
+
+	* mu-bbdb.el (mu-bbdb-history): New variable.
+	(mu-bbdb-get-prefix-register-method): Use it instead of
+	`mu-cite/minibuffer-history'.
+	(mu-bbdb-get-prefix-register-verbose-method): Likewise.
+
+	* MU-ELS: Remove RCS magic cookie.
+
+1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
+
 	* mu-cite.el (mu-cite-save-registration-file): Use `save-buffer'
 	instead of `save-buffer-as-coding-system' if the value of
 	`mu-cite-registration-file-coding-system-for-write' is nil.
