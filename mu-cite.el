@@ -64,6 +64,38 @@
 (defconst mu-cite-version "8.0")
 
 
+;;; @ obsoletes
+;;;
+
+;; This part will be abolished in the near future.
+
+(eval-when-compile (require 'static))
+
+(defconst mu-cite-obsolete-variable-alist
+  '((mu-cite/default-methods-alist
+     mu-cite-default-methods-alist)
+    (mu-cite/cited-prefix-regexp
+     mu-cite-cited-prefix-regexp)
+    (mu-cite/prefix-format
+     mu-cite-prefix-format)
+    (mu-cite/top-format
+     mu-cite-top-format)
+    (mu-cite/instantiation-hook
+     mu-cite-instantiation-hook)
+    (mu-cite/pre-cite-hook
+     mu-cite-pre-cite-hook)
+    (mu-cite/post-cite-hook
+     mu-cite-post-cite-hook)
+    (mu-cite/get-field-value-method-alist
+     mu-cite-get-field-value-method-alist)
+    (mu-cite/ml-count-field-list
+     mu-cite-ml-count-field-list)))
+
+(static-if (featurep 'xemacs)
+    (dolist (def mu-cite-obsolete-variable-alist)
+      (apply (function define-obsolete-variable-alias) def)))
+
+
 ;;; @ set up
 ;;;
 
@@ -502,38 +534,6 @@ TABLE defaults to the current buffer's category table."
 (define-obsolete-function-alias
   'mu-cite/get-value 'mu-cite-get-value)
 
-(eval-when-compile (require 'static))
-
-(static-when (featurep 'xemacs)
-  (define-obsolete-variable-alias
-    'mu-cite/default-methods-alist
-    'mu-cite-default-methods-alist)
-  (define-obsolete-variable-alias
-    'mu-cite/cited-prefix-regexp
-    'mu-cite-cited-prefix-regexp)
-  (define-obsolete-variable-alias
-    'mu-cite/prefix-format
-    'mu-cite-prefix-format)
-  (define-obsolete-variable-alias
-    'mu-cite/top-format
-    'mu-cite-top-format)
-  (define-obsolete-variable-alias
-    'mu-cite/instantiation-hook
-    'mu-cite-instantiation-hook)
-  (define-obsolete-variable-alias
-    'mu-cite/pre-cite-hook
-    'mu-cite-pre-cite-hook)
-  (define-obsolete-variable-alias
-    'mu-cite/post-cite-hook
-    'mu-cite-post-cite-hook)
-  (define-obsolete-variable-alias
-    'mu-cite/get-field-value-method-alist
-    'mu-cite-get-field-value-method-alist)
-  (define-obsolete-variable-alias
-    'mu-cite/ml-count-field-list
-    'mu-cite-ml-count-field-list)
-  )
-
 
 ;;; @ end
 ;;;
@@ -542,4 +542,23 @@ TABLE defaults to the current buffer's category table."
 
 (run-hooks 'mu-cite-load-hook)
 
+;; This part will be abolished in the future.
+
+(static-unless (featurep 'xemacs)
+  (let ((rest mu-cite-obsolete-variable-alist)
+	def new-sym old-sym)
+    (while rest
+      (setq def (car rest))
+      (apply (function make-obsolete-variable) def)
+      (setq old-sym (car def)
+	    new-sym (car (cdr def)))
+      (or (get new-sym 'saved-value) ; saved?
+	  (not (eq (eval (car (get new-sym 'standard-value)))
+		   (symbol-value new-sym))) ; set as new name?
+	  (and (boundp old-sym) ; old name seems used
+	       (or (eq (symbol-value new-sym)
+		       (symbol-value old-sym))
+		   (set new-sym (symbol-value old-sym)))))
+      (setq rest (cdr rest)))))
+	
 ;;; mu-cite.el ends here
