@@ -353,13 +353,14 @@ Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
       ret)))
 
 (defun mu-cite/eval-format (list)
-  (mapconcat (function
-	      (lambda (elt)
-		(cond ((stringp elt) elt)
-		      ((symbolp elt) (mu-cite/get-value elt))
-		      )))
-	     list "")
-  )
+  (save-excursion
+    (mapconcat (function
+		(lambda (elt)
+		  (cond ((stringp elt) elt)
+			((symbolp elt) (mu-cite/get-value elt))
+			)))
+	       list "")
+    ))
 
 
 ;;; @ main function
