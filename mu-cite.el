@@ -446,7 +446,7 @@ TABLE defaults to the current buffer's category table."
 	(setq prefix
 	      (if (stringp ret)
 		  ret
-		(cadr ret)))
+		(car (cdr ret))))
 	(setq i (1+ i)))
       (cond ((> i 1) prefix)
 	    ((> i 0)
