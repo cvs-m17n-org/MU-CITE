@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11-parse.el,v 0.5 1996-08-28 17:33:26 morioka Exp $
+;; Version: $Id: std11-parse.el,v 0.6 1996-08-28 17:35:10 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -87,6 +87,10 @@
 
 (defun std11-analyze-quoted-string (str)
   (std11-analyze-enclosure str 'quoted-string ?\" ?\")
+  )
+
+(defun std11-analyze-domain-literal (str)
+  (std11-analyze-enclosure str 'domain-literal ?\[ ?\])
   )
 
 
