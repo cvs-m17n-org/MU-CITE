@@ -128,12 +128,13 @@
 	(cons 'id
 	      (function
 	       (lambda ()
-		 (let ((ml-name (mu-cite-get-value 'ml-name)))
+		 (let ((ml-name (mu-cite-get-value 'ml-name))
+		       (ml-count (mu-cite-get-value 'ml-count)))
 		   (if ml-name
 		       (concat "["
 			       ml-name
-			       " : No."
-			       (mu-cite-get-value 'ml-count)
+			       (if ml-count
+				   (concat " : No." ml-count))
 			       "]")
 		     (mu-cite-get-value 'message-id))))))
 	(cons 'in-id
