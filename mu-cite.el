@@ -76,12 +76,13 @@
 (defmacro mu-cite-registration-file ()
   (if (fboundp 'defvaralias)
       'mu-cite-registration-file
-    '(if (boundp 'mu-cite/registration-file)
+    '(if (and (not noninteractive)
+	      (boundp 'mu-cite/registration-file))
 	 (prog1
 	     (if (yes-or-no-p
 		  (format "Obsolete variable `%s' found, use anyway? "
 			  'mu-cite/registration-file))
-		 mu-cite/registration-file
+		 (symbol-value 'mu-cite/registration-file)
 	       mu-cite-registration-file)
 	   (message "You should use `%s' instead of `%s'."
 		    'mu-cite-registration-file 'mu-cite/registration-file)
@@ -108,7 +109,8 @@
    (function
     (lambda (elem)
       (apply (function make-obsolete-variable) elem)
-      (when (boundp (car elem))
+      (when (and (not noninteractive)
+		 (boundp (car elem)))
 	(apply (function message)
 	       "WARNING: `%s' is an obsolete variable, use `%s' instead."
 	       elem))
@@ -349,36 +351,44 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
 ;; load/save registration file
 ;;(defun mu-cite-load-registration-file ()
 ;;  (let ((file mu-cite-registration-file))
-;;    (when (file-readable-p file)
-;;      (let ((alist (with-temp-buffer
-;;		     (eval
-;;		      (` (let ((, mu-cite-registration-symbol))
-;;			   (insert-file-contents-as-coding-system
-;;			    mu-cite-registration-file-coding-system-for-read
-;;			    file)
-;;			   (condition-case nil
-;;			       (progn
-;;				 (eval-current-buffer)
-;;				 (, mu-cite-registration-symbol))
-;;			     (error nil))))))))
+;;    (when (and file
+;;	       (file-readable-p file))
+;;      (let ((alist
+;;	     (with-temp-buffer
+;;	       (eval
+;;		(` (let ((, mu-cite-registration-symbol))
+;;		     (if mu-cite-registration-file-coding-system-for-read
+;;			 (insert-file-contents-as-coding-system
+;;			  mu-cite-registration-file-coding-system-for-read
+;;			  file)
+;;		       (insert-file-contents file))
+;;		     (condition-case nil
+;;			 (progn
+;;			   (eval-current-buffer)
+;;			   (, mu-cite-registration-symbol))
+;;		       (error nil))))))))
 ;;	(when alist
 ;;	  (setq mu-cite-citation-name-alist alist))))))
 (defun mu-cite-load-registration-file ()
   (let ((file (mu-cite-registration-file)))
-    (when (file-readable-p file)
-      (let ((alist (with-temp-buffer
-		     (eval
-		      (` (let ((, mu-cite-registration-symbol)
-			       mu-cite/citation-name-alist)
-			   (insert-file-contents-as-coding-system
-			    mu-cite-registration-file-coding-system-for-read
-			    file)
-			   (condition-case nil
-			       (progn
-				 (eval-current-buffer)
-				 (or mu-cite/citation-name-alist
-				     (, mu-cite-registration-symbol)))
-			     (error nil))))))))
+    (when (and file
+	       (file-readable-p file))
+      (let ((alist
+	     (with-temp-buffer
+	       (eval
+		(` (let ((, mu-cite-registration-symbol)
+			 mu-cite/citation-name-alist)
+		     (if mu-cite-registration-file-coding-system-for-read
+			 (insert-file-contents-as-coding-system
+			  mu-cite-registration-file-coding-system-for-read
+			  file)
+		       (insert-file-contents file))
+		     (condition-case nil
+			 (progn
+			   (eval-current-buffer)
+			   (or mu-cite/citation-name-alist
+			       (, mu-cite-registration-symbol)))
+		       (error nil))))))))
 	(when alist
 	  (setq mu-cite-citation-name-alist alist))))))
 (add-hook 'mu-cite-load-hook (function mu-cite-load-registration-file))
@@ -386,27 +396,30 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
 (defun mu-cite-save-registration-file ()
   ;;(let ((file mu-cite-registration-file))
   (let ((file (mu-cite-registration-file)))
-    (with-temp-buffer
-      (setq buffer-file-name file)
-      (insert ";;; " (file-name-nondirectory file) "\n")
-      (insert ";;; This file is generated automatically by mu-cite "
-	      mu-cite-version "\n\n")
-      (insert "(setq "
-	      (symbol-name mu-cite-registration-symbol)
-	      "\n      '(")
-      (insert (mapconcat
-	       (function prin1-to-string)
-	       mu-cite-citation-name-alist "\n        "))
-      (insert "\n        ))\n\n")
-      (insert ";;; "
-	      (file-name-nondirectory file)
-	      " ends here.\n")
-      (write-region 1 1 file nil 'nomsg)
-      (condition-case nil
-	  (set-file-modes file mu-cite-registration-file-modes)
-	(error nil))
-      (save-buffer-as-coding-system
-       mu-cite-registration-file-coding-system-for-write))))
+    (when file
+      (with-temp-buffer
+	(setq buffer-file-name file)
+	(insert ";;; " (file-name-nondirectory file) "\n")
+	(insert ";;; This file is generated automatically by mu-cite "
+		mu-cite-version "\n\n")
+	(insert "(setq "
+		(symbol-name mu-cite-registration-symbol)
+		"\n      '(")
+	(insert (mapconcat
+		 (function prin1-to-string)
+		 mu-cite-citation-name-alist "\n        "))
+	(insert "\n        ))\n\n")
+	(insert ";;; "
+		(file-name-nondirectory file)
+		" ends here.\n")
+	(write-region 1 1 file nil 'nomsg)
+	(condition-case nil
+	    (set-file-modes file mu-cite-registration-file-modes)
+	  (error nil))
+	(if mu-cite-registration-file-coding-system-for-write
+	    (save-buffer-as-coding-system
+	     mu-cite-registration-file-coding-system-for-write)
+	  (save-buffer))))))
 
 
 ;;; @ item methods
