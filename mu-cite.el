@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
-;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Author: MORIOKA Tomohiko <tomo@m17n.org>
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -45,8 +45,6 @@
 ;;; Code:
 
 (require 'std11)
-;;(require 'tl-str)
-;;(require 'tl-list)
 (require 'alist)
 
 
