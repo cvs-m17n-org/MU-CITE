@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.3 1996-01-25 08:07:39 morioka Exp $")
+  "$Id: tl-822.el,v 7.4 1996-03-02 13:25:12 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -346,6 +346,22 @@
 	  (cdr lal))
     ))
 
+(defun rfc822/parse-ascii-token (lal)
+  (let (token itl parsed)
+    (while (and lal
+		(if (find-charset-string (cdr (setq token (car lal))))
+		    (setq token nil)
+		  (rfc822/ignored-token-p token)
+		  ))
+      (setq lal (cdr lal))
+      (setq itl (cons token itl))
+      )
+    (if (and token
+	     (setq parsed (reverse (cons token itl)))
+	     )
+	(cons parsed (cdr lal))
+      )))
+
 (defun rfc822/parse-token-or-comment (lal)
   (let (token itl)
     (while (and lal
@@ -361,7 +377,7 @@
     ))
 
 (defun rfc822/parse-word (lal)
-  (let ((ret (rfc822/parse-token lal)))
+  (let ((ret (rfc822/parse-ascii-token lal)))
     (if ret
 	(let ((elt (car ret))
 	      (rest (cdr ret))
@@ -401,7 +417,7 @@
     (if ret
 	(let ((local-part (cdr (car ret))) dot)
 	  (setq lal (cdr ret))
-	  (while (and (setq ret (rfc822/parse-token lal))
+	  (while (and (setq ret (rfc822/parse-ascii-token lal))
 		      (setq dot (car ret))
 		      (string-equal (cdr (assq 'specials dot)) ".")
 		      (setq ret (rfc822/parse-word (cdr ret)))
@@ -414,7 +430,7 @@
 	  ))))
 
 (defun rfc822/parse-sub-domain (lal)
-  (let ((ret (rfc822/parse-token lal)))
+  (let ((ret (rfc822/parse-ascii-token lal)))
     (if ret
 	(let ((sub-domain (car ret)))
 	  (if (or (assq 'atom sub-domain)
@@ -430,7 +446,7 @@
     (if ret
 	(let ((domain (cdr (car ret))) dot)
 	  (setq lal (cdr ret))
-	  (while (and (setq ret (rfc822/parse-token lal))
+	  (while (and (setq ret (rfc822/parse-ascii-token lal))
 		      (setq dot (car ret))
 		      (string-equal (cdr (assq 'specials dot)) ".")
 		      (setq ret (rfc822/parse-sub-domain (cdr ret)))
@@ -443,7 +459,7 @@
 	  ))))
 
 (defun rfc822/parse-at-domain (lal)
-  (let ((ret (rfc822/parse-token lal)) at-sign)
+  (let ((ret (rfc822/parse-ascii-token lal)) at-sign)
     (if (and ret
 	     (setq at-sign (car ret))
 	     (string-equal (cdr (assq 'specials at-sign)) "@")
@@ -474,7 +490,7 @@
 	     (progn
 	       (setq route (cdr (car ret)))
 	       (setq lal (cdr ret))
-	       (while (and (setq ret (rfc822/parse-token lal))
+	       (while (and (setq ret (rfc822/parse-ascii-token lal))
 			   (setq comma (car ret))
 			   (string-equal (cdr (assq 'specials comma)) ",")
 			   (setq ret (rfc822/parse-at-domain (cdr ret)))
@@ -482,7 +498,7 @@
 		 (setq route (append route comma (cdr (car ret))))
 		 (setq lal (cdr ret))
 		 )
-	       (and (setq ret (rfc822/parse-token lal))
+	       (and (setq ret (rfc822/parse-ascii-token lal))
 		    (setq colon (car ret))
 		    (string-equal (cdr (assq 'specials colon)) ":")
 		    (setq route (append route colon))
@@ -494,7 +510,7 @@
       )))
 
 (defun rfc822/parse-route-addr (lal)
-  (let ((ret (rfc822/parse-token lal))
+  (let ((ret (rfc822/parse-ascii-token lal))
 	< route addr-spec >)
     (if (and ret
 	     (setq < (car ret))
@@ -508,7 +524,7 @@
 		    )
 	     (setq addr-spec (cdr (car ret)))
 	     (setq lal (cdr ret))
-	     (setq ret (rfc822/parse-token lal))
+	     (setq ret (rfc822/parse-ascii-token lal))
 	     (setq > (car ret))
 	     (string-equal (cdr (assq 'specials >)) ">")
 	     )
@@ -554,7 +570,7 @@
     (if (and ret
 	     (setq phrase (cdr (car ret)))
 	     (setq lal (cdr ret))
-	     (setq ret (rfc822/parse-token lal))
+	     (setq ret (rfc822/parse-ascii-token lal))
 	     (setq colon (car ret))
 	     (string-equal (cdr (assq 'specials colon)) ":")
 	     (setq lal (cdr ret))
@@ -563,7 +579,7 @@
 		    (setq mbox (list (car ret)))
 		    (setq lal (cdr ret))
 		    (progn
-		      (while (and (setq ret (rfc822/parse-token lal))
+		      (while (and (setq ret (rfc822/parse-ascii-token lal))
 				  (setq comma (car ret))
 				  (string-equal
 				   (cdr (assq 'specials comma)) ",")
@@ -573,7 +589,7 @@
 				  (setq lal (cdr ret))
 				  )
 			)))
-	       (and (setq ret (rfc822/parse-token lal))
+	       (and (setq ret (rfc822/parse-ascii-token lal))
 		    (setq semicolon (car ret))
 		    (string-equal (cdr (assq 'specials semicolon)) ";")
 		    )))
@@ -592,7 +608,7 @@
     (if ret
 	(let ((dest (list (car ret))))
 	  (setq lal (cdr ret))
-	  (while (and (setq ret (rfc822/parse-token lal))
+	  (while (and (setq ret (rfc822/parse-ascii-token lal))
 		      (string-equal (cdr (assq 'specials (car ret))) ",")
 		      (setq ret (rfc822/parse-address (cdr ret)))
 		      )
