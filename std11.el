@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.24 1996-08-30 06:11:58 morioka Exp $
+;; Version: $Id: std11.el,v 0.25 1996-08-30 15:32:30 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -61,6 +61,26 @@ If BOUNDARY is not nil, it is used as message header separator.
 	(if (re-search-forward (concat "^" name ":[ \t]*") nil t)
 	    (buffer-substring-no-properties (match-end 0) (std11-field-end))
 	  )))))
+
+(defun std11-find-field-body (field-names &optional boundary)
+  "Return the first found field-body specified by FIELD-NAMES
+of the message header in current buffer. If BOUNDARY is not nil, it is
+used as message header separator. [std11.el]"
+  (save-excursion
+    (save-restriction
+      (std11-narrow-to-header boundary)
+      (let ((case-fold-search t)
+	    field-name)
+	(catch 'tag
+	  (while (setq field-name (car field-names))
+	    (goto-char (point-min))
+	    (if (re-search-forward (concat "^" field-name ":[ \t]*") nil t)
+		(throw 'tag
+		       (buffer-substring-no-properties
+			(match-end 0) (std11-field-end)))
+	      )
+	    (setq field-names (cdr field-names))
+	    ))))))
 
 (defun std11-field-bodies (field-names &optional default-value boundary)
   "Return list of each field-bodies of FIELD-NAMES of the message header
