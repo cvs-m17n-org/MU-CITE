@@ -6,7 +6,7 @@
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.47 $
+;; Version: $Revision: 7.48 $
 ;; Keywords: mail, news, citation
 
 ;; This file is part of MU (Message Utilities).
@@ -54,7 +54,7 @@
 ;;;
 
 (defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.47 1997/02/01 18:29:43 morioka Exp $")
+  "$Id: mu-cite.el,v 7.48 1997/03/10 06:13:17 shuhei-k Exp $")
 (defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
 
 
@@ -122,8 +122,7 @@ Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
 ;;; @ prefix registration
 ;;;
 
-(defvar mu-cite/registration-file
-  (expand-file-name "~/.mu-cite.el")
+(defvar mu-cite/registration-file (expand-file-name "~/.mu-cite.el")
   "*The name of the user environment file for mu-cite.")
 
 (defvar mu-cite/allow-null-string-registration nil
@@ -132,7 +131,6 @@ Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
 (defvar mu-cite/registration-symbol 'mu-cite/citation-name-alist)
 
 (defvar mu-cite/citation-name-alist nil)
-(load mu-cite/registration-file t t t)
 (or (eq 'mu-cite/citation-name-alist mu-cite/registration-symbol)
     (setq mu-cite/citation-name-alist
 	  (symbol-value mu-cite/registration-symbol))
@@ -148,31 +146,48 @@ Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
 (defun mu-cite/add-citation-name (name from)
   (setq mu-cite/citation-name-alist
         (put-alist from name mu-cite/citation-name-alist))
-  (mu-cite/save-to-file)
+  (mu-cite/save-registration-file)
   )
 
-;; save to file
-(defun mu-cite/save-to-file ()
-  (let* ((filename mu-cite/registration-file)
+;; load/save registration file
+(defun mu-cite/load-registration-file ()
+  (let* ((file mu-cite/registration-file)
 	 (buffer (get-buffer-create " *mu-register*")))
-    (save-excursion
-      (set-buffer buffer)
-      (setq buffer-file-name filename)
-      (erase-buffer)
-      (insert
-       (format ";;; %s\n" (file-name-nondirectory filename)))
-      (insert
-       (format ";;; This file is generated automatically by mu-cite %s.\n\n"
-               mu-cite/version))
-      (insert (format "(setq %s\n      '(" mu-cite/registration-symbol))
-      (insert (mapconcat
-	       (function prin1-to-string)
-	       mu-cite/citation-name-alist "\n        "))
-      (insert "\n        ))\n\n")
-      (insert
-       (format ";;; %s ends here.\n" (file-name-nondirectory filename)))
-      (save-buffer))
-    (kill-buffer buffer)))
+    (if (file-readable-p file)
+        (unwind-protect
+            (save-excursion
+              (set-buffer buffer)
+              (erase-buffer)
+              (insert-file-contents file)
+              ;; (eval-buffer)
+              (eval-current-buffer))
+          (kill-buffer buffer))
+      )))
+(add-hook 'mu-cite-load-hook (function mu-cite/load-registration-file))
+
+(defun mu-cite/save-registration-file ()
+  (let* ((file mu-cite/registration-file)
+	 (buffer (get-buffer-create " *mu-register*")))
+    (unwind-protect
+        (save-excursion
+          (set-buffer buffer)
+          (setq buffer-file-name file)
+          (erase-buffer)
+          (insert ";;; " (file-name-nondirectory file) "\n")
+          (insert ";;; This file is generated automatically by mu-cite "
+                  mu-cite/version "\n\n")
+          (insert "(setq "
+                  (symbol-name mu-cite/registration-symbol)
+                  "\n      '(")
+          (insert (mapconcat
+                   (function prin1-to-string)
+                   mu-cite/citation-name-alist "\n        "))
+          (insert "\n        ))\n\n")
+          (insert ";;; "
+                  (file-name-nondirectory file)
+                  " ends here.\n")
+          (save-buffer))
+      (kill-buffer buffer))))
 
 
 ;;; @ item methods
