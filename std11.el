@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.31 1996-09-08 19:35:20 morioka Exp $
+;; Version: $Id: std11.el,v 0.32 1996-09-14 08:41:00 morioka Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -210,6 +210,35 @@ If BOUNDARY is not nil, it is used as message header separator.
 			  )
 			)) string "")
 	  "\""))
+
+(defun std11-strip-quoted-pair (str)
+  (let ((dest "")
+	(i 0)
+	(len (length str))
+	chr flag)
+    (while (< i len)
+      (setq chr (aref str i))
+      (if (or flag (not (eq chr ?\\)))
+	  (progn
+	    (setq dest (concat dest (char-to-string chr)))
+	    (setq flag nil)
+	    )
+	(setq flag t)
+	)
+      (setq i (+ i 1))
+      )
+    dest))
+
+(defun std11-strip-quoted-string (string)
+  "Strip quoted-string STRING. [std11.el]"
+  (std11-strip-quoted-pair
+   (let ((max (1- (length string))))
+     (if (and (eq (aref string 0) ?\")
+	      (eq (aref string max) ?\")
+	      )
+	 (substring str 1 max)
+       string)
+     )))
 
 
 ;;; @ composer
