@@ -43,10 +43,8 @@
 
 ;;; Code:
 
-;; We have need to pickup the function `char-category' for XEmacs which
-;; is defined in `emu'.  It requires `poem' recursively for picking up
-;; the macros `char-next-index', `with-temp-buffer', etc.
-(require 'emu)
+;; For picking up the macros `char-next-index', `with-temp-buffer', etc.
+(require 'poem)
 
 (require 'pcustom)
 (require 'std11)
@@ -376,30 +374,39 @@ function according to the agreed upon standard."
   :type 'string
   :group 'mu-cite)
 
-(defun-maybe-cond char-category (character)
-  "Return a string of category mnemonics for CHAR in TABLE.
-CHAR can be any multilingual character,
+(eval-and-compile
+  ;; Force redefine the function `char-category' which may have been
+  ;; defined by emu.el.  They can be distinguished by the number of
+  ;; arguments.  Anyway, that is the best way not to use emu.el.
+  (if (and (fboundp 'char-category)
+	   (subrp (symbol-function 'char-category)))
+      nil
+    (fmakunbound 'char-category)
+    (defun-maybe-cond char-category (character &optional table)
+      "Return a string of category mnemonics for CHAR in TABLE.
+CHAR can be any multilingual characters,
 TABLE defaults to the current buffer's category table."
-  ((and (subr-fboundp 'char-category-set)
-	(subr-fboundp 'category-set-mnemonics))
-   (category-set-mnemonics (char-category-set character))
-   )
-  ((fboundp 'char-category-list)
-   (mapconcat (lambda (chr)
-		(char-to-string (int-char chr)))
-	      (char-category-list character)
-	      "")
-   )
-  ((boundp 'NEMACS)
-   (if (< (char-int character) 128)
-       "al"
-     "j")
-   )
-  (t
-   (if (< (char-int character) 128)
-       "al"
-     "l")
-   ))
+      ((and (subr-fboundp 'char-category-set)
+	    (subr-fboundp 'category-set-mnemonics))
+       (category-set-mnemonics (char-category-set character)))
+      ((and (fboundp 'char-category-list)
+	    ;; `char-category-list' returns a list of characters
+	    ;; in XEmacs 21.2.25 and later, otherwise integers.
+	    (characterp (car-safe (char-category-list ?a))))
+       (concat (char-category-list character)))
+      ((fboundp 'char-category-list)
+       (mapconcat (lambda (chr)
+		    (char-to-string (int-char chr)))
+		  (char-category-list character)
+		  ""))
+      ((boundp 'NEMACS)
+       (if (< (char-int character) 128)
+	   "al"
+	 "j"))
+      (t
+       (if (< (char-int character) 128)
+	   "al"
+	 "l")))))
 
 (defun detect-paragraph-cited-prefix ()
   (save-excursion

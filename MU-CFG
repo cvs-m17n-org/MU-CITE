@@ -6,11 +6,33 @@
 
 (defvar default-load-path load-path)
 
+(condition-case nil
+    (require 'poe);; Attempt to pickup the function `add-to-list'.
+  (error
+   (if (fboundp 'add-to-list)
+       nil
+     ;; This function is limited to only manage the value of
+     ;; `load-path'.  It will be overridden by the proper one later.
+     (defun add-to-list (list-var element)
+       (let ((paths (mapcar 'intern (delq nil (symbol-value list-var))))
+	     (elem (if (string-match "/$" element)
+		       (substring element 0 (1- (length element)))
+		     element)))
+	 (or (memq (intern elem) paths)
+	     (memq (intern (concat elem "/")) paths)
+	     (set list-var (cons element (symbol-value list-var))))))
+     (put 'add-to-list 'defun-maybe t))))
+
+;;; @ Please correct the directories where APEL or FLIM modules are
+;;;   installed.
+
 (add-to-list 'load-path
 	     (expand-file-name "../../site-lisp/apel" data-directory))
 
 (add-to-list 'load-path
 	     (expand-file-name "../../site-lisp/flim" data-directory))
+
+(require 'poe)
 
 (if (boundp 'LISPDIR)
     (progn

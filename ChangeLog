@@ -1,5 +1,21 @@
 2001-02-23  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* mu-cite.el: (char-category): Force redefine as a function because
+	it may have been defined by emu.el;  don't use `int-char' for
+	XEmacs if the function `char-category-list' returns a list of
+	characters;  enclose the whole form with `eval-and-compile'.
+
+	* MU-CFG: Define the function `add-to-list' for a makeshift.
+
+	* MU-MK: Define byte-optimizer for replacing `sref' with `aref';
+	silence XEmacs not to say "bound but not referenced".
+	(byte-compile-file-form-custom-declare-variable): Define it for old
+	Emacsen.
+
+	* mu-cite.el: Undo the last change.
+
+2001-02-23  Katsumi Yamaoka   <yamaoka@jpl.org>
+
 	* mu-cite.el: Require `emu' as well as `poem' because we have need
 	to pickup the function `char-category' for XEmacs.
 
