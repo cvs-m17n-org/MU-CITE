@@ -1,3 +1,8 @@
+1999-07-29  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el (TopLevel): Use `mapcar' instead of `dolist' for
+	defining obsolete variables and functions.
+
 1999-07-28  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* README.en: (How to use): Remove the part.
