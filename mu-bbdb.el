@@ -3,7 +3,7 @@
 ;; Copyright (C) 1996 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Id: mu-bbdb.el,v 3.2 1996/11/22 08:44:27 shuhei-k Exp $
+;; Version: $Id: mu-bbdb.el,v 3.3 1996/12/10 11:57:23 shuhei-k Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -38,14 +38,8 @@
 ;;; Code:
 
 (require 'mu-cite)
-(if (not (fboundp 'eval-when))
-    (require 'bbdb)
-  (eval-when (compile)
-    (ignore-errors
-      (require 'bbdb)))
-  (eval-when (load eval)
+(if (module-installed-p 'bbdb)
     (require 'bbdb))
-  )
 
 (defvar mu-bbdb-load-hook nil
   "*List of functions called after mu-bbdb is loaded.")
@@ -68,9 +62,9 @@
 (defun mu-cite/set-bbdb-attr (attr addr)
   "Add attribute information to BBDB."
   (let* ((bbdb-notice-hook nil)
-         (record (bbdb-annotate-message-sender 
+         (record (bbdb-annotate-message-sender
                   addr t
-	          (bbdb-invoke-hook-for-value 
+	          (bbdb-invoke-hook-for-value
 	           bbdb/mail-auto-create-p)
 		  t)))
     (if record
