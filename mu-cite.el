@@ -70,13 +70,19 @@
 
 (defmacro mu-cite-remove-text-properties (string)
   "Remove text properties from STRING which is read from minibuffer."
-  (if (or (featurep 'xemacs)
-	  (boundp 'minibuffer-allow-text-properties);; Emacs 20.1 or later.
-	  (not (fboundp 'set-text-properties)));; under Emacs 19.7.
-      string
-    (` (let ((obj (copy-sequence (, string))))
-	 (set-text-properties 0 (length obj) nil obj)
-	 obj))))
+  (cond ((featurep 'xemacs)
+	 (` (let ((string (copy-sequence (, string))))
+	      (map-extents (function (lambda (extent maparg)
+				       (delete-extent extent))
+				     string 0 (length string)))
+	      string)))
+	((or (boundp 'minibuffer-allow-text-properties);; Emacs 20.1 or later.
+	     (not (fboundp 'set-text-properties)));; under Emacs 19.7.
+	 string)
+	(t
+	 (` (let ((string (copy-sequence (, string))))
+	      (set-text-properties 0 (length string) nil string)
+	      string)))))
 
 
 ;;; @ set up

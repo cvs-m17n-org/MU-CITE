@@ -1,3 +1,8 @@
+2001-04-19  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-remove-text-properties): Make it to work with
+	XEmacs.
+
 2001-03-22  NISHIDA Masakazu  <m_nisida@ca2.so-net.ne.jp>
 
 	* mu-register.el (mu-cite-get-prefix-register-verbose-method):
