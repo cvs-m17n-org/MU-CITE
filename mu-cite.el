@@ -3,7 +3,6 @@
 ;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
-;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: mail, news, citation
@@ -56,6 +55,10 @@
 (require 'std11)
 (require 'alist)
 
+(autoload 'mu-cite-get-prefix-method "mu-register")
+(autoload 'mu-cite-get-prefix-register-method "mu-register")
+(autoload 'mu-cite-get-prefix-register-verbose-method "mu-register")
+
 
 ;;; @ version
 ;;;
@@ -66,43 +69,20 @@
 ;;; @ obsoletes
 ;;;
 
-;; This part will be abolished in the future.
+;; This part will be abolished in the near future.
 
 ;; variables
 (eval-when-compile (require 'static))
 
-(defvar mu-cite/registration-file)
-(defvar mu-cite-registration-file)
-(defmacro mu-cite-registration-file ()
-  (if (fboundp 'defvaralias)
-      'mu-cite-registration-file
-    '(if (and (not noninteractive)
-	      (boundp 'mu-cite/registration-file))
-	 (prog1
-	     (if (yes-or-no-p
-		  (format "Obsolete variable `%s' found, use anyway? "
-			  'mu-cite/registration-file))
-		 (symbol-value 'mu-cite/registration-file)
-	       mu-cite-registration-file)
-	   (message "You should use `%s' instead of `%s'."
-		    'mu-cite-registration-file 'mu-cite/registration-file)
-	   (sleep-for 1))
-       mu-cite-registration-file)))
-
 (eval-and-compile
   (defconst mu-cite-obsolete-variable-alist
-    '((mu-cite/allow-null-string-registration
-       mu-cite-allow-null-string-registration)
-      (mu-cite/citation-name-alist	mu-cite-citation-name-alist)
-      (mu-cite/cited-prefix-regexp	mu-cite-cited-prefix-regexp)
+    '((mu-cite/cited-prefix-regexp	mu-cite-cited-prefix-regexp)
       (mu-cite/default-methods-alist	mu-cite-default-methods-alist)
       (mu-cite/instantiation-hook	mu-cite-instantiation-hook)
-      (mu-cite/minibuffer-history	mu-cite-minibuffer-history)
       (mu-cite/ml-count-field-list	mu-cite-ml-count-field-list)
       (mu-cite/post-cite-hook		mu-cite-post-cite-hook)
       (mu-cite/pre-cite-hook		mu-cite-pre-cite-hook)
       (mu-cite/prefix-format		mu-cite-prefix-format)
-      (mu-cite/registration-file	mu-cite-registration-file)
       (mu-cite/top-format		mu-cite-top-format)))
 
   (mapcar
@@ -124,21 +104,12 @@
 ;; functions
 (eval-and-compile
   (defconst mu-cite-obsolete-function-alist
-    '((mu-cite/add-citation-name	mu-cite-add-citation-name)
-      (mu-cite/cite-original		mu-cite-original)
+    '((mu-cite/cite-original		mu-cite-original)
       (mu-cite/eval-format		mu-cite-eval-format)
-      (mu-cite/get-citation-name	mu-cite-get-citation-name)
       (mu-cite/get-field-value		mu-cite-get-field-value)
       (mu-cite/get-ml-count-method	mu-cite-get-ml-count-method)
-      (mu-cite/get-prefix-method	mu-cite-get-prefix-method)
-      (mu-cite/get-prefix-register-method
-       mu-cite-get-prefix-register-method)
-      (mu-cite/get-prefix-register-verbose-method
-       mu-cite-get-prefix-register-verbose-method)
       (mu-cite/get-value		mu-cite-get-value)
-      (mu-cite/load-registration-file	mu-cite-load-registration-file)
-      (mu-cite/make-methods		mu-cite-make-methods)
-      (mu-cite/save-registration-file	mu-cite-save-registration-file)))
+      (mu-cite/make-methods		mu-cite-make-methods)))
 
   (mapcar
    (function (lambda (elem)
@@ -304,124 +275,6 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
 	  (funcall (cdr method) name)))))
 
 
-;;; @ prefix registration
-;;;
-
-(defcustom mu-cite-registration-file (expand-file-name "~/.mu-cite.el")
-  "The name of the user environment file for mu-cite."
-  :type 'file
-  :group 'mu-cite)
-
-(defcustom mu-cite-allow-null-string-registration nil
-  "If non-nil, null-string citation-name is registered."
-  :type 'boolean
-  :group 'mu-cite)
-
-(defcustom mu-cite-registration-file-coding-system-for-read nil
-  "Coding system for reading registration file."
-  :group 'mu-cite)
-
-(defcustom mu-cite-registration-file-coding-system-for-write nil
-  "Coding system for writing registration file."
-  :group 'mu-cite)
-
-(defcustom mu-cite-registration-file-modes 384
-  "Mode bits of `mu-cite-registration-file', as an integer."
-  :type 'integer
-  :group 'mu-cite)
-
-(defvar mu-cite-registration-symbol 'mu-cite-citation-name-alist)
-
-(defvar mu-cite-citation-name-alist nil)
-(unless (eq 'mu-cite-citation-name-alist mu-cite-registration-symbol)
-  (setq mu-cite-citation-name-alist
-	(symbol-value mu-cite-registration-symbol)))
-(defvar mu-cite-minibuffer-history nil)
-
-;; get citation-name from the database
-(defun mu-cite-get-citation-name (from)
-  (cdr (assoc from mu-cite-citation-name-alist)))
-
-;; register citation-name to the database
-(defun mu-cite-add-citation-name (name from)
-  (setq mu-cite-citation-name-alist
-	(put-alist from name mu-cite-citation-name-alist))
-  (mu-cite-save-registration-file))
-
-;; load/save registration file
-;;(defun mu-cite-load-registration-file ()
-;;  (let ((file mu-cite-registration-file))
-;;    (when (and file
-;;	       (file-readable-p file))
-;;      (let ((alist
-;;	     (with-temp-buffer
-;;	       (eval
-;;		(` (let ((, mu-cite-registration-symbol))
-;;		     (if mu-cite-registration-file-coding-system-for-read
-;;			 (insert-file-contents-as-coding-system
-;;			  mu-cite-registration-file-coding-system-for-read
-;;			  file)
-;;		       (insert-file-contents file))
-;;		     (condition-case nil
-;;			 (progn
-;;			   (eval-current-buffer)
-;;			   (, mu-cite-registration-symbol))
-;;		       (error nil))))))))
-;;	(when alist
-;;	  (setq mu-cite-citation-name-alist alist))))))
-(defun mu-cite-load-registration-file ()
-  (let ((file (mu-cite-registration-file)))
-    (when (and file
-	       (file-readable-p file))
-      (let ((alist
-	     (with-temp-buffer
-	       (eval
-		(` (let ((, mu-cite-registration-symbol)
-			 mu-cite/citation-name-alist)
-		     (if mu-cite-registration-file-coding-system-for-read
-			 (insert-file-contents-as-coding-system
-			  mu-cite-registration-file-coding-system-for-read
-			  file)
-		       (insert-file-contents file))
-		     (condition-case nil
-			 (progn
-			   (eval-current-buffer)
-			   (or mu-cite/citation-name-alist
-			       (, mu-cite-registration-symbol)))
-		       (error nil))))))))
-	(when alist
-	  (setq mu-cite-citation-name-alist alist))))))
-(add-hook 'mu-cite-load-hook (function mu-cite-load-registration-file))
-
-(defun mu-cite-save-registration-file ()
-  ;;(let ((file mu-cite-registration-file))
-  (let ((file (mu-cite-registration-file)))
-    (when file
-      (with-temp-buffer
-	(setq buffer-file-name file)
-	(insert ";;; " (file-name-nondirectory file) "\n")
-	(insert ";;; This file is generated automatically by mu-cite "
-		mu-cite-version "\n\n")
-	(insert "(setq "
-		(symbol-name mu-cite-registration-symbol)
-		"\n      '(")
-	(insert (mapconcat
-		 (function prin1-to-string)
-		 mu-cite-citation-name-alist "\n        "))
-	(insert "\n        ))\n\n")
-	(insert ";;; "
-		(file-name-nondirectory file)
-		" ends here.\n")
-	(write-region 1 1 file nil 'nomsg)
-	(condition-case nil
-	    (set-file-modes file mu-cite-registration-file-modes)
-	  (error nil))
-	(if mu-cite-registration-file-coding-system-for-write
-	    (save-buffer-as-coding-system
-	     mu-cite-registration-file-coding-system-for-write)
-	  (save-buffer))))))
-
-
 ;;; @ item methods
 ;;;
 
@@ -451,43 +304,6 @@ Use this hook to add your own methods to `mu-cite-default-methods-alist'."
 		   (substring ml-count
 			      (match-beginning 0)(match-end 0))))
 	  (setq field-list (cdr field-list)))))))
-
-
-;;; @@ prefix and registration
-;;;
-
-(defun mu-cite-get-prefix-method ()
-  (or (mu-cite-get-citation-name (mu-cite-get-value 'address))
-      ">"))
-
-(defun mu-cite-get-prefix-register-method ()
-  (let ((addr (mu-cite-get-value 'address)))
-    (or (mu-cite-get-citation-name addr)
-	(let ((return
-	       (read-string "Citation name? "
-			    (or (mu-cite-get-value 'x-attribution)
-				(mu-cite-get-value 'full-name))
-			    'mu-cite-minibuffer-history)))
-	  (when (and (or mu-cite-allow-null-string-registration
-			 (not (string-equal return "")))
-		     (y-or-n-p (format "Register \"%s\"? " return)))
-	    (mu-cite-add-citation-name return addr))
-	  return))))
-
-(defun mu-cite-get-prefix-register-verbose-method ()
-  (let* ((addr (mu-cite-get-value 'address))
-	 (return1 (mu-cite-get-citation-name addr))
-	 (return (read-string "Citation name? "
-			      (or return1
-				  (mu-cite-get-value 'x-attribution)
-				  (mu-cite-get-value 'full-name))
-			      'mu-cite-minibuffer-history)))
-    (when (and (or mu-cite-allow-null-string-registration
-		   (not (string-equal return "")))
-	       (not (string-equal return return1))
-	       (y-or-n-p (format "Register \"%s\"? " return)))
-      (mu-cite-add-citation-name return addr))
-    return))
 
 
 ;;; @ fundamentals
@@ -690,7 +506,7 @@ function according to the agreed upon standard."
 ;;; @ obsoletes
 ;;;
 
-;; This part will be abolished in the future.
+;; This part will be abolished in the near future.
 
 (static-unless (fboundp 'defvaralias)
   (mapcar
