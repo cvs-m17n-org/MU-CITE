@@ -3,7 +3,7 @@
 ;; Copyright (C) 1996 Shuhei KOBAYASHI
 
 ;; Author: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Id: mu-bbdb.el,v 3.1 1996/08/18 07:19:53 morioka Exp $
+;; Version: $Id: mu-bbdb.el,v 3.2 1996/11/22 08:44:27 shuhei-k Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -38,7 +38,14 @@
 ;;; Code:
 
 (require 'mu-cite)
-(require 'bbdb)
+(if (not (fboundp 'eval-when))
+    (require 'bbdb)
+  (eval-when (compile)
+    (ignore-errors
+      (require 'bbdb)))
+  (eval-when (load eval)
+    (require 'bbdb))
+  )
 
 (defvar mu-bbdb-load-hook nil
   "*List of functions called after mu-bbdb is loaded.")
