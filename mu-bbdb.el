@@ -39,9 +39,6 @@
 (require 'mu-cite)
 (require 'bbdb)
 
-(defvar mu-bbdb-load-hook nil
-  "*List of functions called after mu-bbdb is loaded.")
-
 (defvar mu-bbdb-history nil)
 
 
