@@ -314,8 +314,8 @@ function according to the agreed upon standard."
     (let ((last-point (point))
 	  (top (mu-cite-eval-format mu-cite-top-format))
 	  (prefix (mu-cite-eval-format mu-cite-prefix-format)))
-      (when (re-search-forward "^-*$" nil nil)
-	(forward-line 1))
+      (if (re-search-forward "^-*$" nil nil)
+	  (forward-line 1))
       (widen)
       (delete-region last-point (point))
       (insert top)
@@ -396,8 +396,8 @@ TABLE defaults to the current buffer's category table."
 		    (concat "[" citation-mark-chars "]") nil t)
 		   (progn
 		     (goto-char (match-end 0))
-		     (when (looking-at "[ \t]+")
-		       (goto-char (match-end 0)))
+		     (if (looking-at "[ \t]+")
+			 (goto-char (match-end 0)))
 		     (buffer-substring (point-min)(point)))
 		 prefix)))
 	    ((progn
@@ -407,8 +407,8 @@ TABLE defaults to the current buffer's category table."
 	       (re-search-backward
 		(concat "[" citation-mark-chars "]") nil t))
 	     (goto-char (match-end 0))
-	     (when (looking-at "[ \t]+")
-	       (goto-char (match-end 0)))
+	     (if (looking-at "[ \t]+")
+		 (goto-char (match-end 0)))
 	     (buffer-substring (point-min)(point)))
 	    (t "")))))
 
