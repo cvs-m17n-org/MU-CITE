@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.65 1996-09-08 18:04:57 morioka Exp $")
+  "$Id: tl-822.el,v 7.66 1996-09-08 18:09:42 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -64,6 +64,8 @@
 	   (regexp-or rfc822/qtext-regexp rfc822/quoted-pair-regexp)
 	   )
 	  "\""))
+
+(defalias 'rfc822/wrap-as-quoted-string 'std11-wrap-as-quoted-string)
 
 (defun rfc822/strip-quoted-pair (str)
   (let ((dest "")
