@@ -1,6 +1,10 @@
+1999-07-15  Masahiro Murata   <muse@ba2.so-net.ne.jp>
+
+	* mu-cite.el (mu-cite/eval-format): Add `save-excursion'.
+
 1999-07-15  NAKAJI Hiroyuki   <nakaji@tutrp.tut.ac.jp>
 
-	* MU-CFG (load-path): add "../apel" and "../flim".
+	* MU-CFG (load-path): Add "../apel" and "../flim".
 
 1998-07-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
