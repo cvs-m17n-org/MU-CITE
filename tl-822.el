@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.10 1996-04-19 19:18:30 morioka Exp $")
+  "$Id: tl-822.el,v 7.11 1996-04-19 19:20:08 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -342,7 +342,7 @@
       (setq lal (cdr lal))
       (setq itl (cons token itl))
       )
-    (cons (reverse (cons token itl))
+    (cons (nreverse (cons token itl))
 	  (cdr lal))
     ))
 
