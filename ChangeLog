@@ -1,3 +1,21 @@
+1999-07-28  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-ml-count-field-list): Modify tag string for
+	`choice'; use `const' with the arg nil for the menu separator;
+	delete element which value is nil when the symbol value is set.
+	(mu-cite-top-format): New implementation for customization using
+	`mu-cite-choose-top-format' and `mu-cite-custom-set-variable'.
+	(mu-cite-prefix-format): New implementation for customization using
+	`mu-cite-choose-prefix-format' and `mu-cite-custom-set-variable'.
+	(mu-cite-custom-set-variable): New function.
+	(mu-cite-choose-top-format): New widget.
+	(mu-cite-choose-prefix-format): New widget.
+
+	(widget-mu-cite-method-prompt-value): Abolish function.
+	(mu-cite-method): Abolish widget.
+	(widget-mu-cite-method-prompt-value-history): Abolish variable.
+	(mu-cite-method-list): Abolish function.
+
 1999-07-22  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-register.el (mu-cite-load-registration-file): Check for the
