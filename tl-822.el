@@ -6,7 +6,7 @@
 ;;;
 ;;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Version:
-;;;	$Id: tl-822.el,v 2.0 1995-10-05 11:26:43 morioka Exp $
+;;;	$Id: tl-822.el,v 3.0 1995-10-05 12:09:52 morioka Exp $
 ;;; Keywords: mail, news, RFC 822
 ;;;
 ;;; This file is part of tm (Tools for MIME).
@@ -20,8 +20,10 @@
 
 (defconst rfc822/field-name-regexp "[!-9;-~]+")
 
-(defconst rfc822::next-field-top-regexp
-  (concat "\n" rfc822/field-name-regexp ":"))
+(defconst rfc822/field-top-regexp
+  (concat "\\(" rfc822/field-name-regexp "\\):"))
+
+(defconst rfc822::next-field-top-regexp (concat "\n" rfc822/field-top-regexp))
 
 (defun rfc822/field-end ()
   (if (re-search-forward rfc822::next-field-top-regexp nil t)
