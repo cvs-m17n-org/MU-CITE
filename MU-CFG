@@ -1,7 +1,8 @@
 ;;; -*-Emacs-Lisp-*-
-;;;
-;;; $Id: MU-CFG,v 0.0 1997-03-14 07:27:30 morioka Exp $
-;;;
+
+;; MU-CFG: installation setting about mu-cite.
+
+;;; Code:
 
 (setq load-path (append
 		 (mapcar (function
