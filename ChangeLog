@@ -1,7 +1,174 @@
+1999-07-19  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-bbdb.el (mu-bbdb-history): New variable.
+	(mu-cite/get-bbdb-prefix-method): Use `mu-cite-get-value' instead
+	of `mu-cite/get-value'.
+	(mu-cite/get-bbdb-prefix-register-method): Likewise; use
+	`mu-bbdb-history' instead of `mu-cite/minibuffer-history'.
+	(mu-cite/get-bbdb-prefix-register-verbose-method): Likewise.
+
+	* mu-register.el: New file.
+
+	* mu-cite.el:
+	- Add autoload setting for `mu-cite-get-prefix-method',
+	  `mu-cite-get-prefix-register-method' and
+	  `mu-cite-get-prefix-register-verbose-method'.
+	(mu-cite-registration-file): Deleted.
+	(mu-cite-obsolete-variable-alist): Deleted.
+	(mu-cite-obsolete-function-alist): Deleted.
+	(mu-cite-registration-file): Deleted [moved to mu-register.el].
+	(mu-cite-allow-null-string-registration): Likewise.
+	(mu-cite-registration-file-coding-system-for-read): Likewise.
+	(mu-cite-registration-file-coding-system-for-write): Deleted.
+	(mu-cite-registration-file-modes): Deleted [moved to
+	mu-register.el].
+	(mu-cite-registration-symbol): Likewise.
+	(mu-cite-citation-name-alist): Likewise.
+	(mu-cite-minibuffer-history): Likewise.
+	(mu-cite-get-citation-name): Likewise.
+	(mu-cite-add-citation-name): Likewise.
+	(mu-cite-load-registration-file): Likewise.
+	(mu-cite-save-registration-file): Likewise.
+	(mu-cite-get-prefix-method): Likewise.
+	(mu-cite-get-prefix-register-method): Likewise.
+	(mu-cite-get-prefix-register-verbose-method): Likewise.
+	(mu-cite/allow-null-string-registration): Deleted [moved to
+	mu-register.el].
+	(mu-cite/citation-name-alist): Likewise.
+	(mu-cite/minibuffer-history): Deleted because there are no need.
+	(mu-cite/registration-file): Deleted [moved to mu-register.el].
+	- Delete obsolete aliases except `mu-cite/cite-original',
+	  `mu-cite/get-field-value' and `mu-cite/get-value' because there
+	  are no need.
+
+	* MU-ELS: Remove RCS magic cookie.
+	(mu-modules-to-compile): Add `mu-register'.
+
+1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* ftp.in: New file.
+
+	* Makefile (ARC_DIR): Default to "/pub/elisp/mu".
+
+1999-07-17  Kenji Itoh        <keit@tpj.co.jp>
+
+	* mu-cite.el (mu-cite-original): Add autoload cookie.
+	* latex-math-symbol.el (latex-math-decode-region): Likewise.
+	(latex-math-decode-buffer): Likewise.
+
+	* Makefile (release): New target.
+	(tar): New implementation.
+	(clean): Use the variables `RM' and `GOMI'.
+	(install-package): New target.
+	(package): New target.
+	(install): Accept the arguments `PREFIX', `LISPDIR' and
+	`VERSION_SPECIFIC_LISPDIR'.
+	(elc): Likewise.
+
+	(ARC_DIR, VERSION, FILES, GOMI): New variables.
+	(VERSION_SPECIFIC_LISPDIR, PACKAGEDIR, LISPDIR): New variables.
+	(PREFIX): Default to "NONE".
+	(XEMACS, CP, RM, TAR, RELEASE, API, PACKAGE): New variables.
+
+	* MU-MK (install-mu-package): New function.
+	(compile-mu-package): New function.
+	(config-mu-package): New function.
+	(config-mu): Extract the values of `LISPDIR' and
+	`VERSION_SPECIFIC_LISPDIR' from the command line arguments.
+
+	* MU-CFG (PACKAGEDIR): New variable.
+	(MU_DIR): Use `VERSION_SPECIFIC_LISPDIR' instead of `LISPDIR'.
+	(VERSION_SPECIFIC_LISPDIR): New variable.
+	(TopLevel): Delete code to detect APEL 7.3 or later.
+	(load-path): Modernize the way of adding the paths of APEL, FLIM,
+	LISPDIR, VERSION_SPECIFIC_LISPDIR, CUSTOM and `default-directory'.
+	(default-load-path): New variable.
+
+1999-07-16  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* (mu-cite-version): Update to 8.0.
+
+	* (mu-cite-eval-format): Don't use `save-excursion'.
+	* (mu-cite-get-value): Save excursion while evaluating a function.
+
+	* (mu-cite-save-registration-file): New implementation.
+	* (mu-cite-load-registration-file): Likewise.
+
+	* (mu-cite-registration-file-modes): New user option.
+	* (mu-cite-registration-file-coding-system-for-write): Likewise.
+	* (mu-cite-registration-file-coding-system-for-read): Likewise.
+
+	* (TopLevel): Treat old variables and functions as obsolete.
+
+	* (TopLevel): Require `custom'.
+	* (TopLevel): Require `emu' for picking up `char-category' for
+	XEmacs.
+	* (TopLevel): Require `poe' for picking up some macros, e.g.
+	`with-temp-buffer', for old Emacsen.
+	* (TopLevel): Require `cl' at the compile time.
+
+	* (mu-cite-top-format, mu-cite-registration-file,
+	mu-cite-prefix-format, mu-cite-pre-cite-hook,
+	mu-cite-post-cite-hook, mu-cite-ml-count-field-list,
+	mu-cite-load-hook, mu-cite-instantiation-hook,
+	mu-cite-cited-prefix-regexp,
+	mu-cite-allow-null-string-registration, citation-mark-chars,
+	citation-disable-chars): Use `defcustom' instead of `defvar'.
+
+	* (mu-cite): New customization group.
+
+	* (mu-cite-original): Renamed from `mu-cite/cite-original'.
+	* (mu-cite-version, mu-cite-top-format,
+	mu-cite-save-registration-file, mu-cite-registration-symbol,
+	mu-cite-registration-file, mu-cite-prefix-format,
+	mu-cite-pre-cite-hook, mu-cite-post-cite-hook, mu-cite-mu-cite.el,
+	mu-cite-ml-count-field-list, mu-cite-minibuffer-history,
+	mu-cite-methods-alist, mu-cite-make-methods,
+	mu-cite-load-registration-file, mu-cite-instantiation-hook,
+	mu-cite-get-value, mu-cite-get-prefix-register-verbose-method,
+	mu-cite-get-prefix-register-method, mu-cite-get-prefix-method,
+	mu-cite-get-ml-count-method, mu-cite-get-field-value-method-alist,
+	mu-cite-get-field-value, mu-cite-get-citation-name,
+	mu-cite-eval-format, mu-cite-default-methods-alist,
+	mu-cite-cited-prefix-regexp, mu-cite-citation-name-alist,
+	mu-cite-allow-null-string-registration, mu-cite-add-citation-name):
+	Renamed from `mu-cite/*'.
+
+	* MU-MK (compile-mu): Use `mu-modules-to-compile' instead of
+	`mu-modules'.
+
+1999-07-15  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-cite.el: Change Maintainer; change my address.
+
+1999-07-15  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* Makefile: Remove RCS magic cookie.
+
+	* mu-cite.el: Likewise.
+
+	* MU-MK: Likewise.
+
+	* MU-CFG: Likewise.
+
+1999-07-15  Masahiro Murata   <muse@ba2.so-net.ne.jp>
+
+	* mu-cite.el (mu-cite/eval-format): Add `save-excursion'.
+
+1999-07-15  NAKAJI Hiroyuki   <nakaji@tutrp.tut.ac.jp>
+
+	* MU-CFG (load-path): Add "../apel" and "../flim".
+
+1998-07-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* mu-cite.el (detect-paragraph-cited-prefix): Use `cadr' instead
+	of `second'.
+
 1998-03-09  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* README.en (Bug reports): Modify description of tm mailing list.
 
+
 1997-03-19  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* MU: Version 0.40.2 was released.
@@ -9,7 +176,7 @@
 Tue Mar 18 15:07:56 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (mu-cite/get-field-value-method-alist): Setting for
- 	tm-mh-e was abolished.
+	tm-mh-e was abolished.
 
 
 1997-03-14  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -24,7 +191,7 @@ Mon Mar 10 06:13:17 1997  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* mu-cite.el (mu-cite/load-registration-file): New function.
 	(mu-cite/save-registration-file): Renamed from
- 	`mu-cite/save-to-file'.
+	`mu-cite/save-to-file'.
 
 
 1997-03-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -34,7 +201,7 @@ Mon Mar 10 06:13:17 1997  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 1997-03-03  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
 	* std11.el (std11-addr-to-string): Enclose quoted-string with
- 	double-quote.
+	double-quote.
 
 
 1997-02-03  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -45,10 +212,10 @@ Sat Feb  1 18:29:43 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (citation-disable-chars): New variable.
 	(detect-paragraph-cited-prefix): Use variable
- 	`citation-disable-chars' for single line.
+	`citation-disable-chars' for single line.
 
 	* mu-cite.el (mu-cite/cited-prefix-regexp): Don't regard "<" as
- 	cited-prefix.
+	cited-prefix.
 
 
 1997-01-31  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -58,7 +225,7 @@ Sat Feb  1 18:29:43 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Fri Jan 31 12:31:20 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (detect-paragraph-cited-prefix): check return value
- 	of `string-compare-from-top'.
+	of `string-compare-from-top'.
 
 
 1997-01-21  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -68,18 +235,18 @@ Fri Jan 31 12:31:20 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Fri Jan 17 05:11:03 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* latex-math-symbol.el (latex-math-decode-region): to avoid
- 	mismatching.
+	mismatching.
 
 Tue Jan 14 11:30:27 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* latex-math-symbol.el (latex-math-symbol-table-alist): Add more
- 	symbols.
+	symbols.
 
 Thu Jan  9 18:01:23 1997  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* mu-cite.el (detect-paragraph-cited-prefix): New function.
 	(fill-cited-region): Use function `detect-paragraph-cited-prefix'.
-  	Variable `cited-prefix-regexp' was abolished.
+	Variable `cited-prefix-regexp' was abolished.
 
 
 Tue Dec 17 13:07:54 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -91,14 +258,14 @@ Tue Dec 17 13:07:54 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Tue Dec 17 12:06:15 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-full-name-string): Strip quoted-pair and return
- 	nil if phrase is null-string.
+	nil if phrase is null-string.
 
 Tue Dec 17 11:01:47 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-wrap-as-quoted-pairs): New function.
 
 	(std11-wrap-as-quoted-string): Use function
- 	`std11-wrap-as-quoted-pairs'.
+	`std11-wrap-as-quoted-pairs'.
 
 Mon Dec 16 07:12:38 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -118,7 +285,7 @@ Mon Dec  2 15:20:12 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 Thu Nov 28 19:38:27 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11-parse.el (std11-check-enclosure): Unused local variable
- 	`dest' was abolished.
+	`dest' was abolished.
 
 Fri Nov 22 08:44:27 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -136,7 +303,7 @@ Wed Oct 16 00:14:50 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Thu Oct  3 05:02:32 1996  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
 
 	* mu-cite.el (fill-cited-region): prefix should be checked by
- 	`cited-prefix-regexp'. (cf. [tm-ja:2106])
+	`cited-prefix-regexp'. (cf. [tm-ja:2106])
 
 
 Tue Oct  1 13:33:32 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -154,7 +321,7 @@ Sat Sep 28 10:34:12 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 	(mu-cite/cited-prefix-regexp), (mu-cite/ml-count-field-list),
 	(cited-prefix-regexp): Doc strings.
 	(mu-cite-load-hook), (mu-cite/instantiation-hook): Explicitly
- 	defined.
+	defined.
 
 Thu Sep 26 04:51:47 1996  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
 
@@ -177,14 +344,14 @@ Sun Sep 15 09:27:25 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Sat Sep 14 08:44:17 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* tl-822.el (rfc822/strip-quoted-string): New alias; moved to
- 	std11.el.
+	std11.el.
 
 	* std11.el (std11-strip-quoted-pair): New function; moved from
- 	tl-822.el.
+	tl-822.el.
 	(std11-strip-quoted-string): New function; moved from tl-822.el.
 
 	* tl-822.el: Constant `rfc822/linear-white-space-regexp' was
- 	abolished.
+	abolished.
 
 
 Sun Sep  8 19:35:20 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -200,22 +367,22 @@ Sun Sep  8 18:09:42 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 Sun Sep  8 18:07:44 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
 	* std11.el (std11-wrap-as-quoted-string): Renamed from
- 	`rfc822/wrap-as-quoted-string'.
+	`rfc822/wrap-as-quoted-string'.
 
 	* tl-822.el (rfc822/qtext-regexp): Use variable
- 	`std11-non-qtext-char-list' instead of
- 	`rfc822/non-qtext-char-list'.
+	`std11-non-qtext-char-list' instead of
+	`rfc822/non-qtext-char-list'.
 
 	* std11.el (std11-non-qtext-char-list): Renamed from
- 	`rfc822/non-qtext-char-list'.
+	`rfc822/non-qtext-char-list'.
 
 	* std11.el (rfc822/non-qtext-char-list): New variable; moved from
- 	tl-822.el.
+	tl-822.el.
 	(rfc822/wrap-as-quoted-string): New function; moved from
- 	tl-822.el.
+	tl-822.el.
 
 	* tl-822.el: Function `rfc822/wrap-as-quoted-string' and variable
- 	`rfc822/non-qtext-char-list' were moved to std11.el.
+	`rfc822/non-qtext-char-list' were moved to std11.el.
 
 
 Tue Sep  3 09:49:49 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
@@ -241,7 +408,7 @@ Mon Sep  2 15:48:07 1996  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 	New alias; moved to std11.el.
 
 	* std11.el (std11-extract-address-components): New function; moved
- 	from tl-822.el.
+	from tl-822.el.
 
 	* std11.el, std11-parse.el, tl-822.el, mu-cite.el, mu-bbdb.el:
 	moved from tl package.
