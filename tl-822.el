@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.24 1996-05-15 14:23:50 morioka Exp $")
+  "$Id: tl-822.el,v 7.25 1996-05-17 08:12:46 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -327,7 +327,7 @@
 	   (eq (elt str 0) ?\()
 	   )
       (let ((dest "")
-	    chr p ret)
+	    p ret)
 	(setq str (substring str 1))
 	(catch 'tag
 	  (while (not (string-equal str ""))
