@@ -1,5 +1,16 @@
 1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* mu-cite.el (mu-cite-save-registration-file): Use `save-buffer'
+	instead of `save-buffer-as-coding-system' if the value of
+	`mu-cite-registration-file-coding-system-for-write' is nil.
+	(mu-cite-load-registration-file): Use `insert-file-contents'
+	instead of `insert-file-contents-as-coding-system' if the value of
+	`mu-cite-registration-file-coding-system-for-read' is nil.
+
+	(TopLevel): Don't warn for the obsolete variables if the value of
+	`noninteractive' is non-nil.
+	(mu-cite-registration-file): Likewise.
+
 	* mu-bbdb.el (TopLevel): Use `mu-cite-default-methods-alist'
 	instead of `mu-cite/default-methods-alist'.
 	(mu-cite/get-bbdb-prefix-register-method): Use
