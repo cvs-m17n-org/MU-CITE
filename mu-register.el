@@ -58,8 +58,6 @@
 (defvar mu-registration-file-coding-system nil
   "Coding system used when writing a current registration file.")
 
-(defvar mu-citation-name-alist nil)
-
 (defvar mu-register-history nil)
 
 (eval-when-compile (require 'static))
@@ -91,7 +89,9 @@
 	(let ((exp (read (current-buffer))))
 	  (or (eq (car (cdr exp)) mu-registration-symbol)
 	      (setcar (cdr exp) mu-registration-symbol))
-	  (eval exp)))))
+	  (eval exp))))
+  (or (boundp mu-registration-symbol)
+      (set mu-registration-symbol nil)))
 
 (defun mu-cite-save-registration-file ()
   (with-temp-buffer
@@ -103,7 +103,7 @@
 	    "\n      '(")
     (insert (mapconcat
 	     (function prin1-to-string)
-	     mu-citation-name-alist "\n        "))
+	     (symbol-value mu-registration-symbol) "\n        "))
     (insert "\n        ))\n\n")
     (insert ";;; "
 	    (file-name-nondirectory mu-registration-file)
@@ -121,12 +121,11 @@
 
 ;; get citation-name from the database
 (defun mu-register-get-citation-name (from)
-  (cdr (assoc from mu-citation-name-alist)))
+  (cdr (assoc from (symbol-value mu-registration-symbol))))
 
 ;; register citation-name to the database
 (defun mu-register-add-citation-name (name from)
-  (setq mu-citation-name-alist
-	(put-alist from name mu-citation-name-alist))
+  (set-alist mu-registration-symbol from name)
   (mu-cite-save-registration-file))
 
 
