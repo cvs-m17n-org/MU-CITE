@@ -240,7 +240,6 @@
 	`VERSION_SPECIFIC_LISPDIR' from the command line arguments.
 
 	* MU-CFG (PACKAGEDIR): New variable.
-	(MU_DIR): Use `VERSION_SPECIFIC_LISPDIR' instead of `LISPDIR'.
 	(VERSION_SPECIFIC_LISPDIR): New variable.
 	(TopLevel): Delete code to detect APEL 7.3 or later.
 	(load-path): Modernize the way of adding the paths of APEL, FLIM,
