@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.26 1996-05-20 15:51:11 morioka Exp $")
+  "$Id: tl-822.el,v 7.27 1996-05-22 02:51:33 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -688,8 +688,7 @@
 		    ", ")
 	 )
 	((eq (car address) 'mailbox)
-	 (let ((addr (nth 1 address))
-	       addr-spec)
+	 (let ((addr (nth 1 address)))
 	   (rfc822/addr-to-string
 	    (if (eq (car addr) 'phrase-route-addr)
 		(nth 2 addr)
