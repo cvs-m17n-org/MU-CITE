@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11-parse.el,v 0.7 1996-08-28 18:07:03 morioka Exp $
+;; Version: $Id: std11-parse.el,v 0.8 1996-08-28 18:11:29 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -113,6 +113,24 @@
 	(cons (cons 'comment (substring str 1 (1- p)))
 	      (substring str p))
       )))
+
+(defun std11-lexical-analyze (str)
+  (let (dest ret)
+    (while (not (string-equal str ""))
+      (setq ret
+	    (or (std11-analyze-quoted-string str)
+		(std11-analyze-domain-literal str)
+		(std11-analyze-comment str)
+		(std11-analyze-spaces str)
+		(std11-analyze-special str)
+		(std11-analyze-atom str)
+		'((error) . "")
+		))
+      (setq dest (cons (car ret) dest))
+      (setq str (cdr ret))
+      )
+    (nreverse dest)
+    ))
 
 
 ;;; @ end
