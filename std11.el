@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.21 1996-08-28 21:06:59 morioka Exp $
+;; Version: $Id: std11.el,v 0.22 1996-08-28 22:39:08 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -190,6 +190,11 @@ If BOUNDARY is not nil, it is used as message header separator.
 (defun std11-parse-address-string (string)
   "Parse STRING as mail address. [std11.el]"
   (std11-parse-address (std11-lexical-analyze string))
+  )
+
+(defun std11-parse-addresses-string (string)
+  "Parse STRING as mail address list. [std11.el]"
+  (std11-parse-addresses (std11-lexical-analyze string))
   )
 
 (defun std11-addr-to-string (seq)
