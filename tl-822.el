@@ -29,7 +29,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.34 1996-08-16 05:57:27 morioka Exp $")
+  "$Id: tl-822.el,v 7.35 1996-08-16 06:00:57 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -314,11 +314,7 @@
 	(setq str (substring str 1))
 	(catch 'tag
 	  (while (not (string-equal str ""))
-	    (setq p (position-mismatched
-		     (function
-		      (lambda (elt)
-			(not (find elt rfc822/non-ctext-chars))
-			)) str))
+	    (setq p (string-match (concat "[" rfc822/non-ctext-chars "]") str))
 	    (cond ((> p 0)
 		   (setq dest (concat dest (substring str 0 p)))
 		   (setq str (substring str p))
