@@ -1,6 +1,101 @@
-1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
+1999-07-21  Katsumi Yamaoka   <yamaoka@jpl.org>
 
-	* mu-register.el: New file.
+	* mu-register.el (mu-cite-load-registration-file): Use
+	`file-coding-system' instead of `buffer-file-coding-system' for old
+	Emacsen.
+
+	* mu-cite.el (string-compare-from-top): Use `aref' instead of
+	`sref'.
+	(TopLevel): Require `widget' for old Emacsen.
+
+1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-cite.el (mu-cite-method-list): New function.
+	(widget-mu-cite-method-prompt-value-history): New variable.
+	(mu-cite-method): New widget.
+	(widget-mu-cite-method-prompt-value): New function.
+	(widget-mu-cite-method-action): New function.
+	(mu-cite-prefix-format): Use `mu-cite-method'.
+	(mu-cite-top-format): Likewise.
+
+1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-register.el (mu-citation-name-alist): Deleted.
+	(mu-cite-load-registration-file): Initialize value of
+	`mu-registration-symbol' if it is not bound.
+	(mu-cite-save-registration-file): Use `(symbol-value
+	mu-registration-symbol)' instead of `mu-citation-name-alist'.
+	(mu-register-get-citation-name): Likewise.
+	(mu-register-add-citation-name): Use `(set-alist
+	mu-registration-symbol ...)'.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-cite.el (mu-cite-obsolete-variable-alist): Revert to define;
+	use it to define obsolete-variable-aliases in XEmacs.
+	- Try to set value of obsolete variables to new variables after
+	  `mu-cite-load-hook' is run in non XEmacs emacsen.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-cite.el (mu-cite-load-hook): Deleted the definition as a user
+	option.
+
+	* mu-bbdb.el (mu-bbdb-load-hook): Deleted the definition as a
+	variable.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-cite.el (string-compare-from-top): Revert to use `sref'
+	instead of `aref'; use `char-next-index'.
+
+	* mu-cite.el (detect-paragraph-cited-prefix): Use
+	`line-beginning-position' and `line-end-position'.
+
+	* mu-cite.el (detect-paragraph-cited-prefix): Revert not to use
+	`incf'.
+
+	* mu-cite.el (mu-cite-original): Revert to use `or' instead of
+	'unless'.
+
+	* mu-cite.el (detect-paragraph-cited-prefix): Revert to use `if'
+	instead of `when'.
+
+	* mu-cite.el (mu-cite-original): Revert to use `if' instead of
+	`when'.
+
+	* mu-cite.el:
+	- Don't require `cl' when compile time.
+	- Don't require `emu'.
+	- Require `pcustom' instead of `custom'.
+	- Add autoload setting for `mu-bbdb-get-prefix-method',
+	  `mu-bbdb-get-prefix-register-method' and
+	  `mu-bbdb-get-prefix-register-verbose-method'.
+	(mu-cite-default-methods-alist): Add setting for
+	`mu-bbdb-get-prefix-method', `mu-bbdb-get-prefix-register-method'
+	and `mu-bbdb-get-prefix-register-verbose-method'.
+	(mu-cite-get-field-value): Add DOC-string; Revert to use `if'
+	instead of `when'.
+	(mu-cite-get-ml-count-method): Add DOC-string; revert to use `if'
+	instead of `when'; use `match-string'.
+	(mu-cite-get-value): Add DOC-string.
+	(char-category): New function.
+	(fill-cited-region): Add DOC-string; revert to use `if' instead of
+	`when'.
+	(compress-cited-prefix): Likewise.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-bbdb.el (mu-bbdb-get-prefix-method): Add DOC-string.
+	(mu-bbdb-get-prefix-register-method): Likewise.
+	(mu-bbdb-get-prefix-register-verbose-method): Likewise.
+	- Delete setting for `mu-cite/default-methods-alist'.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-bbdb.el: Don't use `module-installed-p'.
+
+1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-cite.el (mu-cite-get-prefix-register-verbose-method): Move
 	function to mu-register.el.
@@ -52,7 +147,7 @@
 
 	* mu-bbdb.el (TopLevel): Use `mu-cite-default-methods-alist'
 	instead of `mu-cite/default-methods-alist'.
-	(mu-cite/get-bbdb-prefix-register-method): Use
+	(mu-bbdb-get-prefix-register-method): Use
 	`mu-cite-minibuffer-history' instead of
 	`mu-cite/minibuffer-history'.
 	(mu-bbdb-get-prefix-register-verbose-method): Use
