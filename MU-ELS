@@ -1,9 +1,15 @@
 ;;; -*-Emacs-Lisp-*-
 ;;;
-;;; $Id: MU-ELS,v 0.1 1996-09-02 15:50:53 morioka Exp $
+;;; $Id: MU-ELS,v 0.2 1996-09-02 15:56:42 morioka Exp $
 ;;;
 
 (setq mu-modules-to-compile '(std11 std11-parse tl-822 mu-cite))
+
+(if (featurep 'mule)
+    (setq mu-modules-to-compile
+	  (cons 'latex-math-symbol
+		mu-modules-to-compile))
+  )
 
 (setq mu-modules-not-to-compile nil)
 
