@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.19 1996-08-28 21:01:41 morioka Exp $
+;; Version: $Id: std11.el,v 0.20 1996-08-28 21:03:14 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -195,7 +195,10 @@ If BOUNDARY is not nil, it is used as message header separator.
 (defun std11-addr-to-string (seq)
   (mapconcat (function
 	      (lambda (token)
-		(if (eq (car token) 'spaces)
+		(if (let ((name (car token)))
+		      (or (eq name 'spaces)
+			  (eq name 'comment)
+			  ))
 		    ""
 		  (cdr token)
 		  )))
