@@ -1,6 +1,9 @@
 1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
 
-	* mu-bbdb.el (mu-bbdb-load-hook): Deleted the definition as
+	* mu-cite.el (mu-cite-load-hook): Deleted the definition as a user
+	option.
+
+	* mu-bbdb.el (mu-bbdb-load-hook): Deleted the definition as a
 	variable.
 
 1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
