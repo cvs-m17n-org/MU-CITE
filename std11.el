@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.8 1996-08-28 15:09:13 morioka Exp $
+;; Version: $Id: std11.el,v 0.9 1996-08-28 15:17:19 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -38,7 +38,7 @@
 (defconst std11-next-field-head-regexp
   (concat "\n" std11-field-name-regexp ":"))
 
-(defun std11-get-field-body (name &optional boundary)
+(defun std11-find-field-body (name &optional boundary)
   "Return body of field NAME.
 If BOUNDARY is not nil, it is used as message header separator.
 \[std11.el]"
