@@ -454,8 +454,9 @@ TABLE defaults to the current buffer's category table."
 	     (prefix (buffer-substring b e))
 	     ps pe (s 0)
 	     (nest (let ((i 0))
-		     (when (string-match "<[^<>]+>" prefix)
-		       (setq prefix (substring prefix 0 (match-beginning 0))))
+		     (if (string-match "<[^<>]+>" prefix)
+			 (setq prefix
+			       (substring prefix 0 (match-beginning 0))))
 		     (while (string-match
 			     (concat "\\([" citation-mark-chars "]+\\)[ \t]*")
 			     prefix s)
