@@ -6,7 +6,7 @@
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.45 $
+;; Version: $Revision: 7.47 $
 ;; Keywords: mail, news, citation
 
 ;; This file is part of MU (Message Utilities).
@@ -54,14 +54,14 @@
 ;;;
 
 (defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.45 1997/01/31 12:31:20 morioka Exp $")
+  "$Id: mu-cite.el,v 7.47 1997/02/01 18:29:43 morioka Exp $")
 (defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
 
 
 ;;; @ formats
 ;;;
 
-(defvar mu-cite/cited-prefix-regexp "\\(^[^ \t\n>]+>+[ \t]*\\|^[ \t]*$\\)"
+(defvar mu-cite/cited-prefix-regexp "\\(^[^ \t\n<>]+>+[ \t]*\\|^[ \t]*$\\)"
   "*Regexp to match the citation prefix.
 If match, mu-cite doesn't insert citation prefix.")
 
@@ -390,9 +390,12 @@ function according to the agreed upon standard."
 
 ;;; @ message editing utilities
 ;;;
-  
+
 (defvar citation-mark-chars ">}|"
   "*String of characters for citation delimiter. [mu-cite.el]")
+
+(defvar citation-disable-chars "<{"
+  "*String of characters not allowed as citation-prefix.")
 
 (defun detect-paragraph-cited-prefix ()
   (save-excursion
@@ -435,8 +438,10 @@ function according to the agreed upon standard."
 		 prefix)))
 	    ((progn
 	       (goto-char (point-max))
-	       (re-search-backward (concat "[" citation-mark-chars "]")
-				   nil t)
+	       (re-search-backward
+		(concat "[" citation-disable-chars "]") nil t)
+	       (re-search-backward
+		(concat "[" citation-mark-chars "]") nil t)
 	       )
 	     (goto-char (match-end 0))
 	     (if (looking-at "[ \t]+")
