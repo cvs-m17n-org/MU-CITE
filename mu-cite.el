@@ -1,15 +1,15 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
 
-;; Copyright (C) 1995,1996 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
 ;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.36 $
+;; Version: $Revision: 7.51 $
 ;; Keywords: mail, news, citation
 
-;; This file is part of tl (Tiny Library).
+;; This file is part of MU (Message Utilities).
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -22,8 +22,8 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
@@ -46,27 +46,36 @@
 ;;; Code:
 
 (require 'std11)
-(require 'tl-str)
-(require 'tl-list)
+;;(require 'tl-str)
+;;(require 'tl-list)
+(require 'alist)
 
 
 ;;; @ version
 ;;;
 
+(defsubst get-version-string (id)
+  "Return a version-string from RCS ID."
+  (and (string-match ",v \\([0-9][0-9.][0-9.]+\\)" id)
+       (substring id (match-beginning 1)(match-end 1))
+       ))
+
 (defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.36 1996/08/30 04:25:34 morioka Exp $")
+  "$Id: mu-cite.el,v 7.51 1998/02/13 10:11:54 morioka Exp $")
 (defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
 
 
 ;;; @ formats
 ;;;
 
-(defvar cited-prefix-regexp "^[^ \t>]*[>|]+[ \t#]*")
-(defvar mu-cite/cited-prefix-regexp "\\(^[^ \t\n>]+>+[ \t]*\\|^[ \t]*$\\)")
+(defvar mu-cite/cited-prefix-regexp "\\(^[^ \t\n<>]+>+[ \t]*\\|^[ \t]*$\\)"
+  "*Regexp to match the citation prefix.
+If match, mu-cite doesn't insert citation prefix.")
 
 (defvar mu-cite/prefix-format '(prefix-register-verbose "> ")
   "*List to represent citation prefix.
 Each elements must be string or method name.")
+
 (defvar mu-cite/top-format '(in-id
 			     ">>>>>	" from " wrote:\n")
   "*List to represent top string of citation.
@@ -76,8 +85,16 @@ Each elements must be string or method name.")
 ;;; @ hooks
 ;;;
 
+(defvar mu-cite-load-hook nil
+  "*List of functions called after mu-cite is loaded.
+Use this hook to add your own methods to `mu-cite/default-methods-alist'.")
+
+(defvar mu-cite/instantiation-hook nil
+  "*List of functions called just before narrowing to the message.")
+
 (defvar mu-cite/pre-cite-hook nil
   "*List of functions called before citing a region of text.")
+
 (defvar mu-cite/post-cite-hook nil
   "*List of functions called after citing a region of text.")
 
@@ -85,21 +102,8 @@ Each elements must be string or method name.")
 ;;; @ field
 ;;;
 
-(defvar mu-cite/get-field-value-method-alist
-  (list (cons 'mh-letter-mode
-	      (function
-	       (lambda (name)
-		 (if (and (stringp mh-sent-from-folder)
-			  (numberp mh-sent-from-msg))
-		     (save-excursion
-		       (set-buffer mh-sent-from-folder)
-		       (set-buffer mh-show-buffer)
-		       (and (boundp 'mime::preview/article-buffer)
-			    (bufferp mime::preview/article-buffer)
-			    (set-buffer mime::preview/article-buffer))
-		       (std11-field-body name)
-		       ))
-		 )))))
+(defvar mu-cite/get-field-value-method-alist nil
+  "Alist major-mode vs. function to get field-body of header.")
 
 (defun mu-cite/get-field-value (name)
   (or (std11-field-body name)
@@ -112,8 +116,7 @@ Each elements must be string or method name.")
 ;;; @ prefix registration
 ;;;
 
-(defvar mu-cite/registration-file
-  (expand-file-name "~/.mu-cite.el")
+(defvar mu-cite/registration-file (expand-file-name "~/.mu-cite.el")
   "*The name of the user environment file for mu-cite.")
 
 (defvar mu-cite/allow-null-string-registration nil
@@ -122,7 +125,6 @@ Each elements must be string or method name.")
 (defvar mu-cite/registration-symbol 'mu-cite/citation-name-alist)
 
 (defvar mu-cite/citation-name-alist nil)
-(load mu-cite/registration-file t t t)
 (or (eq 'mu-cite/citation-name-alist mu-cite/registration-symbol)
     (setq mu-cite/citation-name-alist
 	  (symbol-value mu-cite/registration-symbol))
@@ -131,38 +133,55 @@ Each elements must be string or method name.")
 
 ;; get citation-name from the database
 (defun mu-cite/get-citation-name (from)
-  (assoc-value from mu-cite/citation-name-alist)
+  (cdr (assoc from mu-cite/citation-name-alist))
   )
 
 ;; register citation-name to the database
 (defun mu-cite/add-citation-name (name from)
   (setq mu-cite/citation-name-alist
         (put-alist from name mu-cite/citation-name-alist))
-  (mu-cite/save-to-file)
+  (mu-cite/save-registration-file)
   )
 
-;; save to file
-(defun mu-cite/save-to-file ()
-  (let* ((filename mu-cite/registration-file)
+;; load/save registration file
+(defun mu-cite/load-registration-file ()
+  (let* ((file mu-cite/registration-file)
 	 (buffer (get-buffer-create " *mu-register*")))
-    (save-excursion
-      (set-buffer buffer)
-      (setq buffer-file-name filename)
-      (erase-buffer)
-      (insert
-       (format ";;; %s\n" (file-name-nondirectory filename)))
-      (insert
-       (format ";;; This file is generated automatically by mu-cite %s.\n\n"
-               mu-cite/version))
-      (insert (format "(setq %s\n      '(" mu-cite/registration-symbol))
-      (insert (mapconcat
-	       (function prin1-to-string)
-	       mu-cite/citation-name-alist "\n        "))
-      (insert "\n        ))\n\n")
-      (insert
-       (format ";;; %s ends here.\n" (file-name-nondirectory filename)))
-      (save-buffer))
-    (kill-buffer buffer)))
+    (if (file-readable-p file)
+        (unwind-protect
+            (save-excursion
+              (set-buffer buffer)
+              (erase-buffer)
+              (insert-file-contents file)
+              ;; (eval-buffer)
+              (eval-current-buffer))
+          (kill-buffer buffer))
+      )))
+(add-hook 'mu-cite-load-hook (function mu-cite/load-registration-file))
+
+(defun mu-cite/save-registration-file ()
+  (let* ((file mu-cite/registration-file)
+	 (buffer (get-buffer-create " *mu-register*")))
+    (unwind-protect
+        (save-excursion
+          (set-buffer buffer)
+          (setq buffer-file-name file)
+          (erase-buffer)
+          (insert ";;; " (file-name-nondirectory file) "\n")
+          (insert ";;; This file is generated automatically by mu-cite "
+                  mu-cite/version "\n\n")
+          (insert "(setq "
+                  (symbol-name mu-cite/registration-symbol)
+                  "\n      '(")
+          (insert (mapconcat
+                   (function prin1-to-string)
+                   mu-cite/citation-name-alist "\n        "))
+          (insert "\n        ))\n\n")
+          (insert ";;; "
+                  (file-name-nondirectory file)
+                  " ends here.\n")
+          (save-buffer))
+      (kill-buffer buffer))))
 
 
 ;;; @ item methods
@@ -172,7 +191,8 @@ Each elements must be string or method name.")
 ;;;
 
 (defvar mu-cite/ml-count-field-list
-  '("X-Ml-Count" "X-Mail-Count" "X-Seqno" "X-Sequence" "Mailinglist-Id"))
+  '("X-Ml-Count" "X-Mail-Count" "X-Seqno" "X-Sequence" "Mailinglist-Id")
+  "*List of header fields which contain sequence number of mailing list.")
 
 (defun mu-cite/get-ml-count-method ()
   (let ((field-list mu-cite/ml-count-field-list))
@@ -324,7 +344,7 @@ Each elements must be string or method name.")
   )
 
 (defun mu-cite/get-value (item)
-  (let ((ret (assoc-value item mu-cite/methods-alist)))
+  (let ((ret (cdr (assoc item mu-cite/methods-alist))))
     (if (functionp ret)
 	(prog1
 	    (setq ret (funcall ret))
@@ -360,7 +380,7 @@ function according to the agreed upon standard."
 	  (top (mu-cite/eval-format mu-cite/top-format))
 	  (prefix (mu-cite/eval-format mu-cite/prefix-format))
 	  )
-      (if (re-search-forward "^$\\|^-+$" nil nil)
+      (if (re-search-forward "^-*$" nil nil)
 	  (forward-line 1)
 	)
       (widen)
@@ -380,55 +400,98 @@ function according to the agreed upon standard."
 ;;; @ message editing utilities
 ;;;
 
+(defvar citation-mark-chars ">}|"
+  "*String of characters for citation delimiter. [mu-cite.el]")
+
+(defvar citation-disable-chars "<{"
+  "*String of characters not allowed as citation-prefix.")
+
+(defun detect-paragraph-cited-prefix ()
+  (save-excursion
+    (goto-char (point-min))
+    (let ((i 0)
+	  (prefix
+	   (buffer-substring
+	    (progn (beginning-of-line)(point))
+	    (progn (end-of-line)(point))
+	    ))
+	  str ret)
+      (while (and (= (forward-line) 0)
+		  (setq str (buffer-substring
+			     (progn (beginning-of-line)(point))
+			     (progn (end-of-line)(point))))
+		  (setq ret (string-compare-from-top prefix str))
+		  )
+	(setq prefix
+	      (if (stringp ret)
+		  ret
+		(cadr ret)))
+	(setq i (1+ i))
+	)
+      (cond ((> i 1) prefix)
+	    ((> i 0)
+	     (goto-char (point-min))
+	     (save-restriction
+	       (narrow-to-region (point)
+				 (+ (point)(length prefix)))
+	       (goto-char (point-max))
+	       (if (re-search-backward
+		    (concat "[" citation-mark-chars "]") nil t)
+		   (progn
+		     (goto-char (match-end 0))
+		     (if (looking-at "[ \t]+")
+			 (goto-char (match-end 0))
+		       )
+		     (buffer-substring (point-min)(point))
+		     )
+		 prefix)))
+	    ((progn
+	       (goto-char (point-max))
+	       (re-search-backward
+		(concat "[" citation-disable-chars "]") nil t)
+	       (re-search-backward
+		(concat "[" citation-mark-chars "]") nil t)
+	       )
+	     (goto-char (match-end 0))
+	     (if (looking-at "[ \t]+")
+		 (goto-char (match-end 0))
+	       )
+	     (buffer-substring (point-min)(point))
+	     )
+	    (t ""))
+      )))
+
 (defun fill-cited-region (beg end)
   (interactive "*r")
   (save-excursion
     (save-restriction
       (goto-char end)
-      (while (not (eolp))
-	(backward-char)
-	)
-      (setq end (point))
+      (and (search-backward "\n" nil t)
+	   (setq end (match-end 0))
+	   )
       (narrow-to-region beg end)
-      (goto-char (point-min))
-      (let* ((fill-prefix
-	      (let* ((str1 (buffer-substring
-			    (progn (beginning-of-line)(point))
-			    (progn (end-of-line)(point))
-			    ))
-		     (str2 (let ((p0 (point)))
-			     (forward-line)
-			     (if (> (count-lines p0 (point)) 0)
-				 (buffer-substring
-				  (progn (beginning-of-line)(point))
-				  (progn (end-of-line)(point))
-				  ))))
-		     (ret (string-compare-from-top str1 str2))
-		     )
-		(if ret
-		    (nth 1 ret)
-		  (goto-char (point-min))
-		  (if (re-search-forward cited-prefix-regexp nil t)
-		      (buffer-substring (match-beginning 0) (match-end 0))
-		    ))))
-	     (pat (concat "\n" fill-prefix))
+      (let* ((fill-prefix (detect-paragraph-cited-prefix))
+	     (pat (concat fill-prefix "\n"))
 	     )
 	(goto-char (point-min))
 	(while (search-forward pat nil t)
-	  (if (and (> (match-beginning 0) (point-min))
-		   (member (char-category
-			    (char-before (match-beginning 0)))
-			   '("a" "l"))
-		   )
-	      (replace-match " ")
-	    (replace-match "")
-	    )
+	  (let ((b (match-beginning 0))
+		(e (match-end 0))
+		)
+	    (delete-region b e)
+	    (if (and (> b (point-min))
+		     (let ((cat (char-category
+				 (char-before b))))
+		       (or (string-match "a" cat)
+			   (string-match "l" cat)
+			   ))
+		     )
+		(insert " ")
+	      ))
 	  )
 	(goto-char (point-min))
 	(fill-region (point-min) (point-max))
 	))))
-
-(defvar citation-mark-chars ">}|")
 
 (defun compress-cited-prefix ()
   (interactive)
@@ -468,6 +531,30 @@ function according to the agreed upon standard."
           (concat "^" (regexp-quote old)) nil t)
     (replace-match new)
     ))
+
+(defun string-compare-from-top (str1 str2)
+  (let* ((len1 (length str1))
+	 (len2 (length str2))
+	 (len (min len1 len2))
+	 (p 0)
+	 c1 c2)
+    (while (and (< p len)
+		(progn
+		  (setq c1 (sref str1 p)
+			c2 (sref str2 p))
+		  (eq c1 c2)
+		  ))
+      (setq p (+ p (char-length c1)))
+      )
+    (and (> p 0)
+	 (let ((matched (substring str1 0 p))
+	       (r1 (and (< p len1)(substring str1 p)))
+	       (r2 (and (< p len2)(substring str2 p)))
+	       )
+	   (if (eq r1 r2)
+	       matched
+	     (list 'seq matched (list 'or r1 r2))
+	     )))))
 
 
 ;;; @ end
