@@ -1,5 +1,14 @@
 1999-07-28  Katsumi Yamaoka   <yamaoka@jpl.org>
 
+	* README.en: (How to use): Remove the part.
+	(load-path): Document that FLIM should be included in `load-path'.
+	(Installation): Add expositions how to use make options LISPDIR and
+	VERSION_SPECIFIC_LISPDIR; add the clause for installing as a
+	XEmacs package.
+	(What's MU): Remove the clause for std11; add description about
+	mu-register.el; update required packages.
+	(TopLevel):Remove RCS magic cookie.
+
 	* mu-cite.el (mu-cite-ml-count-field-list): Modify tag string for
 	`choice'; use `const' with the arg nil for the menu separator;
 	delete element which value is nil when the symbol value is set.
