@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.8 1996-04-15 08:57:58 morioka Exp $")
+  "$Id: tl-822.el,v 7.9 1996-04-19 18:48:55 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -632,30 +632,42 @@
   )
 
 (defun rfc822/address-string (address)
-  (if (eq (car address) 'mailbox)
-      (let ((addr (nth 1 address))
-	    addr-spec)
-	(rfc822/addr-to-string
-	 (if (eq (car addr) 'phrase-route-addr)
-	     (nth 2 addr)
-	   (cdr addr)
-	   )
-	 ))))
+  (cond ((eq (car address) 'group)
+	 (mapconcat (function rfc822/address-string)
+		    (nth 2 address)
+		    ", ")
+	 )
+	((eq (car address) 'mailbox)
+	 (let ((addr (nth 1 address))
+	       addr-spec)
+	   (rfc822/addr-to-string
+	    (if (eq (car addr) 'phrase-route-addr)
+		(nth 2 addr)
+	      (cdr addr)
+	      )
+	    )))))
 
 (defun rfc822/full-name-string (address)
-  (if (eq (car address) 'mailbox)
-      (let ((addr (nth 1 address))
-	    (comment (nth 2 address))
-	    phrase)
-	(if (eq (car addr) 'phrase-route-addr)
-	    (setq phrase (mapconcat (function
-				     (lambda (token)
-				       (cdr token)
-				       ))
-				    (nth 1 addr) ""))
-	  )
-	(or phrase comment)
-	)))
+  (cond ((eq (car address) 'group)
+	 (mapconcat (function
+		     (lambda (token)
+		       (cdr token)
+		       ))
+		    (nth 1 address) "")
+	 )
+	((eq (car address) 'mailbox)
+	 (let ((addr (nth 1 address))
+	       (comment (nth 2 address))
+	       phrase)
+	   (if (eq (car addr) 'phrase-route-addr)
+	       (setq phrase (mapconcat (function
+					(lambda (token)
+					  (cdr token)
+					  ))
+				       (nth 1 addr) ""))
+	     )
+	   (or phrase comment)
+	   ))))
 
 (defun rfc822/extract-address-components (str)
   "Extract full name and canonical address from STR.
