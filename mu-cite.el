@@ -307,8 +307,8 @@ function according to the agreed upon standard."
   (interactive)
   (mu-cite-make-methods)
   (save-restriction
-    (when (< (mark t) (point))
-      (exchange-point-and-mark))
+    (if (< (mark t) (point))
+	(exchange-point-and-mark))
     (narrow-to-region (point)(point-max))
     (run-hooks 'mu-cite-pre-cite-hook)
     (let ((last-point (point))
