@@ -15,7 +15,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 5.0 1995-11-11 12:48:59 morioka Exp $")
+  "$Id: tl-822.el,v 6.0 1995-11-15 15:55:20 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -522,13 +522,13 @@
 
 (defun rfc822/parse-group (lal)
   (let ((ret (rfc822/parse-phrase lal))
-	phrase : comma mbox semicolon)
+	phrase colon mbox semicolon)
     (if (and ret
 	     (setq phrase (cdr (car ret)))
 	     (setq lal (cdr ret))
 	     (setq ret (rfc822/parse-token lal))
-	     (setq : (car ret))
-	     (equal (cdr (assq 'specials :)) ":")
+	     (setq colon (car ret))
+	     (equal (cdr (assq 'specials colon)) ":")
 	     (setq lal (cdr ret))
 	     (progn
 	       (and (setq ret (rfc822/parse-mailbox lal))
