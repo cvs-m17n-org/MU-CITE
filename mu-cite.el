@@ -504,13 +504,6 @@ function according to the agreed upon standard."
     'mu-cite-ml-count-field-list)
   )
 
-(static-unless (fboundp 'defvaralias)
-  (mapcar
-   (function
-    (lambda (elem)
-      (eval (list 'defvar (car elem) (cadr elem)))))
-   mu-cite-obsolete-variable-alist))
-
 
 ;;; @ end
 ;;;
