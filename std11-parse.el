@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11-parse.el,v 0.10 1996-08-28 20:40:29 morioka Exp $
+;; Version: $Id: std11-parse.el,v 0.11 1996-08-28 20:54:03 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -431,15 +431,6 @@
 	    )
 	  (nreverse dest)
 	  ))))
-
-
-;;; @ utilities
-;;;
-
-(defun std11-parse-address-string (string)
-  "Parse STRING as mail address. [std11-parse.el]"
-  (std11-parse-address (std11-lexical-analyze string))
-  )
 
 
 ;;; @ end
