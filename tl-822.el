@@ -29,7 +29,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.33 1996-08-16 05:44:47 morioka Exp $")
+  "$Id: tl-822.el,v 7.34 1996-08-16 05:57:27 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -227,7 +227,7 @@
 (defconst rfc822/space-chars " \t\n")
 (defconst rfc822/non-atom-chars
   (concat rfc822/special-chars rfc822/space-chars))
-(defconst rfc822/non-dtext-chars "[]")
+(defconst rfc822/non-dtext-chars "][")
 (defconst rfc822/non-ctext-chars "()")
 
 (defun rfc822/analyze-spaces (str)
@@ -291,22 +291,16 @@
 
 (defun rfc822/analyze-domain-literal (str)
   (if (and (> (length str) 0)
-	   (eq (elt str 0) ?\[)
+	   (eq (aref str 0) ?\[)
 	   )
-      (let* ((i (position-mismatched
-		 (function
-		  (lambda (elt)
-		    (not (find elt rfc822/non-dtext-chars))
-		    ))
-		 (setq str (substring str 1))
-		 ))
-	     (rest (substring str i))
+      (let* ((i (string-match (concat "[" rfc822/non-dtext-chars "]") str 1))
+	     (rest (and i (substring str i)))
 	     )
-	(if (and (> i 0)
+	(if (and i
 		 (> (length rest) 0)
-		 (eq (elt rest 0) ?\])
+		 (eq (aref rest 0) ?\])
 		 )
-	    (cons (cons 'domain-literal (substring str 0 i))
+	    (cons (cons 'domain-literal (substring str 1 i))
 		  (substring rest 1)
 		  )
 	  ))))
