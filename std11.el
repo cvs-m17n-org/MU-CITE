@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.18 1996-08-28 20:54:43 morioka Exp $
+;; Version: $Id: std11.el,v 0.19 1996-08-28 21:01:41 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -191,6 +191,31 @@ If BOUNDARY is not nil, it is used as message header separator.
   "Parse STRING as mail address. [std11.el]"
   (std11-parse-address (std11-lexical-analyze string))
   )
+
+(defun std11-addr-to-string (seq)
+  (mapconcat (function
+	      (lambda (token)
+		(if (eq (car token) 'spaces)
+		    ""
+		  (cdr token)
+		  )))
+	     seq "")
+  )
+
+(defun std11-address-string (address)
+  (cond ((eq (car address) 'group)
+	 (mapconcat (function std11-address-string)
+		    (car (cdr address))
+		    ", ")
+	 )
+	((eq (car address) 'mailbox)
+	 (let ((addr (nth 1 address)))
+	   (std11-addr-to-string
+	    (if (eq (car addr) 'phrase-route-addr)
+		(nth 2 addr)
+	      (cdr addr)
+	      )
+	    )))))
 
 
 ;;; @ end
