@@ -1,28 +1,27 @@
-;;;
 ;;; tl-822.el --- RFC 822 parser for GNU Emacs
-;;;
-;;; Copyright (C) 1995 Free Software Foundation, Inc.
-;;; Copyright (C) 1995,1996 MORIOKA Tomohiko
-;;;
-;;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;; Keywords: mail, news, RFC 822
-;;;
-;;; This file is part of tl (Tiny Library).
-;;;
-;;; This program is free software; you can redistribute it and/or
-;;; modify it under the terms of the GNU General Public License as
-;;; published by the Free Software Foundation; either version 2, or
-;;; (at your option) any later version.
-;;;
-;;; This program is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-;;; General Public License for more details.
-;;;
-;;; You should have received a copy of the GNU General Public License
-;;; along with This program.  If not, write to the Free Software
-;;; Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-;;;
+
+;; Copyright (C) 1995,1996 Free Software Foundation, Inc.
+
+;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;; Keywords: mail, news, RFC 822
+
+;; This file is part of tl (Tiny Library).
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2, or (at
+;; your option) any later version.
+
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with This program; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
 ;;; Code:
 
 (require 'tl-seq)
@@ -30,7 +29,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.31 1996-06-17 23:47:19 morioka Exp $")
+  "$Id: tl-822.el,v 7.32 1996-08-16 05:36:27 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -232,17 +231,15 @@
 (defconst rfc822/non-ctext-chars "()")
 
 (defun rfc822/analyze-spaces (str)
-  (let ((i (position-mismatched
-	    (function
-	     (lambda (elt)
-	       (find elt rfc822/space-chars)
-	       )) str))
-	)
-    (if (> i 0)
-	(cons (cons 'spaces (substring str 0 i))
-	      (substring str i)
-	      ))
-    ))
+  (let ((i (string-match (concat "[^" rfc822/space-chars "]") str)))
+    (if i
+	(if (> i 0)
+	    (cons (cons 'spaces (substring str 0 i))
+		  (substring str i)
+		  ))
+      (if (not (string-equal str ""))
+	  (cons (cons 'spaces str) "")
+	))))
 
 (defun rfc822/analyze-special (str)
   (if (and (> (length str) 0)
