@@ -20,7 +20,7 @@
 
 (defun compile-mu ()
   (config-mu)
-  (compile-elisp-modules mu-modules	".")
+  (compile-elisp-modules mu-modules-to-compile	".")
   )
 
 (defun install-mu ()
