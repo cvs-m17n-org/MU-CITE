@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.23 1996-08-30 04:21:28 morioka Exp $
+;; Version: $Id: std11.el,v 0.24 1996-08-30 06:11:58 morioka Exp $
 
 ;; This file is part of tl (Tiny Library).
 
@@ -174,30 +174,12 @@ If BOUNDARY is not nil, it is used as message header separator.
 	dest))))
 
 
-;;; @ parser
+;;; @ composer
 ;;;
 
-(provide 'std11)
-
-(mapcar (function
-	 (lambda (func)
-	   (autoload func "std11-parse")
-	   ))
-	'(std11-lexical-analyze
-	  std11-parse-address std11-parse-addresses
-	  std11-parse-address-string))
-
-(defun std11-parse-address-string (string)
-  "Parse STRING as mail address. [std11.el]"
-  (std11-parse-address (std11-lexical-analyze string))
-  )
-
-(defun std11-parse-addresses-string (string)
-  "Parse STRING as mail address list. [std11.el]"
-  (std11-parse-addresses (std11-lexical-analyze string))
-  )
-
 (defun std11-addr-to-string (seq)
+  "Return string from lexical analyzed list SEQ
+represents addr-spec of RFC 822. [std11.el]"
   (mapconcat (function
 	      (lambda (token)
 		(if (let ((name (car token)))
@@ -211,6 +193,8 @@ If BOUNDARY is not nil, it is used as message header separator.
   )
 
 (defun std11-address-string (address)
+  "Return string of address part from parsed ADDRESS of RFC 822.
+\[std11.el]"
   (cond ((eq (car address) 'group)
 	 (mapconcat (function std11-address-string)
 		    (car (cdr address))
@@ -226,6 +210,8 @@ If BOUNDARY is not nil, it is used as message header separator.
 	    )))))
 
 (defun std11-full-name-string (address)
+  "Return string of full-name part from parsed ADDRESS of RFC 822.
+\[std11.el]"
   (cond ((eq (car address) 'group)
 	 (mapconcat (function
 		     (lambda (token)
@@ -246,6 +232,30 @@ If BOUNDARY is not nil, it is used as message header separator.
 	     )
 	   (or phrase comment)
 	   ))))
+
+
+;;; @ parser
+;;;
+
+(defun std11-parse-address-string (string)
+  "Parse STRING as mail address. [std11.el]"
+  (std11-parse-address (std11-lexical-analyze string))
+  )
+
+(defun std11-parse-addresses-string (string)
+  "Parse STRING as mail address list. [std11.el]"
+  (std11-parse-addresses (std11-lexical-analyze string))
+  )
+
+(provide 'std11)
+
+(mapcar (function
+	 (lambda (func)
+	   (autoload func "std11-parse")
+	   ))
+	'(std11-lexical-analyze
+	  std11-parse-address std11-parse-addresses
+	  std11-parse-address-string))
 
 
 ;;; @ end
