@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 0.0 1997-03-14 07:29:06 morioka Exp $
+# Makefile for mu-cite.
 #
 
 EMACS	= emacs

@@ -1,7 +1,8 @@
 ;;; -*-Emacs-Lisp-*-
-;;;
-;;; $Id: MU-MK,v 0.0 1997-03-14 07:27:50 morioka Exp $
-;;;
+
+;; MU-MK: installer for mu-cite.
+
+;;; Code:
 
 (defun config-mu ()
   (let (prefix)
