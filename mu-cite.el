@@ -86,13 +86,17 @@
     (mu-cite/top-format			mu-cite-top-format)))
 
 (static-if (featurep 'xemacs)
-    (dolist (def mu-cite-obsolete-variable-alist)
-      (apply (function define-obsolete-variable-alias) def)))
+    (mapcar
+     (function (lambda (elem)
+		 (apply (function define-obsolete-variable-alias) elem)))
+     mu-cite-obsolete-variable-alist))
 
-(dolist (def '((mu-cite/cite-original	mu-cite-original)
-	       (mu-cite/get-field-value	mu-cite-get-field-value)
-	       (mu-cite/get-value	mu-cite-get-value)))
-  (apply (function define-obsolete-function-alias) def))
+(mapcar
+ (function (lambda (elem)
+	     (apply (function define-obsolete-function-alias) elem)))
+ '((mu-cite/cite-original	mu-cite-original)
+   (mu-cite/get-field-value	mu-cite-get-field-value)
+   (mu-cite/get-value		mu-cite-get-value)))
 
 
 ;;; @ set up
