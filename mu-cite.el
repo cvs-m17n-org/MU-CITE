@@ -178,45 +178,45 @@
 	      (function mu-bbdb-get-prefix-register-verbose-method))
 	))
 
-(defun mu-cite-method-list ()
-  (mapcar (function car) mu-cite-default-methods-alist))
-
 
 ;;; @ formats
 ;;;
 
-(defvar widget-mu-cite-method-prompt-value-history nil
-  "History of input to `widget-mu-cite-method-prompt-value'.")
+(define-widget 'mu-cite-choose-prefix-format 'group
+  "Widget for entering a prefix citation method."
+  :convert-widget
+  (function
+   (lambda (widget)
+     (list 'choice
+	   :tag "Method or String"
+	   :args (nconc
+		  (mapcar
+		   (function (lambda (elem) (list 'choice-item (car elem))))
+		   mu-cite-default-methods-alist)
+		  '((symbol :tag "Method")
+		    (const :tag "-" nil)
+		    (choice-item :tag "String: \"> \"" "> ")
+		    (string)))))))
 
-(define-widget 'mu-cite-method 'symbol
-  "A mu-cite-method."
-  :format "%{%t%}: %v"
-  :tag "Method"
-  :prompt-history 'widget-mu-cite-method-prompt-value-history
-  :prompt-value 'widget-mu-cite-method-prompt-value
-  :action 'widget-mu-cite-method-action)
+(define-widget 'mu-cite-choose-top-format 'group
+  "Widget for entering a top citation method."
+  :convert-widget
+  (function
+   (lambda (widget)
+     (list 'choice
+	   :tag "Method or String"
+	   :args (nconc
+		  (mapcar
+		   (function (lambda (elem) (list 'choice-item (car elem))))
+		   mu-cite-default-methods-alist)
+		  '((symbol :tag "Method")
+		    (const :tag "-" nil)
+		    (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
+		    (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
+		    (string :tag "String")))))))
 
-(defun widget-mu-cite-method-prompt-value (widget prompt value unbound)
-  ;; Read mu-cite-method from minibuffer.
-  (intern
-   (completing-read (format "%s (default %s) " prompt value)
-		    (mapcar (function
-			     (lambda (sym)
-			       (list (symbol-name sym))
-			       ))
-			    (mu-cite-method-list)))))
-
-(defun widget-mu-cite-method-action (widget &optional event)
-  ;; Read a mu-cite-method from the minibuffer.
-  (let ((answer
-	 (widget-mu-cite-method-prompt-value
-	  widget
-	  (widget-apply widget :menu-tag-get)
-	  (widget-value widget)
-	  t)))
-    (widget-value-set widget answer)
-    (widget-apply widget :notify widget event)
-    (widget-setup)))
+(defun mu-cite-custom-set-variable (symbol value)
+  (set-default symbol (delq nil value)))
 
 (defcustom mu-cite-cited-prefix-regexp
   "\\(^[^ \t\n<>]+>+[ \t]*\\|^[ \t]*$\\)"
@@ -228,24 +228,15 @@ If match, mu-cite doesn't insert citation prefix."
 (defcustom mu-cite-prefix-format '(prefix-register-verbose "> ")
   "List to represent citation prefix.
 Each elements must be string or method name."
-  :type '(repeat
-	  (choice :tag "String or Method name"
-		  mu-cite-method
-		  (item "-")
-		  (choice-item :tag "String: \"> \"" "> ")
-		  (string :tag "Other String")))
+  :type '(repeat mu-cite-choose-prefix-format)
+  :set (function mu-cite-custom-set-variable)
   :group 'mu-cite)
 
 (defcustom mu-cite-top-format '(in-id ">>>>>\t" from " wrote:\n")
   "List to represent top string of citation.
 Each elements must be string or method name."
-  :type '(repeat
-	  (choice :tag "String or Method name"
-		  mu-cite-method
-		  (item "-")
-		  (choice-item :tag "String: \">>>>>\\t\"" ">>>>>\t")
-		  (choice-item :tag "String: \" wrote:\\n\"" " wrote:\n")
-		  (string :tag "Other String")))
+  :type '(repeat mu-cite-choose-top-format)
+  :set (function mu-cite-custom-set-variable)
   :group 'mu-cite)
 
 
@@ -293,13 +284,15 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
 (defcustom mu-cite-ml-count-field-list
   '("X-Ml-Count" "X-Mail-Count" "X-Seqno" "X-Sequence" "Mailinglist-Id")
   "List of header fields which contain sequence number of mailing list."
-  :type '(repeat (choice (choice-item "X-Ml-Count")
+  :type '(repeat (choice :tag "Field Name"
+			 (choice-item "X-Ml-Count")
 			 (choice-item "X-Mail-Count")
 			 (choice-item "X-Seqno")
 			 (choice-item "X-Sequence")
 			 (choice-item "Mailinglist-Id")
-			 (item "-")
+			 (const :tag "-" nil)
 			 (string :tag "Other")))
+  :set (function mu-cite-custom-set-variable)
   :group 'mu-cite)
 
 (defun mu-cite-get-ml-count-method ()
