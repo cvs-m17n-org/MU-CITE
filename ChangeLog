@@ -1,5 +1,64 @@
 1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
 
+	* mu-cite.el (string-compare-from-top): Revert to use `sref'
+	instead of `aref'; use `char-next-index'.
+
+	* mu-cite.el (detect-paragraph-cited-prefix): Use
+	`line-beginning-position' and `line-end-position'.
+
+	* mu-cite.el (detect-paragraph-cited-prefix): Revert not to use
+	`incf'.
+
+	* mu-cite.el (mu-cite-original): Revert to use `or' instead of
+	'unless'.
+
+	* mu-cite.el (detect-paragraph-cited-prefix): Revert to use `if'
+	instead of `when'.
+
+	* mu-cite.el (mu-cite-original): Revert to use `if' instead of
+	`when'.
+
+	* mu-cite.el:
+	- Don't require `cl' when compile time.
+	- Don't require `emu'.
+	- Require `pcustom' instead of `custom'.
+	- Add autoload setting for `mu-bbdb-get-prefix-method',
+	  `mu-bbdb-get-prefix-register-method' and
+	  `mu-bbdb-get-prefix-register-verbose-method'.
+	(mu-cite-default-methods-alist): Add setting for
+	`mu-bbdb-get-prefix-method', `mu-bbdb-get-prefix-register-method'
+	and `mu-bbdb-get-prefix-register-verbose-method'.
+	(mu-cite-get-field-value): Add DOC-string; Revert to use `if'
+	instead of `when'.	
+	(mu-cite-get-ml-count-method): Add DOC-string; revert to use `if'
+	instead of `when'; use `match-string'.
+	(mu-cite-get-value): Add DOC-string.
+	(char-category): New function.
+	(fill-cited-region): Add DOC-string; revert to use `if' instead of
+	`when'.
+	(compress-cited-prefix): Likewise.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-bbdb.el (mu-bbdb-get-prefix-method): Add DOC-string.
+	(mu-bbdb-get-prefix-register-method): Likewise.
+	(mu-bbdb-get-prefix-register-verbose-method): Likewise.
+	- Delete setting for `mu-cite/default-methods-alist'.
+
+1999-07-19  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-bbdb.el (mu-bbdb-set-attr): Renamed from
+	`mu-cite/set-bbdb-attr'.
+	(mu-bbdb-get-prefix-register-verbose-method): Renamed from
+	`mu-cite/get-bbdb-prefix-register-verbose-method'.
+	(mu-bbdb-get-prefix-register-method): Renamed from
+	`mu-cite/get-bbdb-prefix-register-method'.
+	(mu-bbdb-get-prefix-method): Renamed from
+	`mu-cite/get-bbdb-prefix-method'.
+	(mu-bbdb-get-attr): Renamed from `mu-cite/get-bbdb-attr'.
+
+1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
+
 	* mu-bbdb.el: Don't use `module-installed-p'.
 
 1999-07-19  MORIOKA Tomohiko  <tomo@m17n.org>
