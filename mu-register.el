@@ -7,7 +7,7 @@
 ;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.5 1996-01-15 20:04:52 morioka Exp $
+;;;	$Id: mu-register.el,v 1.6 1996-01-15 20:28:32 morioka Exp $
 ;;;
 ;;; This file is part of tl (Tiny Library).
 ;;;
@@ -45,6 +45,10 @@
 ;;;
 
 ;;; Code:
+
+(require 'mu-cite)
+(require 'pp)
+
 
 ;;; @ variables
 ;;;
@@ -125,9 +129,11 @@
       (erase-buffer)
       (insert ";; generated automatically by mu-register.\n")
       (insert (format "(setq %s
- '" mu-register/registration-symbol))
-      (insert (prin1-to-string mu-register/citation-name-alist))
-      (insert "\n)\n")
+ '(" mu-register/registration-symbol))
+      (insert (mapconcat
+	       (function prin1-to-string)
+	       mu-register/citation-name-alist "\n   "))
+      (insert "\n   ))\n")
       (save-buffer))
     (kill-buffer buffer)))
 
@@ -135,7 +141,6 @@
 ;;; @ Installation
 ;;;
 
-(require 'mu-cite)
 (set-alist 'mu-cite/default-methods-alist
 	   'registered 
 	   (function mu-register/citation-name))
