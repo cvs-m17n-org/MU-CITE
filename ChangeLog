@@ -21,13 +21,11 @@
 	`with-temp-buffer', for old Emacsen.
 	* (TopLevel): Require `cl' at the compile time.
 
-	* (mu-cite-top-format, mu-cite-registration-file-modes,
-	mu-cite-registration-file-coding-system-for-write,
-	mu-cite-registration-file-coding-system-for-read,
-	mu-cite-registration-file, mu-cite-prefix-format,
-	mu-cite-pre-cite-hook, mu-cite-post-cite-hook,
-	mu-cite-ml-count-field-list, mu-cite-load-hook,
-	mu-cite-instantiation-hook, mu-cite-cited-prefix-regexp,
+	* (mu-cite-top-format, mu-cite-registration-file,
+	mu-cite-prefix-format, mu-cite-pre-cite-hook,
+	mu-cite-post-cite-hook, mu-cite-ml-count-field-list,
+	mu-cite-load-hook, mu-cite-instantiation-hook,
+	mu-cite-cited-prefix-regexp,
 	mu-cite-allow-null-string-registration, citation-mark-chars,
 	citation-disable-chars): Use `defcustom' instead of `defvar'.
 
