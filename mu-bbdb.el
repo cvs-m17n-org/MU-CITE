@@ -34,7 +34,6 @@
 ;;                          (require 'mu-bbdb)
 ;;                          )))
 
-
 ;;; Code:
 
 (eval-when-compile (require 'cl))
@@ -50,7 +49,7 @@
 ;;; @ obsolete functions
 ;;;
 
-;; This part will be abolished in the future.
+;; This part will be abolished in the near future.
 
 (eval-and-compile
   (defconst mu-bbdb-obsolete-function-alist
@@ -82,6 +81,8 @@
   "List of functions called after mu-bbdb is loaded."
   :type 'hook
   :group 'mu-bbdb)
+
+(defvar mu-bbdb-history nil)
 
 
 ;;; @@ prefix and registration using BBDB
@@ -116,7 +117,7 @@
 	       (read-string "Citation name? "
 			    (or (mu-cite-get-value 'x-attribution)
 				(mu-cite-get-value 'full-name))
-			    'mu-cite-minibuffer-history)))
+			    'mu-bbdb-history)))
 	  (if (and (not (string-equal return ""))
 		   (y-or-n-p (format "Register \"%s\"? " return)))
 	      (mu-bbdb-set-attr return addr))
@@ -129,7 +130,7 @@
 			      (or attr
 				  (mu-cite-get-value 'x-attribution)
 				  (mu-cite-get-value 'full-name))
-			      'mu-cite-minibuffer-history)))
+			      'mu-bbdb-history)))
     (if (and (not (string-equal return ""))
 	     (not (string-equal return attr))
 	     (y-or-n-p (format "Register \"%s\"? " return)))
@@ -148,7 +149,7 @@
 		       (function
 			mu-bbdb-get-prefix-register-verbose-method))))))
 
-
+
 ;;; @ end
 ;;;
 
