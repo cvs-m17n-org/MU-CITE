@@ -4,6 +4,8 @@
 ;;; Copyright (C) 1995 MINOURA Makoto
 ;;;
 ;;; Author: MINOURA Makoto <minoura@leo.bekkoame.or.jp>
+;;; Version:
+;;;	$Id: mu-register.el,v 1.2 1996-01-15 16:08:10 morioka Exp $
 ;;;
 ;;; This file is not part of tm (Tools for MIME).
 ;;;
@@ -53,12 +55,12 @@
 
 
 ;;
-;; from から引用名を得る
+;; get citation-name from From field
 (defsubst mu-register/get-citation-name (from)
   (cdr (assoc from mu-register/citation-name-alist)))
 
 ;;
-;; 引用名を登録する
+;; register citation-name
 (defun mu-register/add-citation-name (name from)
   (let* ((elt (assoc from mu-register/citation-name-alist)))
     (if elt
@@ -72,7 +74,7 @@
     ))
 
 ;;
-;; 実際に呼び出される関数
+;; main function
 (defun mu-register/citation-name ()
   (let* ((from
 	  (rfc822/address-string
@@ -104,7 +106,7 @@
     return))
 
 ;;
-;; ファイルに保存
+;; save to file
 (defun mu-register/save-to-file ()
   (let* ((filename mu-register/registration-file)
 	 (buffer (get-buffer-create " *mu-register*")))
