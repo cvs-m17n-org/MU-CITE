@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.26 1996-09-02 15:47:29 morioka Exp $
+;; Version: $Id: std11.el,v 0.27 1996-09-03 09:22:23 morioka Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -271,7 +271,8 @@ represents addr-spec of RFC 822. [std11.el]"
   "Extract full name and canonical address from STRING.
 Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).
 If no name can be extracted, FULL-NAME will be nil. [std11.el]"
-  (let* ((structure (car (std11-parse-address-string string)))
+  (let* ((structure (car (std11-parse-address-string
+			  (std11-unfold-string string))))
          (phrase  (std11-full-name-string structure))
          (address (std11-address-string structure))
          )
