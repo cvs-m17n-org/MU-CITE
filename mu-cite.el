@@ -1,12 +1,11 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
 
-;; Copyright (C) 1995,1996,1997,1998 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;;         MINOURA Makoto <minoura@netlaputa.or.jp>
 ;;         Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Maintainer: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Revision: 7.51 $
+;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: mail, news, citation
 
 ;; This file is part of MU (Message Utilities).
@@ -54,15 +53,7 @@
 ;;; @ version
 ;;;
 
-(defsubst get-version-string (id)
-  "Return a version-string from RCS ID."
-  (and (string-match ",v \\([0-9][0-9.][0-9.]+\\)" id)
-       (substring id (match-beginning 1)(match-end 1))
-       ))
-
-(defconst mu-cite/RCS-ID
-  "$Id: mu-cite.el,v 7.51 1998/02/13 10:11:54 morioka Exp $")
-(defconst mu-cite/version (get-version-string mu-cite/RCS-ID))
+(defconst mu-cite/version "7.52")
 
 
 ;;; @ formats
