@@ -1,3 +1,25 @@
+1999-08-03  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-register.el (mu-cite-get-prefix-register-verbose-method): Bind
+	`minibuffer-allow-text-properties' to nil; use
+	`mu-cite-remove-text-properties'; use `if' instead of `when'.
+	(mu-cite-get-prefix-register-method): Ditto.
+	(mu-cite-save-registration-file): Don't use `prin1-to-string' for
+	avoiding text properties.
+
+	* mu-bbdb.el (mu-bbdb-get-prefix-register-verbose-method): Bind
+	`minibuffer-allow-text-properties' to nil; use
+	`mu-cite-remove-text-properties'.
+	(mu-bbdb-get-prefix-register-method): Ditto.
+
+	* mu-cite.el (compress-cited-prefix): Use `if' instead of `when'.
+	(mu-cite-remove-text-properties): New macro for removing text
+	properties under FSF Emacs from 19.7 to under 20.1.  It is
+	suggested by Masahiro MURATA <muse@ba2.so-net.ne.jp>.
+
+	* NEWS: Document that text properties in the registration file is
+	not recommended.
+
 1999-08-02  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* NEWS: New file.
