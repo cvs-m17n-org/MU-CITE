@@ -30,7 +30,7 @@
 
 
 (defconst rfc822/RCS-ID
-  "$Id: tl-822.el,v 7.19 1996-04-25 21:24:27 morioka Exp $")
+  "$Id: tl-822.el,v 7.20 1996-04-25 21:28:03 morioka Exp $")
 (defconst rfc822/version (get-version-string rfc822/RCS-ID))
 
 
@@ -54,15 +54,11 @@
   (point)
   )
 
-(defun rfc822/get-field-body (name)
+(defun rfc822/get-field-body (name &optional boundary)
   (let ((case-fold-search t))
     (save-excursion
       (save-restriction
-	(narrow-to-region
-	 (goto-char (point-min))
-	 (or (and (re-search-forward "^$" nil t) (match-end 0))
-	     (point-max)
-	     ))
+	(rfc822/narrow-to-header boundary)
 	(goto-char (point-min))
 	(if (re-search-forward (concat "^" name ":[ \t]*") nil t)
 	    (buffer-substring-no-properties
@@ -102,11 +98,11 @@
 
 (defun rfc822/narrow-to-header (&optional boundary)
   (narrow-to-region (goto-char (point-min))
-		    (progn
-		      (re-search-forward
-		       (concat "^\\(" (regexp-quote (or boundary "")) "\\)?$")
-		       nil t)
-		      (match-beginning 0)
+		    (if (re-search-forward
+			 (concat "^\\(" (regexp-quote
+					 (or boundary "")) "\\)?$") nil t)
+			(match-end 0)
+		      (point-max)
 		      )))
 
 (defun rfc822/get-header-string (pat &optional boundary)
