@@ -4,7 +4,7 @@
 
 ;; Author:   MORIOKA Tomohiko <morioka@jaist.ac.jp>
 ;; Keywords: mail, news, RFC 822, STD 11
-;; Version: $Id: std11.el,v 0.32 1996-09-14 08:41:00 morioka Exp $
+;; Version: $Id: std11.el,v 0.33 1996-09-14 08:42:39 morioka Exp $
 
 ;; This file is part of MU (Message Utilities).
 
@@ -236,7 +236,7 @@ If BOUNDARY is not nil, it is used as message header separator.
      (if (and (eq (aref string 0) ?\")
 	      (eq (aref string max) ?\")
 	      )
-	 (substring str 1 max)
+	 (substring string 1 max)
        string)
      )))
 
