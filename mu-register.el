@@ -29,6 +29,8 @@
 
 (require 'mu-cite)
 
+(eval-when-compile (require 'static))
+
 
 ;;; @ variables
 ;;;
@@ -60,8 +62,6 @@
 
 (defvar mu-register-history nil)
 
-(eval-when-compile (require 'static))
-
 (static-when (featurep 'xemacs)
   (define-obsolete-variable-alias
     'mu-cite/registration-file 'mu-registration-file)
@@ -81,11 +81,15 @@
 (defun mu-cite-load-registration-file ()
   (if (file-readable-p mu-registration-file)
       (with-temp-buffer
-	(insert-file-contents-as-coding-system
-	 mu-registration-file-coding-system-for-read
-	 mu-registration-file)
+	(if mu-registration-file-coding-system-for-read
+	    (insert-file-contents-as-coding-system
+	     mu-registration-file-coding-system-for-read
+	     mu-registration-file)
+	  (insert-file-contents mu-registration-file))
 	(setq mu-registration-file-coding-system
-	      buffer-file-coding-system)
+	      (static-if (<= emacs-major-version 19)
+		  file-coding-system
+		buffer-file-coding-system))
 	(let ((exp (read (current-buffer))))
 	  (or (eq (car (cdr exp)) mu-registration-symbol)
 	      (setcar (cdr exp) mu-registration-symbol))
