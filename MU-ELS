@@ -1,9 +1,9 @@
 ;;; -*-Emacs-Lisp-*-
 ;;;
-;;; $Id: MU-ELS,v 0.3 1996-12-17 13:07:54 morioka Exp $
+;;; $Id: MU-ELS,v 1.1 1998-02-13 10:15:19 morioka Exp $
 ;;;
 
-(setq mu-modules-to-compile '(std11 std11-parse mu-cite))
+(setq mu-modules-to-compile '(mu-cite))
 
 (if (featurep 'mule)
     (setq mu-modules-to-compile
