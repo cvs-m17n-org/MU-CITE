@@ -1,9 +1,10 @@
-;;; mu-bbdb.el --- `attribution' function for mu-cite with BBDB.
+;;; mu-bbdb.el --- registration feature of mu-cite using BBDB
 
-;; Copyright (C) 1996,1997 Shuhei KOBAYASHI
+;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
 
-;; Author: Shuhei KOBAYASHI <shuhei-k@jaist.ac.jp>
-;; Version: $Id: mu-bbdb.el,v 3.3 1996/12/10 11:57:23 shuhei-k Exp $
+;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
+;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
+;; Keywords: BBDB, citation, mail, news
 
 ;; This file is part of MU (Message Utilities).
 
@@ -33,12 +34,10 @@
 ;;                          (require 'mu-bbdb)
 ;;                          )))
 
-
 ;;; Code:
 
 (require 'mu-cite)
-(if (module-installed-p 'bbdb)
-    (require 'bbdb))
+(require 'bbdb)
 
 (defvar mu-bbdb-load-hook nil
   "*List of functions called after mu-bbdb is loaded.")
@@ -120,7 +119,7 @@
                           mu-cite/get-bbdb-prefix-register-verbose-method))
                    ))))
 
-
+
 ;;; @ end
 ;;;
 
