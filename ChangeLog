@@ -1,3 +1,8 @@
+2001-08-29  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-register.el (mu-cite-load-registration-file): Retry to read
+	a file when failed.
+
 2001-08-03  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-register.el (mu-cite-save-registration-file): Use

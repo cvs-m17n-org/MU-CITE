@@ -86,18 +86,42 @@ registration id read.")
 	     mu-registration-file-coding-system-for-read
 	     mu-registration-file)
 	  (insert-file-contents mu-registration-file))
-	(setq mu-registration-file-coding-system
-	      (static-cond
-	       ((boundp 'buffer-file-coding-system)
-		(symbol-value 'buffer-file-coding-system))
-	       ((boundp 'file-coding-system)
-		(symbol-value 'file-coding-system))
-	       (t
-		nil)))
-	(let ((exp (read (current-buffer))))
-	  (or (eq (car (cdr exp)) mu-registration-symbol)
-	      (setcar (cdr exp) mu-registration-symbol))
-	  (eval exp))))
+	(let (exp)
+	  (if (or (condition-case nil
+		      (progn
+			(setq exp (read (current-buffer)))
+			t)
+		    (error nil))
+		  ;; Under XEmacs, the function `insert-file-contents'
+		  ;; does not handle the coding-system magic cookie.
+		  (progn
+		    (insert-file-contents-as-raw-text mu-registration-file
+						      nil 0 3000 t)
+		    (goto-char (point-min))
+		    (if (looking-at "\
+^[^\n]*-\\*-[^\n]*coding: \\([^\t\n ;]+\\)[^\n]*-\\*-")
+			(progn
+			  (insert-file-contents-as-coding-system
+			   (intern (match-string 1)) mu-registration-file
+			   nil nil nil t)
+			  (goto-char (point-min))
+			  (condition-case nil
+			      (progn
+				(setq exp (read (current-buffer)))
+				t)
+			    (error nil))))))
+	      (progn
+		(setq mu-registration-file-coding-system
+		      (static-cond
+		       ((boundp 'buffer-file-coding-system)
+			(symbol-value 'buffer-file-coding-system))
+		       ((boundp 'file-coding-system)
+			(symbol-value 'file-coding-system))
+		       (t
+			nil)))
+		(or (eq (car (cdr exp)) mu-registration-symbol)
+		    (setcar (cdr exp) mu-registration-symbol))
+		(eval exp))))))
   (or (boundp mu-registration-symbol)
       (set mu-registration-symbol nil)))
 
