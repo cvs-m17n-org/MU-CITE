@@ -1,3 +1,14 @@
+1999-07-21  MORIOKA Tomohiko  <tomo@m17n.org>
+
+	* mu-register.el (mu-citation-name-alist): Deleted.
+	(mu-cite-load-registration-file): Initialize value of
+	`mu-registration-symbol' if it is not bound.
+	(mu-cite-save-registration-file): Use `(symbol-value
+	mu-registration-symbol)' instead of `mu-citation-name-alist'.
+	(mu-register-get-citation-name): Likewise.
+	(mu-register-add-citation-name): Use `(set-alist
+	mu-registration-symbol ...)'.
+
 1999-07-20  MORIOKA Tomohiko  <tomo@m17n.org>
 
 	* mu-cite.el (mu-cite-obsolete-variable-alist): Revert to define;
