@@ -25,7 +25,7 @@ GOMI	= *.elc auto-autoloads.el custom-load.el \
 FILES	= README.?? Makefile MU-MK MU-CFG MU-ELS *.el ChangeLog
 
 VERSION	= $(API).$(RELEASE)
-ARC_DIR = /pub/mule/mu/mu-$(API)
+ARC_DIR = /pub/elisp/mu
 
 elc:
 	$(EMACS) $(FLAGS) -f compile-mu $(PREFIX) $(LISPDIR) \
