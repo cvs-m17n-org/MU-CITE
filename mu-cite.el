@@ -535,8 +535,8 @@ TABLE defaults to the current buffer's category table."
 	 c1 c2)
     (while (and (< p len)
 		(progn
-		  (setq c1 (aref str1 p)
-			c2 (aref str2 p))
+		  (setq c1 (sref str1 p)
+			c2 (sref str2 p))
 		  (eq c1 c2)))
       (setq p (char-next-index c1 p)))
     (and (> p 0)
