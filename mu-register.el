@@ -4,10 +4,12 @@
 ;;; Copyright (C) 1995 MINOURA Makoto
 ;;;
 ;;; Author: MINOURA Makoto <minoura@leo.bekkoame.or.jp>
+;;;         modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+;;; Created: 1995/12/27 by MINOURA Makoto <minoura@leo.bekkoame.or.jp>
 ;;; Version:
-;;;	$Id: mu-register.el,v 1.2 1996-01-15 16:08:10 morioka Exp $
+;;;	$Id: mu-register.el,v 1.3 1996-01-15 19:24:19 morioka Exp $
 ;;;
-;;; This file is not part of tm (Tools for MIME).
+;;; This file is part of tl (Tiny Library).
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License as
@@ -44,6 +46,9 @@
 
 ;;; Code:
 
+;;; @ variables
+;;;
+
 (defvar mu-register/registration-file
   (expand-file-name "~/.mu-register")
   "*The name of the user environment file for mu-register.")
@@ -54,12 +59,13 @@
 (defvar mu-register/minibuffer-history nil)
 
 
-;;
+;;; @ functions
+;;;
+
 ;; get citation-name from From field
 (defsubst mu-register/get-citation-name (from)
   (cdr (assoc from mu-register/citation-name-alist)))
 
-;;
 ;; register citation-name
 (defun mu-register/add-citation-name (name from)
   (let* ((elt (assoc from mu-register/citation-name-alist)))
@@ -73,7 +79,6 @@
     (mu-register/save-to-file)
     ))
 
-;;
 ;; main function
 (defun mu-register/citation-name ()
   (let* ((from
@@ -105,7 +110,6 @@
 	      (mu-register/add-citation-name return from))))
     return))
 
-;;
 ;; save to file
 (defun mu-register/save-to-file ()
   (let* ((filename mu-register/registration-file)
@@ -124,17 +128,18 @@
     (kill-buffer buffer)))
 
 
-;;
-;; Installation
+;;; @ Installation
+;;;
 
 (require 'mu-cite)
-(if (null (assoc 'registered mu-cite/default-methods-alist))
-    (setq mu-cite/default-methods-alist
-	  (cons (cons 'registered (function mu-register/citation-name))
-		mu-cite/default-methods-alist)))
+(set-alist 'mu-cite/default-methods-alist
+	   'registered 
+	   (function mu-register/citation-name))
 
-;;
-;; provide
+
+;;; @ end
+;;;
+
 (provide 'mu-register)
 
 ;;; mu-register.el ends here
