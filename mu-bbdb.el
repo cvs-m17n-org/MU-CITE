@@ -45,79 +45,88 @@
 (defvar mu-bbdb-history nil)
 
 
-;;; @ prefix and registration using BBDB
+;;; @ BBDB interface
 ;;;
 
-(defun mu-cite/get-bbdb-prefix-method ()
-  (or (mu-cite/get-bbdb-attr (mu-cite-get-value 'address))
-      ">")
-  )
-
-(defun mu-cite/get-bbdb-attr (addr)
+(defun mu-bbdb-get-attr (addr)
   "Extract attribute information from BBDB."
   (let ((record (bbdb-search-simple nil addr)))
     (and record
-         (bbdb-record-getprop record 'attribution))
-    ))
+         (bbdb-record-getprop record 'attribution))))
 
-(defun mu-cite/set-bbdb-attr (attr addr)
+(defun mu-bbdb-set-attr (attr addr)
   "Add attribute information to BBDB."
   (let* ((bbdb-notice-hook nil)
-         (record (bbdb-annotate-message-sender
-                  addr t
-	          (bbdb-invoke-hook-for-value
-	           bbdb/mail-auto-create-p)
+	 (record (bbdb-annotate-message-sender
+		  addr t
+		  (bbdb-invoke-hook-for-value
+		   bbdb/mail-auto-create-p)
 		  t)))
     (if record
         (progn
           (bbdb-record-putprop record 'attribution attr)
-          (bbdb-change-record record nil))
-      )))
+          (bbdb-change-record record nil)
+	  ))))
 
-(defun mu-cite/get-bbdb-prefix-register-method ()
+
+;;; @ methods
+;;;
+
+;;;###autoload
+(defun mu-bbdb-get-prefix-method ()
+  "A mu-cite method to return a prefix from BBDB or \">\".
+If an `attribution' value is found in BBDB, the value is returned.
+Otherwise \">\" is returned.
+
+Notice that please use (mu-cite-get-value 'bbdb-prefix)
+instead of call the function directly."
+  (or (mu-bbdb-get-attr (mu-cite-get-value 'address))
+      ">"))
+
+;;;###autoload
+(defun mu-bbdb-get-prefix-register-method ()
+  "A mu-cite method to return a prefix from BBDB or register it.
+If an `attribution' value is found in BBDB, the value is returned.
+Otherwise the function requests a prefix from a user.  The prefix will
+be registered to BBDB if the user wants it.
+
+Notice that please use (mu-cite-get-value 'bbdb-prefix-register)
+instead of call the function directly."
   (let ((addr (mu-cite-get-value 'address)))
-    (or (mu-cite/get-bbdb-attr addr)
-    	(let ((return
+    (or (mu-bbdb-get-attr addr)
+	(let ((return
 	       (read-string "Citation name? "
 			    (or (mu-cite-get-value 'x-attribution)
 				(mu-cite-get-value 'full-name))
-			    'mu-bbdb-history)
-	       ))
+			    'mu-bbdb-history)))
 	  (if (and (not (string-equal return ""))
-                   (y-or-n-p (format "Register \"%s\"? " return)))
-	      (mu-cite/set-bbdb-attr return addr)
-	    )
+		   (y-or-n-p (format "Register \"%s\"? " return)))
+	      (mu-bbdb-set-attr return addr))
 	  return))))
 
-(defun mu-cite/get-bbdb-prefix-register-verbose-method ()
+;;;###autoload
+(defun mu-bbdb-get-prefix-register-verbose-method ()
+  "A mu-cite method to return a prefix using BBDB.
+
+In this method, a user must specify a prefix unconditionally.  If an
+`attribution' value is found in BBDB, the value is used as a initial
+value to input the prefix.  The prefix will be registered to BBDB if
+the user wants it.
+
+Notice that please use (mu-cite-get-value 'bbdb-prefix-register-verbose)
+instead of call the function directly."
   (let* ((addr (mu-cite-get-value 'address))
-         (attr (mu-cite/get-bbdb-attr addr))
+	 (attr (mu-bbdb-get-attr addr))
 	 (return (read-string "Citation name? "
 			      (or attr
 				  (mu-cite-get-value 'x-attribution)
 				  (mu-cite-get-value 'full-name))
-			      'mu-bbdb-history))
-	 )
+			      'mu-bbdb-history)))
     (if (and (not (string-equal return ""))
-             (not (string-equal return attr))
-	     (y-or-n-p (format "Register \"%s\"? " return))
-	     )
-	(mu-cite/set-bbdb-attr return addr)
-      )
+	     (not (string-equal return attr))
+	     (y-or-n-p (format "Register \"%s\"? " return)))
+	(mu-bbdb-set-attr return addr))
     return))
-
-(or (assoc 'bbdb-prefix mu-cite/default-methods-alist)
-    (setq mu-cite/default-methods-alist
-          (append mu-cite/default-methods-alist
-                  (list
-                   (cons 'bbdb-prefix
-                         (function mu-cite/get-bbdb-prefix-method))
-                   (cons 'bbdb-prefix-register
-                         (function mu-cite/get-bbdb-prefix-register-method))
-                   (cons 'bbdb-prefix-register-verbose
-                         (function
-                          mu-cite/get-bbdb-prefix-register-verbose-method))
-                   ))))
 
 
 ;;; @ end
