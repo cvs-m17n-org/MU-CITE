@@ -1,3 +1,10 @@
+1999-07-22  Katsumi Yamaoka   <yamaoka@jpl.org>
+
+	* mu-register.el (mu-cite-load-registration-file): Check for the
+	existence of `buffer-file-coding-system' or `file-coding-system'.
+
+	* mu-cite.el (string-compare-from-top): Don't use `aref'.
+
 1999-07-21  Katsumi Yamaoka   <yamaoka@jpl.org>
 
 	* mu-register.el (mu-cite-load-registration-file): Use
