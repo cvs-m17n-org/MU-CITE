@@ -47,7 +47,6 @@
 (require 'poe)
 
 (require 'pcustom)
-(require 'widget)
 (require 'std11)
 (require 'alist)
 
