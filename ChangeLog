@@ -1,3 +1,8 @@
+2005-06-06  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
+
+	* mu-cite.el (mu-cite-original): Allow nil as a value of
+	`mu-cite-cited-prefix-regexp'.
+
 2002-02-25  Daiki Ueno  <ueno@unixuser.org>
 
 	* MU-MK (config-mu-package): Add auto-autoloads and custom-load
