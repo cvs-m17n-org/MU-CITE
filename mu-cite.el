@@ -364,7 +364,8 @@ function according to the agreed upon standard."
       (insert top)
       (setq last-point (point))
       (while (< (point)(mark t))
-	(or (looking-at mu-cite-cited-prefix-regexp)
+	(or (and mu-cite-cited-prefix-regexp
+		 (looking-at mu-cite-cited-prefix-regexp))
 	    (insert prefix))
 	(forward-line 1))
       (goto-char last-point))
