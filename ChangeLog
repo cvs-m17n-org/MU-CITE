@@ -1,3 +1,9 @@
+2006-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* MU-CFG (PACKAGEDIR): Check for
+	(early|late|last)-package-hierarchies and configure-package-path
+	as well as (early|late|last)-packages.
+
 2005-06-06  MORIOKA Tomohiko  <tomo@kanji.zinbun.kyoto-u.ac.jp>
 
 	* mu-cite.el (mu-cite-original): Allow nil as a value of
