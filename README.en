@@ -15,7 +15,7 @@ What's MU
 	latex-math-symbol.el --- translate mathematical symbols of
 			     	 LaTeX into MULE characters
 
-  It requires two packages APEL 9.20 or later and FLIM 1.12.2 or later.
+  It requires two packages APEL 10.7 or later and FLIM 1.12.2 or later.
   Please install them.
 
 
