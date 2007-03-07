@@ -1,5 +1,5 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2005, 2007
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
@@ -386,17 +386,16 @@ function according to the agreed upon standard."
   :group 'mu-cite)
 
 (eval-and-compile
-  ;; Force redefine the function `char-category' which may have been
-  ;; defined by emu.el.  They can be distinguished by the number of
-  ;; arguments.  Anyway, that is the best way not to use emu.el.
+  ;; Don't use the function `char-category' which may have been
+  ;; defined by emu.el.  Anyway, the best way is not to use emu.el.
   (if (and (fboundp 'char-category)
 	   (subrp (symbol-function 'char-category)))
-      nil
-    (fmakunbound 'char-category)
-    (defun-maybe-cond char-category (character &optional table)
-      "Return a string of category mnemonics for CHAR in TABLE.
-CHAR can be any multilingual characters,
-TABLE defaults to the current buffer's category table."
+      (defalias 'mu-cite-char-category 'char-category)
+    (defun-maybe-cond mu-cite-char-category (character &optional table)
+      "Return a string of category mnemonics for CHARACTER in TABLE.
+CHARACTER can be any multilingual characters,
+TABLE defaults to the current buffer's category table (it is currently
+ignored)."
       ((and (subr-fboundp 'char-category-set)
 	    (subr-fboundp 'category-set-mnemonics))
        (category-set-mnemonics (char-category-set character)))
@@ -498,8 +497,7 @@ to 70. :-)"
 		(e (match-end 0)))
 	    (delete-region b e)
 	    (if (and (> b (point-min))
-		     (let ((cat (char-category
-				 (char-before b))))
+		     (let ((cat (mu-cite-char-category (char-before b))))
 		       (or (string-match "a" cat)
 			   (string-match "l" cat))))
 		(insert " "))))

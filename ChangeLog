@@ -1,3 +1,8 @@
+2007-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-char-category): Rename from char-category of
+	which the name is too generic.
+
 2006-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* README.en (What's MU): Update required version of APEL to 10.7
