@@ -71,18 +71,18 @@
 (defmacro mu-cite-remove-text-properties (string)
   "Remove text properties from STRING which is read from minibuffer."
   (cond ((featurep 'xemacs)
-	 (` (let ((string (copy-sequence (, string))))
-	      (map-extents (function (lambda (extent maparg)
-				       (delete-extent extent))
-				     string 0 (length string)))
-	      string)))
+	 `(let ((string (copy-sequence ,string)))
+	    (map-extents (function (lambda (extent maparg)
+				     (delete-extent extent))
+				   string 0 (length string)))
+	    string))
 	((or (boundp 'minibuffer-allow-text-properties);; Emacs 20.1 or later.
 	     (not (fboundp 'set-text-properties)));; under Emacs 19.7.
 	 string)
 	(t
-	 (` (let ((string (copy-sequence (, string))))
-	      (set-text-properties 0 (length string) nil string)
-	      string)))))
+	 `(let ((string (copy-sequence ,string)))
+	    (set-text-properties 0 (length string) nil string)
+	    string))))
 
 
 ;;; @ set up
@@ -470,8 +470,8 @@ ignored)."
 executed.  If you wish people call you ****-san, you may set the value
 of `fill-column' to 60 in the buffer for message sending and set this
 to 70. :-)"
-  :type (` (choice (const :tag "Off" nil)
-		   (integer (, default-fill-column))))
+  :type `(choice (const :tag "Off" nil)
+		 (integer ,default-fill-column))
   :group 'mu-cite)
 
 ;;;###autoload

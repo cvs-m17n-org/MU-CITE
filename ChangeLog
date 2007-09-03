@@ -1,3 +1,8 @@
+2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-remove-text-properties)
+	(fill-column-for-fill-cited-region): Don't use old-style backquotes.
+
 2007-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mu-cite.el (mu-cite-char-category): Rename from char-category of
