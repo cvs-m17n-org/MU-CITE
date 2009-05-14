@@ -1,3 +1,7 @@
+2009-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* README.en (Bug reports): Remove.
+
 2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mu-cite.el (mu-cite-remove-text-properties)

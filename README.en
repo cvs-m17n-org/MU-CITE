@@ -115,24 +115,6 @@ load-path (for Emacs or MULE)
   load-path.
 
 
-Bug reports
-===========
-
-  If you write bug-reports and/or suggestions for improvement, please
-  send them to Elips Mailing List:
-
-	Elips@eos.hokudai.ac.jp
-
-  Elips mailing list is for discussing all sorts of Emacsen, mainly in
-  Japanese.  To join Elips ML, please introduce yourself briefly in an
-  e-mail to
-
-	Elips-request@eos.hokudai.ac.jp
-
-  Via Elips ML, you can report MU-CITE related bugs, obtain the latest
-  release of MU-CITE, and discuss future enhancements to MU-CITE.
-
-
 CVS based development
 =====================
 
