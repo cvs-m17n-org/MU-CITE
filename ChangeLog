@@ -1,3 +1,8 @@
+2010-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* MU-CFG: Don't load poe twice; add emu subdirectory to load-path
+	when LISPDIR is specified.
+
 2009-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* README.en (Bug reports): Remove.

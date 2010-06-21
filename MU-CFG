@@ -32,12 +32,11 @@
 (add-to-list 'load-path
 	     (expand-file-name "../../site-lisp/flim" data-directory))
 
-(require 'poe)
-
 (if (boundp 'LISPDIR)
     (progn
       (add-to-list 'default-load-path LISPDIR)
       (add-to-list 'load-path LISPDIR)
+      (add-to-list 'load-path (expand-file-name "emu" LISPDIR))
       (add-to-list 'load-path (expand-file-name "apel" LISPDIR))
       (add-to-list 'load-path (expand-file-name "flim" LISPDIR))
       ))
