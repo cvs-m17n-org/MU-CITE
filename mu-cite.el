@@ -73,8 +73,8 @@
   (cond ((featurep 'xemacs)
 	 `(let ((string (copy-sequence ,string)))
 	    (map-extents (function (lambda (extent maparg)
-				     (delete-extent extent))
-				   string 0 (length string)))
+				     (delete-extent extent)))
+			 string 0 (length string))
 	    string))
 	((or (boundp 'minibuffer-allow-text-properties);; Emacs 20.1 or later.
 	     (not (fboundp 'set-text-properties)));; under Emacs 19.7.

@@ -1,3 +1,8 @@
+2012-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-remove-text-properties): Fix mismatched paren in
+	XEmacs part.
+
 2010-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* MU-CFG: Don't load poe twice; add emu subdirectory to load-path
