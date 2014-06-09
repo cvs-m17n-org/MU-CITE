@@ -1,5 +1,5 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2005, 2007
+;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
@@ -53,6 +53,7 @@
 (autoload 'mu-cite-get-prefix-method "mu-register")
 (autoload 'mu-cite-get-prefix-register-method "mu-register")
 (autoload 'mu-cite-get-prefix-register-verbose-method "mu-register")
+(autoload 'mu-cite-get-no-prefix-register-verbose-method "mu-register")
 
 (autoload 'mu-bbdb-get-prefix-method "mu-bbdb")
 (autoload 'mu-bbdb-get-prefix-register-method "mu-bbdb")
@@ -164,6 +165,8 @@
 	      (function mu-cite-get-prefix-register-method))
 	(cons 'prefix-register-verbose
 	      (function mu-cite-get-prefix-register-verbose-method))
+	(cons 'no-prefix-register-verbose
+	      (function mu-cite-get-no-prefix-register-verbose-method))
 	;; mu-bbdb
 	(cons 'bbdb-prefix
 	      (function mu-bbdb-get-prefix-method))
@@ -355,8 +358,9 @@ function according to the agreed upon standard."
     (narrow-to-region (point)(point-max))
     (run-hooks 'mu-cite-pre-cite-hook)
     (let ((last-point (point))
-	  (top (mu-cite-eval-format mu-cite-top-format))
-	  (prefix (mu-cite-eval-format mu-cite-prefix-format)))
+	  ;; Register a name before generating the top cite form.
+	  (prefix (mu-cite-eval-format mu-cite-prefix-format))
+	  (top (mu-cite-eval-format mu-cite-top-format)))
       (if (re-search-forward "^-*$" nil nil)
 	  (forward-line 1))
       (widen)
@@ -471,7 +475,7 @@ executed.  If you wish people call you ****-san, you may set the value
 of `fill-column' to 60 in the buffer for message sending and set this
 to 70. :-)"
   :type `(choice (const :tag "Off" nil)
-		 (integer ,default-fill-column))
+		 (integer ,(default-value 'fill-column)))
   :group 'mu-cite)
 
 ;;;###autoload
@@ -552,8 +556,8 @@ to 70. :-)"
 	 c1 c2)
     (while (and (< p len)
 		(progn
-		  (setq c1 (sref str1 p)
-			c2 (sref str2 p))
+		  (setq c1 (aref str1 p)
+			c2 (aref str2 p))
 		  (eq c1 c2)))
       (setq p (char-next-index c1 p)))
     (and (> p 0)

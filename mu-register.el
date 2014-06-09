@@ -1,5 +1,5 @@
 ;;; mu-register.el --- registration feature of mu-cite
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995-2001, 2014
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MINOURA Makoto <minoura@netlaputa.or.jp>
@@ -181,7 +181,7 @@ registration file is read.")
 	  return))))
 
 ;;;###autoload
-(defun mu-cite-get-prefix-register-verbose-method ()
+(defun mu-cite-get-prefix-register-verbose-method (&optional no-return)
   (let* ((addr (mu-cite-get-value 'address))
 	 (return1 (mu-register-get-citation-name addr))
 	 (minibuffer-allow-text-properties nil)
@@ -197,7 +197,12 @@ registration file is read.")
 	     (not (string-equal return return1))
 	     (y-or-n-p (format "Register \"%s\"? " return)))
 	(mu-register-add-citation-name return addr))
-    return))
+    (if no-return "" return)))
+
+;;;###autoload
+(defun mu-cite-get-no-prefix-register-verbose-method ()
+  ;; Allow registration of a name but don't use it as a citation prefix.
+  (mu-cite-get-prefix-register-verbose-method t))
 
 
 ;;; @ end

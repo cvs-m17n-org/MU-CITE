@@ -1,3 +1,15 @@
+2014-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mu-register.el (mu-cite-get-no-prefix-register-verbose-method):
+	New function.
+	(mu-cite-get-prefix-register-verbose-method): Work for it.
+
+	* mu-cite.el (mu-cite-default-methods-alist):
+	Add a new method `no-prefix-register-verbose'.
+	(mu-cite-original): Register a name before generating top cite form.
+	(fill-column-for-fill-cited-region): Don't use default-fill-column.
+	(string-compare-from-top): Replace sref with aref.
+
 2012-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mu-cite.el (mu-cite-remove-text-properties): Fix mismatched paren in
