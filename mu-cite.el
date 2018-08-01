@@ -1,5 +1,5 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
-;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014
+;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014, 2018
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
@@ -159,6 +159,8 @@
 	      (function
 	       (lambda ()
 		 (mu-cite-get-field-value "X-Cite-Me"))))
+	(cons 'top-posting
+	      (function mu-cite-get-original-header))
 	;; mu-register
 	(cons 'prefix (function mu-cite-get-prefix-method))
 	(cons 'prefix-register
@@ -273,6 +275,72 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
       (let ((method (assq major-mode mu-cite-get-field-value-method-alist)))
 	(if method
 	    (funcall (cdr method) name)))))
+
+;;; @ top-posting
+;;;
+
+(defun mu-cite-get-original-header ()
+  "Return an original header used with the O*tlook-style top-posting.
+
+You can use the top-posting style as follows; this is the simplest way:
+
+(setq mu-cite-prefix-format nil)
+(setq mu-cite-top-format '(top-posting))
+
+If you want to use it for only replying to [1]certain recipients, or
+\[2]those who use the top-posting style, try this:
+
+\(add-hook
+ 'mu-cite-pre-cite-hook
+ (lambda ()
+   (let ((last-point (point))
+         (case-fold-search nil))
+     (goto-char (point-min))
+     (if (or
+          ;; [1]certain recipients (an address contains \"jp\")
+          (save-excursion
+            (save-restriction
+              (std11-narrow-to-header)
+              (string-match \"\\\\Wjp\\\\(\\\\W\\\\|\\\\'\\\\)\"
+                            (or (std11-fetch-field \"from\") \"\"))))
+          ;; [2]those who use the top-posting style
+          (re-search-forward \"\\n-----Original Message-----\\nFrom:\"
+                             nil t)
+          ;; [3]the last resort
+          (y-or-n-p \"Use top-posting? \"))
+         (progn
+           (set (make-local-variable 'mu-cite-prefix-format)
+                nil)
+           (set (make-local-variable 'mu-cite-top-format)
+                '(top-posting))))
+     (goto-char last-point))))
+
+This is just an example; modify it to make it suitable to your taste."
+  (save-excursion
+    (let ((case-fold-search t) rest)
+      (save-restriction
+	(std11-narrow-to-header)
+	(dolist (field '("from" "date" "to" "cc" "subject"))
+	  (goto-char (point-min))
+	  (if (re-search-forward (concat "^" field ":") nil t)
+	      (setq rest (cons (replace-regexp-in-string
+				"\"\"+" "\""
+				(subst-char-in-string
+				 ?' ?\"
+				 (replace-regexp-in-string
+				  " \\'" ""
+				  (replace-regexp-in-string
+				   "[\t\n\r ]+" " "
+				   (buffer-substring-no-properties
+				    (match-beginning 0)
+				    (std11-field-end))))))
+			       rest))))
+	(goto-char (point-max)))
+      (if (looking-at "\n\n+")
+	  (delete-region (1+ (match-beginning 0)) (match-end 0)))
+      (concat "\n-----Original Message-----\n"
+	      (mapconcat #'identity (nreverse rest) "\n")
+	      "\n\n"))))
 
 
 ;;; @ item methods

@@ -1,3 +1,10 @@
+2018-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-default-methods-alist): Add a new method
+	`top-posting'.  See the doc-string of `mu-cite-get-original-header'
+	for the usage.
+	(mu-cite-get-original-header): New function.
+
 2014-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mu-register.el (mu-cite-get-no-prefix-register-verbose-method):
