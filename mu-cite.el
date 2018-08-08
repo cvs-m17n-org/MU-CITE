@@ -282,13 +282,14 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
 (defun mu-cite-get-original-header ()
   "Return an original header used with the O*tlook-style top-posting.
 
-You can use the top-posting style as follows; this is the simplest way:
+You can use the top-posting style with this most simple way:
 
 (setq mu-cite-prefix-format nil)
 (setq mu-cite-top-format '(top-posting))
 
-If you want to use it for only replying to [1]certain recipients, or
-\[2]those who use the top-posting style, try this:
+But it might not necessarily be convenient as the case may be.  If you
+want to use it for only replying to [1]certain recipients, or [2]those
+who use the top-posting style, try this:
 
 \(add-hook
  'mu-cite-pre-cite-hook
@@ -297,11 +298,11 @@ If you want to use it for only replying to [1]certain recipients, or
          (case-fold-search nil))
      (goto-char (point-min))
      (if (or
-          ;; [1]certain recipients (an address contains \"jp\")
+          ;; [1]certain recipients (an address contains \"co.jp\")
           (save-excursion
             (save-restriction
               (std11-narrow-to-header)
-              (string-match \"\\\\Wjp\\\\(\\\\W\\\\|\\\\'\\\\)\"
+              (string-match \"\\\\Wco\\\\.jp\\\\(\\\\W\\\\|\\\\'\\\\)\"
                             (or (std11-fetch-field \"from\") \"\"))))
           ;; [2]those who use the top-posting style
           (re-search-forward \"\\n-----Original Message-----\\nFrom:\"
