@@ -280,7 +280,7 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
 ;;;
 
 (defun mu-cite-get-original-header ()
-  "Return an original header used with the O*tlook-style top-posting.
+  "Return an original header used with the M$ O*tlook-style top-posting.
 
 You can use the top-posting style with this most simple way:
 
@@ -318,24 +318,49 @@ who use the top-posting style, try this:
 
 This is just an example; modify it to make it suitable to your taste."
   (save-excursion
-    (let ((case-fold-search t) rest)
+    (let ((case-fold-search t) cont rest)
       (save-restriction
 	(std11-narrow-to-header)
 	(dolist (field '("from" "date" "to" "cc" "subject"))
 	  (goto-char (point-min))
 	  (if (re-search-forward (concat "^" field ":") nil t)
-	      (setq rest (cons (replace-regexp-in-string
-				"\"\"+" "\""
-				(subst-char-in-string
-				 ?' ?\"
-				 (replace-regexp-in-string
-				  " \\'" ""
-				  (replace-regexp-in-string
-				   "[\t\n\r ]+" " "
-				   (buffer-substring-no-properties
-				    (match-beginning 0)
-				    (std11-field-end))))))
-			       rest))))
+	      (progn
+		(setq cont (replace-regexp-in-string
+			    "\"\"+" "\""
+			    (subst-char-in-string
+			     ?' ?\"
+			     (replace-regexp-in-string
+			      " \\'" ""
+			      (replace-regexp-in-string
+			       "[\t\n\r ]+" " "
+			       (buffer-substring-no-properties
+				(match-beginning 0)
+				(std11-field-end)))))))
+		;; Make it compatible with M$ O*tlook.
+		(cond ((string-equal field "date")
+		       (let ((date (substring cont 5 (length cont))))
+			 (setq cont
+			       (concat
+				"Sent:"
+				(condition-case nil
+				    (format-time-string
+				     " %a, %d %b %Y %T %z"
+				     (date-to-time date)
+				     (car (current-time-zone)))
+				  (error date))))))
+		      ((member field '("to" "cc"))
+		       (setq cont
+			     (concat
+			      (capitalize field) ": "
+			      (mapconcat
+			       (lambda (addr)
+				 (if (car addr)
+				     (concat (car addr) " <" (nth 1 addr) ">")
+				   (nth 1 addr)))
+			       (mail-extract-address-components
+				(substring cont 3 (length cont)) t)
+			       "; ")))))
+		(setq rest (cons cont rest)))))
 	(goto-char (point-max)))
       (if (looking-at "\n\n+")
 	  (delete-region (1+ (match-beginning 0)) (match-end 0)))

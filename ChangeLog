@@ -1,3 +1,8 @@
+2018-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mu-cite.el (mu-cite-get-original-header): Make the return value
+	compatible with the M$ O*tlook style.
+
 2018-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mu-cite.el (mu-cite-default-methods-alist): Add a new method
