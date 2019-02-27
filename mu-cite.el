@@ -1,5 +1,5 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
-;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014, 2018
+;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014, 2018, 2019
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
@@ -338,7 +338,14 @@ This is just an example; modify it to make it suitable to your taste."
 				(std11-field-end)))))))
 		;; Make it compatible with M$ O*tlook.
 		(cond ((string-equal field "date")
-		       (let ((date (substring cont 5 (length cont))))
+		       (let* ((date (substring cont 5 (length cont)))
+			      (tz (aref (timezone-parse-date date) 4)))
+			 (if tz
+			     (setq tz (string-to-number tz)
+				   tz (+ (* (/ tz 100) 3600)
+					 (* (if (>= tz 0) 60 -60)
+					    (% (abs tz) 100))))
+			   (setq tz (car (current-time-zone))))
 			 (setq cont
 			       (concat
 				"Sent:"
@@ -346,7 +353,7 @@ This is just an example; modify it to make it suitable to your taste."
 				    (format-time-string
 				     " %a, %d %b %Y %T %z"
 				     (date-to-time date)
-				     (car (current-time-zone)))
+				     tz)
 				  (error date))))))
 		      ((member field '("to" "cc"))
 		       (setq cont
