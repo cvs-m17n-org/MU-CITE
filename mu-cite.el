@@ -271,10 +271,17 @@ Each elements must be a string or a method name."
   "Return the value of the header field NAME.
 If the field is not found in the header, a method function which is
 registered in variable `mu-cite-get-field-value-method-alist' is called."
-  (or (std11-field-body name)
-      (let ((method (assq major-mode mu-cite-get-field-value-method-alist)))
-	(if method
-	    (funcall (cdr method) name)))))
+  (let ((value (std11-field-body name)))
+    (if (null value)
+	(let ((method (assq major-mode mu-cite-get-field-value-method-alist)))
+	  (if method
+	      (funcall (cdr method) name)))
+      (setq value (std11-unfold-string value))
+      (when (string-match "^[ \t]+" value)
+	(setq value (replace-match "" nil t value)))
+      (when (string-match "[ \t]+$" value)
+	(setq value (replace-match "" nil t value)))
+      value)))
 
 ;;; @ top-posting
 ;;;
