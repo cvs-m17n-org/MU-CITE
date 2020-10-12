@@ -59,6 +59,7 @@
 (autoload 'mu-bbdb-get-prefix-register-method "mu-bbdb")
 (autoload 'mu-bbdb-get-prefix-register-verbose-method "mu-bbdb")
 
+(autoload 'timezone-parse-date "timezone")
 
 ;;; @ version
 ;;;

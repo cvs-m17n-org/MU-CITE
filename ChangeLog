@@ -1,7 +1,13 @@
+2020-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mu-register.el: Autoload pces for *-as-coding-system functions.
+	(mu-registration-file-coding-system-for-write): Add custom type.
+
 2020-10-12  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
 
 	* mu-cite.el (mu-cite-get-field-value): Unfold the value,
-	and remove leading/trailing white spaces from the value.  (PR#2)
+	and remove leading/trailing white spaces from the value (PR#2).
+	(timezone-parse-date): Autoload (issue #1).
 
 2019-08-04  Ken Sato  <ksato9700>
 

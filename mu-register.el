@@ -1,5 +1,5 @@
 ;;; mu-register.el --- registration feature of mu-cite
-;; Copyright (C) 1995-2001, 2014
+;; Copyright (C) 1995-2001, 2014, 2020
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MINOURA Makoto <minoura@netlaputa.or.jp>
@@ -31,6 +31,9 @@
 
 (eval-when-compile (require 'static))
 
+(autoload 'insert-file-contents-as-coding-system "pces")
+(autoload 'write-region-as-coding-system "pces")
+
 
 ;;; @ variables
 ;;;
@@ -52,6 +55,7 @@
   "Coding-system used when writing a registration file.  If you set this
 to nil, the value of `mu-registration-file-coding-system' will be used
 for writing a file."
+  :type 'coding-system
   :group 'mu-cite)
 
 (defcustom mu-cite-allow-null-string-registration nil
