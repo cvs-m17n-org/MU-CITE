@@ -1,5 +1,5 @@
 ;;; mu-cite.el --- yet another citation tool for GNU Emacs
-;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014, 2018, 2019
+;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014, 2018-2020
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
