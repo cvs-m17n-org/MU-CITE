@@ -43,8 +43,8 @@
 
 ;;; Code:
 
-;; For picking up the macros `char-next-index', `with-temp-buffer', etc.
-(require 'poem)
+(require 'poem)	;; `char-next-index', `with-temp-buffer', etc.
+(require 'pym)	;; `defun-maybe-cond'
 
 (require 'pcustom)
 (require 'std11)
