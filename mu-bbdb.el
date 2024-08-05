@@ -1,6 +1,6 @@
-;;; mu-bbdb.el --- registration feature of mu-cite using BBDB
+;;; mu-bbdb.el --- registration feature of mu-cite using BBDB -*- lexical-binding: nil -*-
 
-;; Copyright (C) 1995,1996,1997,1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1995,1996,1997,1998,1999,2024 Free Software Foundation, Inc.
 
 ;; Author: Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>

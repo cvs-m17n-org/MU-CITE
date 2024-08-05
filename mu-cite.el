@@ -1,5 +1,5 @@
-;;; mu-cite.el --- yet another citation tool for GNU Emacs
-;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014, 2018-2020
+;;; mu-cite.el --- yet another citation tool for GNU Emacs -*- lexical-binding: nil -*-
+;; Copyright (C) 1995-2001, 2005, 2007, 2012, 2014, 2018-2020, 2024
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MORIOKA Tomohiko <tomo@m17n.org>
@@ -293,14 +293,14 @@ registered in variable `mu-cite-get-field-value-method-alist' is called."
 You can use the top-posting style with this most simple way:
 
 (setq mu-cite-prefix-format nil)
-(setq mu-cite-top-format '(top-posting))
+(setq mu-cite-top-format \\='(top-posting))
 
 But it might not necessarily be convenient as the case may be.  If you
 want to use it for only replying to [1]certain recipients, or [2]those
 who use the top-posting style, try this:
 
 \(add-hook
- 'mu-cite-pre-cite-hook
+ \\='mu-cite-pre-cite-hook
  (lambda ()
    (let ((last-point (point))
          (case-fold-search nil))
@@ -310,7 +310,7 @@ who use the top-posting style, try this:
           (save-excursion
             (save-restriction
               (std11-narrow-to-header)
-              (string-match \"\\\\Wco\\\\.jp\\\\(\\\\W\\\\|\\\\'\\\\)\"
+              (string-match \"\\\\Wco\\\\.jp\\\\(\\\\W\\\\|\\\\\\='\\\\)\"
                             (or (std11-fetch-field \"from\") \"\"))))
           ;; [2]those who use the top-posting style
           (re-search-forward \"\\n-----Original Message-----\\nFrom:\"
@@ -318,10 +318,10 @@ who use the top-posting style, try this:
           ;; [3]the last resort
           (y-or-n-p \"Use top-posting? \"))
          (progn
-           (set (make-local-variable 'mu-cite-prefix-format)
+           (set (make-local-variable \\='mu-cite-prefix-format)
                 nil)
-           (set (make-local-variable 'mu-cite-top-format)
-                '(top-posting))))
+           (set (make-local-variable \\='mu-cite-top-format)
+                \\='(top-posting))))
      (goto-char last-point))))
 
 This is just an example; modify it to make it suitable to your taste."
@@ -412,7 +412,7 @@ the variable `mu-cite-ml-count-field-list', in a header.
 If the field is found, the function returns a number part of the
 field.
 
-Notice that please use (mu-cite-get-value 'ml-count)
+Notice that please use (mu-cite-get-value \\='ml-count)
 instead of to call the function directly."
   (let ((field-list mu-cite-ml-count-field-list))
     (catch 'tag

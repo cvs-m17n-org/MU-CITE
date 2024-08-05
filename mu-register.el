@@ -1,5 +1,5 @@
-;;; mu-register.el --- registration feature of mu-cite
-;; Copyright (C) 1995-2001, 2014, 2020
+;;; mu-register.el --- registration feature of mu-cite -*- lexical-binding: nil -*-
+;; Copyright (C) 1995-2001, 2014, 2020, 2024
 ;;        Free Software Foundation, Inc.
 
 ;; Author: MINOURA Makoto <minoura@netlaputa.or.jp>

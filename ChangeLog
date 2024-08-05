@@ -1,3 +1,12 @@
+2024-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* MU-MK (byte-compile-file-form-custom-declare-variable):
+	Don't define it for Emacs 29 and elders.
+	* latex-math-symbol.el, mu-bbdb.el, mu-cite.el, mu-register.el:
+	Add lexical-binding cookie with the nil value.
+	* mu-cite.el (mu-cite-get-original-header, mu-cite-get-ml-count-method):
+	Quote single quote in docstrings.
+
 2020-11-03  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
 
 	* mu-cite.el: Require `pym' (issue #4).

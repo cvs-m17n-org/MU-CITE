@@ -76,7 +76,8 @@ LISPDIR=%s\n" PREFIX LISPDIR))))
 
 (load "bytecomp" nil t)
 
-(if (fboundp 'byte-compile-file-form-custom-declare-variable)
+(if (or (fboundp 'byte-compile-file-form-custom-declare-variable)
+	(>= emacs-major-version 29))
     nil
   ;; Bind defcustom'ed variables when byte-compiling.
   (put 'custom-declare-variable 'byte-hunk-handler

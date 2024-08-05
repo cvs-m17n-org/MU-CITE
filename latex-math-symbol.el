@@ -1,4 +1,4 @@
-;;; latex-math-symbol.el --- LaTeX math symbol decoder
+;;; latex-math-symbol.el --- LaTeX math symbol decoder -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 1996,1997 MORIOKA Tomohiko
 
