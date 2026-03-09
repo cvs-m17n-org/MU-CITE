@@ -6,7 +6,7 @@
 ;;         Shuhei KOBAYASHI <shuhei@aqua.ocn.ne.jp>
 ;; Maintainer: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: mail, news, citation
-;; Package-Version: 8.1
+;; Package-Version: 8.2
 ;; Package-Requires: ((flim "1.14.9"))
 
 ;; This file is part of MU (Message Utilities).
