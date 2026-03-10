@@ -1,4 +1,4 @@
-;;; -*-Emacs-Lisp-*-
+;;; -*- mode: Emacs-Lisp; lexical-binding: nil -*-
 
 ;; MU-ELS: list of mu-cite modules to install
 

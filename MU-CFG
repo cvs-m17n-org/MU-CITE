@@ -1,4 +1,4 @@
-;;; -*-Emacs-Lisp-*-
+;;; -*- mode: Emacs-Lisp; lexical-binding: nil -*-
 
 ;; MU-CFG: installation setting about mu-cite.
 
